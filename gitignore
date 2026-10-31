@@ -1,0 +1,17 @@
+# Dependencias de Node
+node_modules/
+
+# Archivos compilados de Angular
+dist/
+
+# Caché de Angular
+.angular/
+
+# Archivos del sistema macOS
+.DS_Store
+
+# Archivos temporales
+*.log
+
+# Configuración local de Visual Studio Code
+.vscode/
