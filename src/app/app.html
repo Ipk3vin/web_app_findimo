@@ -1,0 +1,775 @@
+<!-- ========================================== -->
+<!-- 1. BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)   -->
+<!-- ========================================== -->
+<header class="navbar-wrapper">
+  <div class="navbar-container">
+    <!-- Logotipo FINDIMO con isotipo casa/pin -->
+    <a href="#inicio" class="brand-logo" aria-label="FINDIMO Inicio">
+      <div class="logo-icon">
+        <!-- Techo Turquesa / Cyan -->
+        <svg class="roof-svg" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 18L20 4L36 18" stroke="#00b4b6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 11V6H16V7.5" stroke="#00b4b6" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <!-- Pin Naranja -->
+        <div class="pin-dot"></div>
+      </div>
+      <span class="logo-text">FINDIMO</span>
+    </a>
+
+    <!-- Enlaces de navegación -->
+    <nav class="nav-links">
+      <a href="#inicio" class="nav-link active">Inicio</a>
+      <a href="#propiedades" class="nav-link">Propiedades</a>
+      <a href="#nosotros" class="nav-link">Nosotros</a>
+      <a href="#beneficios" class="nav-link">Beneficios</a>
+      <a href="#contacto" class="nav-link">Contacto</a>
+    </nav>
+
+    <!-- Acciones de usuario / Botones -->
+    <div class="nav-actions">
+      @if (!usuarioActual()) {
+        <button type="button" class="btn-login" (click)="abrirModalLogin()">
+          Iniciar Sesión
+        </button>
+        <button type="button" class="btn-publish-orange" (click)="abrirModalPublicar()">
+          Publicar Propiedad
+        </button>
+      } @else {
+        <div class="user-pill" [title]="usuarioActual()?.correoElectronico">
+          <span class="user-avatar-circle">
+            {{ usuarioActual()?.nombre?.charAt(0) || 'U' }}
+          </span>
+          <span class="user-name">
+            {{ usuarioActual()?.nombre }} ({{ usuarioActual()?.nombreRol === 'ARRENDADOR' ? 'Arrendador' : 'Estudiante' }})
+          </span>
+        </div>
+        <button type="button" class="btn-publish-orange" (click)="abrirModalPublicar()">
+          Publicar Propiedad
+        </button>
+        <button type="button" class="btn-logout" (click)="cerrarSesion()" title="Cerrar sesión">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      }
+    </div>
+  </div>
+</header>
+
+<!-- ========================================== -->
+<!-- 2. SECCIÓN HERO (ENCUENTRA TU ESPACIO)    -->
+<!-- ========================================== -->
+<section id="inicio" class="hero-section">
+  <!-- Capa de superposición con gradiente azul oscuro -->
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <!-- Badge: CONFIANZA & SEGURIDAD -->
+    <div class="trust-badge">
+      <span>CONFIANZA & SEGURIDAD</span>
+    </div>
+
+    <!-- Título Principal -->
+    <h1 class="hero-title">Encuentra tu espacio ideal</h1>
+
+    <!-- BARRA FLOTANTE DE BÚSQUEDA -->
+    <div class="search-bar-card">
+      <!-- 1. UBICACIÓN -->
+      <div class="search-field">
+        <label class="field-label">UBICACIÓN</label>
+        <div class="field-control">
+          <!-- Ícono de ubicación (Turquesa) -->
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 7.2c0 7.3-8 11.8-8 11.8z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <select [(ngModel)]="filtroUbicacion" class="search-select">
+            <option value="todos">Lima, Perú</option>
+            <option value="Surco">Surco (Roma Norte)</option>
+            <option value="Chorrillos">Chorrillos (Los Portales)</option>
+            <option value="Molina">La Molina (Villa Olivos)</option>
+            <option value="Miraflores">Miraflores</option>
+            <option value="San Isidro">San Isidro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="search-divider"></div>
+
+      <!-- 2. TIPO DE ESPACIO -->
+      <div class="search-field">
+        <label class="field-label">TIPO DE ESPACIO</label>
+        <div class="field-control">
+          <!-- Ícono de casa (Turquesa) -->
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <select [(ngModel)]="filtroTipo" class="search-select">
+            <option value="Departamentos">Departamentos</option>
+            <option value="Casas">Casas</option>
+            <option value="Estudios">Estudios</option>
+            <option value="Habitaciones">Habitaciones</option>
+            <option value="todos">Todos los espacios</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="search-divider"></div>
+
+      <!-- 3. PRECIO -->
+      <div class="search-field">
+        <label class="field-label">PRECIO</label>
+        <div class="field-control">
+          <!-- Ícono de tarjeta/billetera (Turquesa) -->
+          <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+            <circle cx="6" cy="15" r="1" fill="#00b4b6"/>
+          </svg>
+          <select [(ngModel)]="filtroPrecio" class="search-select">
+            <option value="700-850">S/ 700 - S/ 850</option>
+            <option value="hasta-600">Hasta S/ 600</option>
+            <option value="600-1000">S/ 600 - S/ 1,000</option>
+            <option value="mas-1000">Más de S/ 1,000</option>
+            <option value="todos">Todos los precios</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- BOTÓN DE BÚSQUEDA NARANJA -->
+      <button type="button" class="btn-search-orange" (click)="ejecutarBusqueda()" aria-label="Buscar propiedades">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Beneficios bajo la barra de búsqueda -->
+    <div class="hero-trust-checks">
+      <span class="trust-item">
+        <span class="check-symbol">✓</span> Contratos 100% Digitales
+      </span>
+      <span class="trust-item">
+        <span class="check-symbol">✓</span> Soporte y Mediación Legal
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- 3. PROPIEDADES DESTACADAS                  -->
+<!-- ========================================== -->
+<section id="propiedades" class="properties-section">
+  <div class="section-container">
+    <div class="section-header-row">
+      <div class="header-titles">
+        <span class="section-tag-teal">NUESTRA SELECCIÓN</span>
+        <h2 class="section-heading-navy">Propiedades Destacadas</h2>
+      </div>
+
+      <button type="button" class="btn-see-all" (click)="limpiarFiltros()">
+        <span>Ver todas</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Grid de tarjetas de propiedad -->
+    <div class="properties-grid">
+      @for (prop of propiedadesFiltradas(); track prop.idPropiedad) {
+        <article class="property-card">
+          <!-- Imagen de la propiedad con botón de favoritos -->
+          <div class="property-image-box">
+            <img [src]="prop.imagen" [alt]="prop.titulo" class="property-image" loading="lazy" />
+            <button
+              type="button"
+              class="btn-favorite"
+              [class.active]="prop.esFavorito"
+              (click)="toggleFavorito(prop, $event)"
+              aria-label="Guardar en favoritos"
+            >
+              <svg viewBox="0 0 24 24" [attr.fill]="prop.esFavorito ? '#ef4444' : 'none'" [attr.stroke]="prop.esFavorito ? '#ef4444' : 'white'" stroke-width="2.2" width="20" height="20">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+            <div class="property-badge-type">
+              {{ prop.tipoEspacio || 'Departamento' }}
+            </div>
+          </div>
+
+          <!-- Información de la propiedad -->
+          <div class="property-details">
+            <!-- Precio destacado en naranja -->
+            <div class="property-price">
+              S/{{ prop.precio | number:'1.0-0' }} <span class="price-period">mes</span>
+            </div>
+
+            <!-- Título -->
+            <h3 class="property-title">{{ prop.titulo }}</h3>
+
+            <!-- Ubicación -->
+            <p class="property-address">
+              {{ prop.direccion }}, {{ prop.distrito }}
+            </p>
+
+            <!-- Características / Especificaciones con íconos turquesa -->
+            <div class="property-specs">
+              <!-- Habitaciones -->
+              <div class="spec-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="spec-icon">
+                  <path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/>
+                </svg>
+                <span>{{ prop.habitaciones }} Hab</span>
+              </div>
+
+              <!-- Baños -->
+              <div class="spec-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="spec-icon">
+                  <path d="M9 6h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"/>
+                  <path d="M12 2v4M8 14h8"/>
+                </svg>
+                <span>{{ prop.banos || (prop.habitaciones === 3 ? 2.5 : 1) }} Baños</span>
+              </div>
+
+              <!-- Metros cuadrados -->
+              <div class="spec-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="spec-icon">
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                </svg>
+                <span>{{ prop.area || (prop.habitaciones === 3 ? 80 : (prop.precio >= 1000 ? 65 : 42)) }} m²</span>
+              </div>
+            </div>
+
+            <!-- Botón de acción para solicitar alquiler -->
+            <button type="button" class="btn-solicitar" (click)="abrirSolicitud(prop)">
+              Solicitar Alquiler
+            </button>
+          </div>
+        </article>
+      }
+    </div>
+
+    @if (propiedadesFiltradas().length === 0) {
+      <div class="no-results-box">
+        <p>No se encontraron propiedades con los filtros seleccionados.</p>
+        <button type="button" class="btn-reset-filters" (click)="limpiarFiltros()">
+          Restablecer Filtros
+        </button>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- 4. ¿POR QUÉ ELEGIRNOS? (EVOLUCIÓN DIGITAL) -->
+<!-- ========================================== -->
+<section id="nosotros" class="why-us-section">
+  <div class="section-container why-us-grid">
+    <!-- Columna Izquierda: Imagen de familia feliz con badge flotante -->
+    <div class="why-us-visual">
+      <div class="visual-card">
+        <img
+          src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=80"
+          alt="Familia feliz con llaves de su nuevo hogar"
+          class="family-photo"
+        />
+
+        <!-- Badge flotante: Transacciones Seguras -->
+        <div class="floating-trust-card">
+          <div class="shield-circle-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="trust-text-group">
+            <h4 class="trust-card-title">Transacciones Seguras</h4>
+            <p class="trust-card-sub">Respaldadas por Findimo Pay</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Beneficios y evolución -->
+    <div class="why-us-content" id="beneficios">
+      <span class="section-tag-teal">¿POR QUÉ ELEGIRNOS?</span>
+      <h2 class="why-us-heading">La evolución digital del mercado inmobiliario</h2>
+
+      <div class="features-list">
+        <!-- Feature 1: Arrendamiento Garantizado -->
+        <div class="feature-item">
+          <div class="feature-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div class="feature-text">
+            <h3 class="feature-title">Arrendamiento Garantizado</h3>
+            <p class="feature-desc">
+              Filtramos a cada arrendatario para tu completa seguridad. Cero preocupaciones con depósitos de garantía ágiles.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 2: Contrato con Firma Digital -->
+        <div class="feature-item">
+          <div class="feature-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <div class="feature-text">
+            <h3 class="feature-title">Contrato con Firma Digital</h3>
+            <p class="feature-desc">
+              Olvídate de notarías y firmas presenciales. Firma tu contrato digital legalmente válido en minutos desde tu celular.
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 3: Proceso 100% Ágil -->
+        <div class="feature-item">
+          <div class="feature-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="feature-text">
+            <h3 class="feature-title">Proceso 100% Ágil</h3>
+            <p class="feature-desc">
+              Visitas virtuales y físicas agendadas de forma automática. Un buscador inteligente que ahorra tu valioso tiempo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- 5. TESTIMONIOS (LO QUE DICEN NUESTROS USUARIOS) -->
+<!-- ========================================== -->
+<section class="testimonials-section">
+  <div class="section-container">
+    <div class="testimonials-header">
+      <span class="section-tag-teal">TESTIMONIOS</span>
+      <h2 class="section-heading-navy">Lo que dicen nuestros usuarios</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      <!-- Testimonio 1: Sofía Martínez (Estudiante) -->
+      <div class="testimonial-card">
+        <div class="quote-icon-teal">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 7 2 9 3 10z"/>
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 7 2 9 3 10z"/>
+          </svg>
+        </div>
+        <p class="testimonial-comment">
+          “Encontrar departamento cerca de mi universidad solía ser un dolor de cabeza de meses. Con Findimo, agendé la visita virtual, firmé mi contrato y me mudé en menos de una semana.”
+        </p>
+        <div class="author-row">
+          <img
+            src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=200&q=80"
+            alt="Sofía Martínez"
+            class="author-avatar"
+          />
+          <div class="author-info">
+            <h4 class="author-name">Sofía Martínez</h4>
+            <p class="author-role">Estudiante de Medicina</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Testimonio 2: Eduardo Garza (Arrendador registrado - borde azul destacado) -->
+      <div class="testimonial-card featured-review-border">
+        <div class="quote-icon-teal">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2H4c-1.25 0-2 .75-2 2v6c0 7 2 9 3 10z"/>
+            <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.75-2-2-2h-4c-1.25 0-2 .75-2 2v6c0 7 2 9 3 10z"/>
+          </svg>
+        </div>
+        <p class="testimonial-comment">
+          “Como arrendador, la seguridad es mi prioridad. Findimo valida el perfil financiero de los candidatos de forma inmediata y su contrato digital es fantástico.”
+        </p>
+        <div class="author-row">
+          <img
+            src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80"
+            alt="Eduardo Garza"
+            class="author-avatar"
+          />
+          <div class="author-info">
+            <h4 class="author-name">Eduardo Garza</h4>
+            <p class="author-role">Arrendador registrado</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- 6. BANNER CTA (LISTO PARA ENCONTRAR...)     -->
+<!-- ========================================== -->
+<section class="cta-banner-section">
+  <!-- Fondo con ondas vectoriales -->
+  <div class="cta-wave-bg">
+    <svg viewBox="0 0 1440 320" preserveAspectRatio="none" fill="none">
+      <path fill="rgba(255, 255, 255, 0.03)" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,122.7C960,117,1056,171,1152,181.3C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+      <path fill="rgba(255, 255, 255, 0.04)" d="M0,192L48,197.3C96,203,192,213,288,197.3C384,181,480,139,576,144C672,149,768,203,864,224C960,245,1056,235,1152,208C1248,181,1344,139,1392,117.3L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+  </div>
+
+  <div class="section-container cta-container">
+    <h2 class="cta-title">¿Listo para encontrar tu espacio ideal?</h2>
+    <p class="cta-subtitle">
+      Únete a miles de personas que ya disfrutan de un arrendamiento rápido, transparente y con total seguridad legal.
+    </p>
+
+    <div class="cta-buttons-row">
+      <button type="button" class="btn-cta-orange" (click)="abrirModalRegistro()">
+        <span>Crear una cuenta gratis</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+
+      <button type="button" class="btn-cta-outline" (click)="mostrarToast('Soporte Findimo: contáctanos al WhatsApp +51 987 654 321 o soporte@findimo.pe', 'info')">
+        Hablemos con soporte
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================== -->
+<!-- 7. PIE DE PÁGINA (FOOTER)                  -->
+<!-- ========================================== -->
+<footer id="contacto" class="footer-wrapper">
+  <div class="section-container footer-content">
+    <div class="footer-top-grid">
+      <!-- Columna 1: Logotipo FINDIMO Blanco -->
+      <div class="footer-brand-col">
+        <a href="#inicio" class="footer-logo">
+          <div class="logo-icon">
+            <svg class="roof-svg" viewBox="0 0 40 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 18L20 4L36 18" stroke="#00b4b6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 11V6H16V7.5" stroke="#00b4b6" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+            <div class="pin-dot"></div>
+          </div>
+          <span class="footer-logo-text">FINDIMO</span>
+        </a>
+      </div>
+
+      <!-- Columna 2: Propiedades -->
+      <div class="footer-links-col">
+        <h4 class="footer-col-title">Propiedades</h4>
+        <ul class="footer-links-list">
+          <li><a href="#propiedades">Departamentos</a></li>
+          <li><a href="#propiedades">Casas</a></li>
+          <li><a href="#propiedades">Oficinas</a></li>
+          <li><a href="#propiedades">Estudiantes</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 3: Compañía -->
+      <div class="footer-links-col">
+        <h4 class="footer-col-title">Compañía</h4>
+        <ul class="footer-links-list">
+          <li><a href="#nosotros">Sobre nosotros</a></li>
+          <li><a href="#beneficios">Cómo funciona</a></li>
+          <li><a href="#beneficios">Seguridad legal</a></li>
+          <li><a href="#nosotros">Prensa</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 4: Soporte -->
+      <div class="footer-links-col">
+        <h4 class="footer-col-title">Soporte</h4>
+        <ul class="footer-links-list">
+          <li><a href="#contacto">Centro de ayuda</a></li>
+          <li><a href="#contacto">Preguntas frecuentes</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="#contacto">Términos y condiciones</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Divisor -->
+    <div class="footer-divider"></div>
+
+    <!-- Barra inferior del footer: Copyright y Redes Sociales -->
+    <div class="footer-bottom-row">
+      <p class="copyright-text">
+        Copyright © 2026 FINDIMO. Todos los derechos reservados.
+      </p>
+
+      <div class="social-icons-group">
+        <!-- Facebook -->
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+          </svg>
+        </a>
+        <!-- Twitter / X -->
+        <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Twitter">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </a>
+        <!-- Instagram -->
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ========================================== -->
+<!-- 8. MODALES / FORMULARIOS INTERACTIVOS      -->
+<!-- ========================================== -->
+
+<!-- Modal: Iniciar Sesión -->
+@if (modalLoginAbierto()) {
+  <div class="modal-backdrop" (click)="modalLoginAbierto.set(false)">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Iniciar Sesión en Findimo</h3>
+        <button type="button" class="btn-close-modal" (click)="modalLoginAbierto.set(false)">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="quick-login-pills">
+          <span class="quick-title">Accesos Rápidos Demo:</span>
+          <button type="button" class="pill-demo" (click)="iniciarComoSofia()">Sofía (Estudiante)</button>
+          <button type="button" class="pill-demo" (click)="iniciarComoEduardo()">Eduardo (Arrendador)</button>
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico</label>
+          <input type="email" [(ngModel)]="loginCorreo" placeholder="ejemplo@findimo.pe" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" [(ngModel)]="loginContrasena" placeholder="******" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Rol de Usuario</label>
+          <select [(ngModel)]="loginRol" class="form-input">
+            <option value="ESTUDIANTE">Estudiante (Buscador)</option>
+            <option value="ARRENDADOR">Arrendador (Propietario)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="modalLoginAbierto.set(false)">Cancelar</button>
+        <button type="button" class="btn-primary-orange" (click)="iniciarSesion()">Ingresar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Registro de Usuario (Conectado a POST /api/usuarios/registro) -->
+@if (modalRegistroAbierto()) {
+  <div class="modal-backdrop" (click)="modalRegistroAbierto.set(false)">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Crear Cuenta en Findimo</h3>
+        <button type="button" class="btn-close-modal" (click)="modalRegistroAbierto.set(false)">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre *</label>
+            <input type="text" [(ngModel)]="regNombre" placeholder="Tu nombre" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Apellido *</label>
+            <input type="text" [(ngModel)]="regApellido" placeholder="Tu apellido" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Correo Electrónico *</label>
+          <input type="email" [(ngModel)]="regCorreo" placeholder="usuario@correo.com" class="form-input" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contraseña *</label>
+            <input type="password" [(ngModel)]="regContrasena" placeholder="Contraseña segura" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Teléfono (9 dígitos)</label>
+            <input type="tel" [(ngModel)]="regTelefono" placeholder="987654321" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de Cuenta (Rol en Findimo)</label>
+          <div class="role-selector-radios">
+            <label class="radio-label">
+              <input type="radio" name="rol" value="ESTUDIANTE" [(ngModel)]="regRol" />
+              <span>Estudiante</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="rol" value="ARRENDADOR" [(ngModel)]="regRol" />
+              <span>Arrendador</span>
+            </label>
+          </div>
+        </div>
+
+        @if (regRol === 'ESTUDIANTE') {
+          <div class="form-group">
+            <label>Universidad o Instituto</label>
+            <input type="text" [(ngModel)]="regUniversidad" placeholder="Ej. UPC, PUCP, Cayetano Heredia" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Presupuesto Máximo Mensual (S/)</label>
+            <input type="number" [(ngModel)]="regPresupuesto" placeholder="850" class="form-input" />
+          </div>
+        } @else {
+          <div class="form-group">
+            <label>Cuenta Bancaria para Depósitos (CCI)</label>
+            <input type="text" [(ngModel)]="regCuentaBancaria" placeholder="BCP-191-XXXXXXXX-0-XX" class="form-input" />
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="modalRegistroAbierto.set(false)">Cancelar</button>
+        <button type="button" class="btn-primary-orange" (click)="registrarUsuario()">Registrarse Gratis</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Publicar Propiedad (Conectado a POST /api/propiedades) -->
+@if (modalPublicarAbierto()) {
+  <div class="modal-backdrop" (click)="modalPublicarAbierto.set(false)">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Publicar Propiedad en Findimo</h3>
+        <button type="button" class="btn-close-modal" (click)="modalPublicarAbierto.set(false)">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Título de la Propiedad *</label>
+          <input type="text" [(ngModel)]="pubTitulo" placeholder="Ej. Mini Departamento Moderno cerca a Universidad" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="pubDescripcion" rows="3" placeholder="Detalles de la propiedad, servicios incluidos, etc." class="form-input"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Precio Mensual (S/) *</label>
+            <input type="number" [(ngModel)]="pubPrecio" placeholder="950" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Habitaciones *</label>
+            <input type="number" [(ngModel)]="pubHabitaciones" placeholder="1" min="1" max="10" class="form-input" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dirección *</label>
+            <input type="text" [(ngModel)]="pubDireccion" placeholder="Av. Primavera 450" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>Distrito *</label>
+            <select [(ngModel)]="pubDistrito" class="form-input">
+              <option value="Surco">Surco</option>
+              <option value="Chorrillos">Chorrillos</option>
+              <option value="Molina">La Molina</option>
+              <option value="Miraflores">Miraflores</option>
+              <option value="San Isidro">San Isidro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de Espacio</label>
+          <select [(ngModel)]="pubTipo" class="form-input">
+            <option value="Departamentos">Departamento</option>
+            <option value="Casas">Casa</option>
+            <option value="Estudios">Estudio amueblado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="modalPublicarAbierto.set(false)">Cancelar</button>
+        <button type="button" class="btn-primary-orange" (click)="guardarPropiedad()">Guardar y Publicar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Modal: Solicitar Alquiler (Conectado a POST /api/solicitudes-alquiler) -->
+@if (modalSolicitarAbierto() && propiedadSeleccionada()) {
+  <div class="modal-backdrop" (click)="modalSolicitarAbierto.set(false)">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Solicitar Alquiler</h3>
+        <button type="button" class="btn-close-modal" (click)="modalSolicitarAbierto.set(false)">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="selected-prop-card">
+          <img [src]="propiedadSeleccionada()?.imagen" [alt]="propiedadSeleccionada()?.titulo" class="selected-prop-img" />
+          <div>
+            <h4 class="selected-prop-title">{{ propiedadSeleccionada()?.titulo }}</h4>
+            <p class="selected-prop-loc">{{ propiedadSeleccionada()?.direccion }}, {{ propiedadSeleccionada()?.distrito }}</p>
+            <p class="selected-prop-price">S/{{ propiedadSeleccionada()?.precio | number:'1.0-0' }} / mes</p>
+          </div>
+        </div>
+
+        <div class="solicitud-info-box">
+          <p>
+            Al enviar tu solicitud, el arrendador revisará tu perfil en Findimo. Se agendará una visita virtual o presencial y podrás firmar tu contrato digital seguro.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="modalSolicitarAbierto.set(false)">Cerrar</button>
+        <button type="button" class="btn-primary-orange" (click)="confirmarSolicitud()">Enviar Solicitud</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- TOAST NOTIFICACIÓN FLOTANTE -->
+@if (toastMensaje()) {
+  <div class="toast-notification" [class]="'toast-' + toastTipo()">
+    <span>{{ toastMensaje() }}</span>
+    <button type="button" class="toast-close" (click)="cerrarToast()">✕</button>
+  </div>
+}
