@@ -1,0 +1,311 @@
+.resenas-page-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  min-height: calc(100vh - 350px);
+}
+
+/* Header & Breadcrumb */
+.resenas-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.resenas-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.crumb-link {
+  color: #486581;
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.crumb-link:hover {
+  color: #f26422;
+}
+
+.crumb-sep {
+  color: #94a3b8;
+}
+
+.crumb-active {
+  color: #102a43;
+  font-weight: 700;
+}
+
+.resenas-tagline {
+  color: #00b4b6;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* Title */
+.resenas-page-title {
+  font-size: 2.2rem;
+  font-weight: 850;
+  color: #102a43;
+  letter-spacing: -0.5px;
+  margin-bottom: 28px;
+}
+
+/* Tabs */
+.resenas-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 40px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 12px 4px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: #102a43;
+}
+
+.tab-btn.active {
+  color: #102a43;
+  font-weight: 750;
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #f26422;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Sections */
+.resenas-section-block {
+  margin-bottom: 48px;
+}
+
+.section-subheading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #102a43;
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+
+.section-info-text {
+  font-size: 0.92rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 780px;
+}
+
+/* Empty Card (como en Figma) */
+.resena-empty-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  padding: 48px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.empty-icon-circle-peach {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #fff7ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.empty-icon-circle-teal {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #ecfeff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.empty-card-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #102a43;
+  margin-bottom: 8px;
+}
+
+.empty-card-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  max-width: 540px;
+  line-height: 1.5;
+}
+
+/* List of review cards */
+.resenas-list-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.resena-item-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.resena-author-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.author-avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.author-name-role {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.author-name-role .name {
+  font-size: 1rem;
+  font-weight: 750;
+  color: #102a43;
+}
+
+.role-badge {
+  background: #ecfeff;
+  color: #00b4b6;
+  font-size: 0.72rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stay-date {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.rating-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff7ed;
+  color: #ea580c;
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.star-icon {
+  font-size: 0.9rem;
+}
+
+.resena-text {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.review-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag-pill {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* Reseñas escritas header */
+.resena-item-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.target-title {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: #102a43;
+}
+
+.target-sub {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.stars-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff7ed;
+  color: #ea580c;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.star-filled {
+  color: #f26422;
+}

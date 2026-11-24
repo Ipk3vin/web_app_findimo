@@ -4,6 +4,7 @@ export interface Propiedad {
   titulo: string;
   descripcion: string;
   precio: number;
+  precioNoche?: number;
   habitaciones: number;
   banos?: number;
   area?: number;
@@ -11,8 +12,15 @@ export interface Propiedad {
   distrito: string;
   estado: boolean;
   imagen?: string;
+  imagenesGaleria?: string[];
   tipoEspacio?: 'Departamentos' | 'Casas' | 'Estudios' | 'Habitaciones';
+  calificacion?: number;
+  totalResenas?: number;
   esFavorito?: boolean;
+  arrendadorNombre?: string;
+  arrendadorAntiguedad?: string;
+  arrendadorInicial?: string;
+  subtituloDetalle?: string;
 }
 
 export interface PropiedadRequest {

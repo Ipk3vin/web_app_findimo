@@ -15,3 +15,8 @@ dist/
 
 # Configuración local de Visual Studio Code
 .vscode/
+
+# Variables de entorno
+.env
+.env.*
+!.env.example

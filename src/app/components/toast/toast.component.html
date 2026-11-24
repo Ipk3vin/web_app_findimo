@@ -1,0 +1,5 @@
+<!-- Notificación Toast Flotante -->
+<div class="toast-floating-banner" [class]="'toast-' + toastTipo" *ngIf="toastMensaje">
+  <span class="toast-text">{{ toastMensaje }}</span>
+  <button type="button" class="btn-toast-dismiss" (click)="cerrarToast.emit()">✕</button>
+</div>

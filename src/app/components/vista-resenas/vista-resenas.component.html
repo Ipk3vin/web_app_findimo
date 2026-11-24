@@ -1,0 +1,145 @@
+<div class="resenas-page-container">
+  <!-- BREADCRUMB & TAGLINE -->
+  <div class="resenas-header-row">
+    <div class="resenas-breadcrumb">
+      <a href="javascript:void(0)" (click)="volverAlPerfil.emit()" class="crumb-link">Perfil</a>
+      <span class="crumb-sep">/</span>
+      <span class="crumb-active">Reseñas</span>
+    </div>
+    <div class="resenas-tagline">
+      Tu opinión ayuda a construir una comunidad estudiantil más transparente
+    </div>
+  </div>
+
+  <!-- TÍTULO DINÁMICO -->
+  <h1 class="resenas-page-title">
+    {{ pestanaActiva === 'sobreTi' ? 'Reseñas sobre ti' : 'Reseñas que escribiste' }}
+  </h1>
+
+  <!-- PESTAÑAS (TABS) -->
+  <div class="resenas-tabs-nav">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="pestanaActiva === 'sobreTi'"
+      (click)="pestanaActiva = 'sobreTi'"
+    >
+      Reseñas sobre ti
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="pestanaActiva === 'escritas'"
+      (click)="pestanaActiva = 'escritas'"
+    >
+      Reseñas que escribiste
+    </button>
+  </div>
+
+  <!-- CONTENIDO 1: RESEÑAS QUE ESCRIBISTE -->
+  <ng-container *ngIf="pestanaActiva === 'escritas'">
+    <!-- SECCIÓN 1: Reseñas que tienes que escribir -->
+    <div class="resenas-section-block">
+      <h2 class="section-subheading">Reseñas que tienes que escribir</h2>
+      <div class="resena-empty-card">
+        <div class="empty-icon-circle-peach">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" width="28" height="28">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+            <path d="M2 2l7.586 7.586"/>
+            <circle cx="11" cy="11" r="2"/>
+          </svg>
+        </div>
+        <h3 class="empty-card-title">No hay reseñas pendientes por escribir en este momento.</h3>
+        <p class="empty-card-subtitle">
+          ¡Parece que llegó la hora de planear un nuevo viaje o buscar tu próxima habitación!
+        </p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: Reseñas anteriores que escribiste -->
+    <div class="resenas-section-block">
+      <h2 class="section-subheading">Reseñas anteriores que escribiste</h2>
+
+      <!-- Si no tiene reseñas escritas -->
+      <div *ngIf="resenasEscritas.length === 0" class="resena-empty-card">
+        <div class="empty-icon-circle-teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2" width="28" height="28">
+            <rect x="3" y="4" width="18" height="16" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <h3 class="empty-card-title">Todavía no has escrito ninguna reseña.</h3>
+        <p class="empty-card-subtitle">
+          Las opiniones que compartas sobre tus caseros y habitaciones ayudarán a otros estudiantes en Lima.
+        </p>
+      </div>
+
+      <!-- Si tiene reseñas escritas -->
+      <div *ngIf="resenasEscritas.length > 0" class="resenas-list-cards">
+        <div class="resena-item-card" *ngFor="let item of resenasEscritas">
+          <div class="resena-item-header">
+            <div class="target-info">
+              <span class="target-title">{{ item.propiedadTitulo }}</span>
+              <span class="target-sub">Arrendador: {{ item.arrendadorNombre }} · {{ item.fecha }}</span>
+            </div>
+            <div class="stars-badge">
+              <span class="star-filled">★</span> {{ item.calificacion }}
+            </div>
+          </div>
+          <p class="resena-text">"{{ item.comentario }}"</p>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- CONTENIDO 2: RESEÑAS SOBRE TI (SOLAMENTE DE OTROS ARRENDADORES) -->
+  <ng-container *ngIf="pestanaActiva === 'sobreTi'">
+    <div class="resenas-section-block">
+      <h2 class="section-subheading">Reseñas de arrendadores sobre ti como inquilino</h2>
+      <p class="section-info-text">
+        Aquí se recopilan únicamente las valoraciones y comentarios que otros arrendadores y anfitriones han dejado sobre tu comportamiento, puntualidad de pago y cuidado del inmueble.
+      </p>
+
+      <!-- Si no tiene reseñas sobre ti -->
+      <div *ngIf="resenasSobreTi.length === 0" class="resena-empty-card">
+        <div class="empty-icon-circle-teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2" width="28" height="28">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <h3 class="empty-card-title">Aún no tienes reseñas de arrendadores.</h3>
+        <p class="empty-card-subtitle">
+          Cuando alquiles un cuarto o departamento a través de Findimo, los arrendadores podrán dejar comentarios sobre tu estadía aquí.
+        </p>
+      </div>
+
+      <!-- Lista de reseñas de arrendadores sobre el estudiante -->
+      <div *ngIf="resenasSobreTi.length > 0" class="resenas-list-cards">
+        <div class="resena-item-card" *ngFor="let r of resenasSobreTi">
+          <div class="resena-author-row">
+            <img [src]="r.arrendadorAvatar" [alt]="r.arrendadorNombre" class="author-avatar-circle" />
+            <div class="author-meta">
+              <div class="author-name-role">
+                <span class="name">{{ r.arrendadorNombre }}</span>
+                <span class="role-badge">Arrendador verificado</span>
+              </div>
+              <span class="stay-date">Propiedad: {{ r.propiedadNombre }} · {{ r.fecha }}</span>
+            </div>
+            <div class="rating-badge-pill">
+              <span class="star-icon">★</span>
+              <span class="rating-num">{{ r.calificacion }}</span>
+            </div>
+          </div>
+          <p class="resena-text">"{{ r.comentario }}"</p>
+          <div class="review-tags-row">
+            <span class="tag-pill" *ngFor="let tag of r.etiquetas">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

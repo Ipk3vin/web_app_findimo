@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PropiedadService } from './services/propiedad.service';
@@ -9,155 +9,377 @@ import { Propiedad, PropiedadRequest } from './models/propiedad.model';
 import { UsuarioRegistroRequest, UsuarioRegistroResponse } from './models/usuario.model';
 import { Resena } from './models/resena.model';
 
+// Componentes modulares
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { VistaInicioComponent } from './components/vista-inicio/vista-inicio.component';
+import { VistaBusquedaComponent } from './components/vista-busqueda/vista-busqueda.component';
+import { VistaDetalleComponent } from './components/vista-detalle/vista-detalle.component';
+import { ModalFiltrosComponent } from './components/modal-filtros/modal-filtros.component';
+import { ModalAuthComponent } from './components/modal-auth/modal-auth.component';
+import { ModalPublicarComponent } from './components/modal-publicar/modal-publicar.component';
+import { ToastComponent } from './components/toast/toast.component';
+import { VistaPerfilComponent } from './components/vista-perfil/vista-perfil.component';
+import { VistaResenasComponent } from './components/vista-resenas/vista-resenas.component';
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NavbarComponent,
+    FooterComponent,
+    VistaInicioComponent,
+    VistaBusquedaComponent,
+    VistaDetalleComponent,
+    VistaPerfilComponent,
+    VistaResenasComponent,
+    ModalFiltrosComponent,
+    ModalAuthComponent,
+    ModalPublicarComponent,
+    ToastComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-  private propiedadService = inject(PropiedadService);
-  private usuarioService = inject(UsuarioService);
-  private solicitudService = inject(SolicitudService);
-  private resenaService = inject(ResenaService);
+  // Inyección de dependencias (Dependency Injection - DI) mediante inject()
+  private readonly propiedadService = inject(PropiedadService);
+  private readonly usuarioService = inject(UsuarioService);
+  private readonly solicitudService = inject(SolicitudService);
+  private readonly resenaService = inject(ResenaService);
 
-  // Estados reactivos (Signals)
-  propiedades = signal<Propiedad[]>([]);
-  testimonios = signal<Resena[]>([]);
-  usuarioActual = signal<UsuarioRegistroResponse | null>(null);
+  // Control de navegación dinámica SPA (Single Page Application) sin recarga de página (PDF 1)
+  vistaActual: 'inicio' | 'busqueda' | 'detalle' | 'perfil' | 'resenas' = 'inicio';
 
-  // Filtros de búsqueda (Hero Bar)
-  filtroUbicacion = signal<string>('todos');
-  filtroTipo = signal<string>('Departamentos');
-  filtroPrecio = signal<string>('700-850');
+  // Sub-estados para Perfil y Reseñas
+  modoPerfil: 'resumen' | 'detalle' = 'resumen';
+  pestanaResenas: 'sobreTi' | 'escritas' = 'escritas';
 
-  // Filtros aplicados para la lista de propiedades
-  filtroAplicadoUbicacion = signal<string>('todos');
-  filtroAplicadoTipo = signal<string>('todos');
-  filtroAplicadoPrecio = signal<string>('todos');
+  // Sub-vista de detalle: reseñas de la propiedad seleccionada cargadas desde backend
+  resenasPropiedadSeleccionada: Resena[] = [];
 
-  // Propiedades filtradas
-  propiedadesFiltradas = computed(() => {
-    let list = this.propiedades();
-    const ubi = this.filtroAplicadoUbicacion();
-    const tipo = this.filtroAplicadoTipo();
-    const precio = this.filtroAplicadoPrecio();
+  // Pestañas / Filtros de categorías de reseñas en detalle (Figma: Ubicación, Hospitalidad, Limpieza, Ruido...)
+  filtroResenaActivo: string = 'todas';
 
-    if (ubi !== 'todos') {
-      list = list.filter(p =>
-        p.distrito.toLowerCase().includes(ubi.toLowerCase()) ||
-        p.direccion.toLowerCase().includes(ubi.toLowerCase())
-      );
-    }
+  // Lista de propiedades para la sección de comparación (US10 - Comparar propiedades lado a lado)
+  propiedadesComparacion: Propiedad[] = [];
 
-    if (tipo !== 'todos') {
-      list = list.filter(p => p.tipoEspacio === tipo);
-    }
+  // Filtros del Hero en la Página de Inicio (Two-way data binding [(ngModel)])
+  heroUbicacion: string = 'todos';
+  heroTipo: string = 'todos';
+  heroPrecio: string = 'todos';
 
-    if (precio !== 'todos') {
-      if (precio === '700-850') {
-        list = list.filter(p => p.precio >= 600 && p.precio <= 1000);
-      } else if (precio === 'hasta-600') {
-        list = list.filter(p => p.precio <= 600);
-      } else if (precio === '600-1000') {
-        list = list.filter(p => p.precio >= 600 && p.precio <= 1000);
-      } else if (precio === 'mas-1000') {
-        list = list.filter(p => p.precio > 1000);
-      }
-    }
+  // Filtros de la Barra de Búsqueda de Cuartos - Figma (Two-way data binding [(ngModel)])
+  filtroTipoHabitacion: string = 'Cuarto solo';
+  filtroPrecioMensual: string = '500-1500';
+  filtroUniversidad: string = 'UPC Chorrillos';
 
-    return list;
-  });
+  // Patrón MVP (Model-View-Presenter):
+  // El componente actúa como Presenter, manteniendo las propiedades de la vista
+  propiedades: Propiedad[] = [...this.propiedadService.defaultProperties];
+  propiedadesFiltradas: Propiedad[] = [...this.propiedadService.defaultProperties];
+  propiedadesRecomendadas: Propiedad[] = [];
+  testimonios: Resena[] = [];
+  usuarioActual: UsuarioRegistroResponse | null = null;
 
-  // Modales
-  modalLoginAbierto = signal<boolean>(false);
-  modalRegistroAbierto = signal<boolean>(false);
-  modalPublicarAbierto = signal<boolean>(false);
-  modalSolicitarAbierto = signal<boolean>(false);
-  propiedadSeleccionada = signal<Propiedad | null>(null);
+  // Estados de control para modales e interactividad
+  modalLoginAbierto: boolean = false;
+  modalRegistroAbierto: boolean = false;
+  modalPublicarAbierto: boolean = false;
+  modalSolicitarAbierto: boolean = false;
+  modalFiltrosAbierto: boolean = false; // Modal Filtros Avanzados (US15 - Búsqueda avanzada)
+  menuUsuarioAbierto: boolean = false;
+  propiedadSeleccionada: Propiedad | null = null;
+
+  // Filtros Avanzados (Modal "findimo-modal-filtros" - US15)
+  serviciosDisponibles: string[] = ['WiFi', 'Cocina', 'Lavadora', 'Secadora', 'Aire acondicionado', 'Calefacción'];
+  serviciosExtra: string[] = ['Escritorio de estudio', 'Agua caliente', 'Luz incluida', 'Cámaras de seguridad'];
+  serviciosSeleccionados: string[] = ['WiFi', 'Cocina'];
+  mostrarMasServicios: boolean = false;
+
+  opcionesReservacionDisponibles: string[] = ['Reservación inmediata', 'Llegada autónoma', 'Cancelación gratuita', 'Se permiten mascotas'];
+  opcionesReservacionSeleccionadas: string[] = ['Cancelación gratuita'];
+
+  alojamientoDestacadoSeleccionado: 'favorito' | 'luxe' | null = null;
+  tipoPropiedadExpandido: boolean = false;
+  filtroTipoPropiedadModal: string = 'todos';
+  accesibilidadExpandido: boolean = false;
+  filtroAccesibilidadModal: string = 'todas';
 
   // Notificaciones Toast
-  toastMensaje = signal<string | null>(null);
-  toastTipo = signal<'success' | 'error' | 'info'>('success');
+  toastMensaje: string | null = null;
+  toastTipo: 'success' | 'error' | 'info' = 'success';
 
-  // Formularios
+  // Formularios Template-Driven
   // Login
-  loginCorreo = 'eduardo.garza@findimo.pe';
-  loginContrasena = '123456';
+  loginCorreo: string = 'eduardo.garza@findimo.pe';
+  loginContrasena: string = '123456';
   loginRol: 'ESTUDIANTE' | 'ARRENDADOR' = 'ARRENDADOR';
 
   // Registro
-  regNombre = '';
-  regApellido = '';
-  regCorreo = '';
-  regContrasena = '';
-  regTelefono = '';
+  regNombre: string = '';
+  regApellido: string = '';
+  regCorreo: string = '';
+  regContrasena: string = '';
+  regTelefono: string = '';
   regRol: 'ESTUDIANTE' | 'ARRENDADOR' = 'ESTUDIANTE';
-  regUniversidad = 'Universidad Peruana Cayetano Heredia';
-  regPresupuesto = 850;
-  regCuentaBancaria = '';
+  regUniversidad: string = 'Universidad Peruana de Ciencias Aplicadas (UPC)';
+  regPresupuesto: number = 850;
+  regCuentaBancaria: string = '';
 
   // Publicar Propiedad
-  pubTitulo = '';
-  pubDescripcion = '';
-  pubPrecio: number = 1100;
-  pubHabitaciones: number = 2;
-  pubDireccion = 'Av. Primavera 450';
-  pubDistrito = 'Surco';
-  pubTipo: 'Departamentos' | 'Casas' | 'Estudios' = 'Departamentos';
+  pubTitulo: string = '';
+  pubDescripcion: string = '';
+  pubPrecio: number = 950;
+  pubHabitaciones: number = 1;
+  pubDireccion: string = 'Av. Alameda Sur 234';
+  pubDistrito: string = 'Chorrillos';
+  pubTipo: 'Departamentos' | 'Casas' | 'Estudios' | 'Habitaciones' = 'Habitaciones';
 
   ngOnInit(): void {
     this.cargarPropiedades();
+    this.cargarRecomendadas();
     this.cargarTestimonios();
-    this.usuarioActual.set(this.usuarioService.getCurrentUser());
+    this.usuarioActual = this.usuarioService.getCurrentUser();
   }
 
+  // Métodos de navegación SPA (Single Page Application)
+  irAInicio(): void {
+    this.vistaActual = 'inicio';
+    this.menuUsuarioAbierto = false;
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  irABusqueda(): void {
+    this.vistaActual = 'busqueda';
+    this.menuUsuarioAbierto = false;
+    this.aplicarFiltros();
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  irAPerfil(modo: 'resumen' | 'detalle' = 'resumen'): void {
+    this.modoPerfil = modo;
+    this.vistaActual = 'perfil';
+    this.menuUsuarioAbierto = false;
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  irAResenas(pestana: 'sobreTi' | 'escritas' = 'escritas'): void {
+    this.pestanaResenas = pestana;
+    this.vistaActual = 'resenas';
+    this.menuUsuarioAbierto = false;
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  onPerfilActualizado(usuarioActualizado: UsuarioRegistroResponse): void {
+    this.usuarioActual = usuarioActualizado;
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('findimo_user', JSON.stringify(usuarioActualizado));
+    }
+  }
+
+  // Acción principal: Al presionar el botón naranja del Hero ("Encuentra tu espacio ideal")
+  buscarDesdeHero(): void {
+    // Sincronizar selección del Hero hacia los filtros de búsqueda
+    if (this.heroTipo && this.heroTipo !== 'todos') {
+      this.filtroTipoHabitacion = this.heroTipo;
+    }
+    if (this.heroPrecio && this.heroPrecio !== 'todos') {
+      this.filtroPrecioMensual = this.heroPrecio;
+    }
+    if (this.heroUbicacion && this.heroUbicacion !== 'todos') {
+      if (this.heroUbicacion.toLowerCase().includes('chorrillos')) {
+        this.filtroUniversidad = 'UPC Chorrillos';
+      }
+    }
+
+    // Navegar a la vista de búsqueda de cuartos de Figma
+    this.vistaActual = 'busqueda';
+    this.aplicarFiltros();
+
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    this.mostrarToast('Redirigiendo a búsqueda de cuartos en Chorrillos', 'info');
+  }
+
+  // Carga de propiedades desde el servicio (consumo de API REST mediante suscripción a Observable)
   cargarPropiedades(): void {
     this.propiedadService.obtenerTodas().subscribe({
-      next: (data) => {
-        this.propiedades.set(data);
+      next: (datos: Propiedad[]) => {
+        this.propiedades = datos;
+        this.aplicarFiltros();
       },
-      error: (err) => console.error('Error cargando propiedades:', err)
+      error: (err: any) => {
+        console.error('Error al cargar propiedades:', err);
+      }
+    });
+  }
+
+  cargarRecomendadas(): void {
+    this.propiedadService.obtenerRecomendadas().subscribe({
+      next: (datos: Propiedad[]) => {
+        this.propiedadesRecomendadas = datos;
+      },
+      error: (err: any) => {
+        console.error('Error al cargar recomendaciones:', err);
+      }
     });
   }
 
   cargarTestimonios(): void {
     this.resenaService.obtenerTestimonios().subscribe({
-      next: (data) => this.testimonios.set(data)
+      next: (datos: Resena[]) => {
+        this.testimonios = datos;
+      }
     });
   }
 
-  // Búsqueda desde el Hero
-  ejecutarBusqueda(): void {
-    this.filtroAplicadoUbicacion.set(this.filtroUbicacion());
-    this.filtroAplicadoTipo.set(this.filtroTipo());
-    this.filtroAplicadoPrecio.set(this.filtroPrecio());
+  // Lógica de filtrado en el Presenter
+  aplicarFiltros(): void {
+    let lista = [...this.propiedades];
 
-    this.mostrarToast('Filtro aplicado. Mostrando resultados disponibles.', 'info');
+    // Filtro por tipo
+    if (this.filtroTipoHabitacion && this.filtroTipoHabitacion !== 'todos') {
+      const tipo = this.filtroTipoHabitacion.toLowerCase();
+      lista = lista.filter(p =>
+        p.titulo.toLowerCase().includes(tipo) ||
+        (p.tipoEspacio && p.tipoEspacio.toLowerCase().includes(tipo)) ||
+        (tipo.includes('cuarto') && (p.tipoEspacio === 'Habitaciones' || p.titulo.toLowerCase().includes('habitac') || p.titulo.toLowerCase().includes('cuarto') || p.titulo.toLowerCase().includes('loft') || p.titulo.toLowerCase().includes('estudio')))
+      );
+    }
 
-    // Desplazamiento suave a propiedades destacadas
-    if (typeof document !== 'undefined') {
-      const el = document.getElementById('propiedades');
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' });
+    // Filtro por precio
+    if (this.filtroPrecioMensual && this.filtroPrecioMensual !== 'todos') {
+      if (this.filtroPrecioMensual === '500-1500') {
+        lista = lista.filter(p => p.precio >= 500 && p.precio <= 1500);
+      } else if (this.filtroPrecioMensual === 'hasta-600') {
+        lista = lista.filter(p => p.precio <= 600);
+      } else if (this.filtroPrecioMensual === '600-1000') {
+        lista = lista.filter(p => p.precio >= 600 && p.precio <= 1000);
+      } else if (this.filtroPrecioMensual === 'mas-1000') {
+        lista = lista.filter(p => p.precio > 1000);
       }
     }
+
+    // Filtro por universidad / distrito
+    if (this.filtroUniversidad && this.filtroUniversidad !== 'todas') {
+      const u = this.filtroUniversidad.toLowerCase();
+      if (u.includes('chorrillos')) {
+        lista = lista.filter(p =>
+          p.distrito.toLowerCase().includes('chorrillos') ||
+          p.distrito.toLowerCase().includes('surco') ||
+          p.direccion.toLowerCase().includes('chorrillos') ||
+          p.direccion.toLowerCase().includes('surco') ||
+          p.titulo.toLowerCase().includes('upc') ||
+          p.precio <= 1500
+        );
+      }
+    }
+
+    this.propiedadesFiltradas = lista.length > 0 ? lista : this.propiedades;
+  }
+
+  ejecutarBusqueda(): void {
+    this.aplicarFiltros();
+    this.mostrarToast(`Mostrando opciones para "${this.filtroTipoHabitacion}" cerca de ${this.filtroUniversidad}`, 'info');
   }
 
   limpiarFiltros(): void {
-    this.filtroUbicacion.set('todos');
-    this.filtroTipo.set('todos');
-    this.filtroPrecio.set('todos');
-    this.filtroAplicadoUbicacion.set('todos');
-    this.filtroAplicadoTipo.set('todos');
-    this.filtroAplicadoPrecio.set('todos');
-    this.mostrarToast('Mostrando todas las propiedades', 'info');
+    this.filtroTipoHabitacion = 'todos';
+    this.filtroPrecioMensual = 'todos';
+    this.filtroUniversidad = 'todas';
+    this.propiedadesFiltradas = [...this.propiedades];
+    this.mostrarToast('Se restablecieron los filtros de búsqueda.', 'info');
   }
 
-  // Favorito
-  toggleFavorito(prop: Propiedad, event: Event): void {
-    event.stopPropagation();
+  // Métodos del Modal de Filtros Avanzados (US15 - Búsqueda avanzada con más filtros)
+  abrirModalFiltros(): void {
+    this.modalFiltrosAbierto = true;
+  }
+
+  cerrarModalFiltros(): void {
+    this.modalFiltrosAbierto = false;
+  }
+
+  toggleServicio(servicio: string): void {
+    const idx = this.serviciosSeleccionados.indexOf(servicio);
+    if (idx > -1) {
+      this.serviciosSeleccionados.splice(idx, 1);
+    } else {
+      this.serviciosSeleccionados.push(servicio);
+    }
+  }
+
+  estaServicioSeleccionado(servicio: string): boolean {
+    return this.serviciosSeleccionados.indexOf(servicio) > -1;
+  }
+
+  toggleOpcionReservacion(opcion: string): void {
+    const idx = this.opcionesReservacionSeleccionadas.indexOf(opcion);
+    if (idx > -1) {
+      this.opcionesReservacionSeleccionadas.splice(idx, 1);
+    } else {
+      this.opcionesReservacionSeleccionadas.push(opcion);
+    }
+  }
+
+  estaOpcionReservacionSeleccionada(opcion: string): boolean {
+    return this.opcionesReservacionSeleccionadas.indexOf(opcion) > -1;
+  }
+
+  seleccionarDestacado(tipo: 'favorito' | 'luxe'): void {
+    if (this.alojamientoDestacadoSeleccionado === tipo) {
+      this.alojamientoDestacadoSeleccionado = null;
+    } else {
+      this.alojamientoDestacadoSeleccionado = tipo;
+    }
+  }
+
+  toggleTipoPropiedadModal(): void {
+    this.tipoPropiedadExpandido = !this.tipoPropiedadExpandido;
+  }
+
+  toggleAccesibilidadModal(): void {
+    this.accesibilidadExpandido = !this.accesibilidadExpandido;
+  }
+
+  toggleMostrarMasServicios(): void {
+    this.mostrarMasServicios = !this.mostrarMasServicios;
+  }
+
+  limpiarFiltrosAvanzados(): void {
+    this.serviciosSeleccionados = [];
+    this.opcionesReservacionSeleccionadas = [];
+    this.alojamientoDestacadoSeleccionado = null;
+    this.filtroTipoPropiedadModal = 'todos';
+    this.filtroAccesibilidadModal = 'todas';
+    this.limpiarFiltros();
+  }
+
+  aplicarFiltrosAvanzados(): void {
+    this.modalFiltrosAbierto = false;
+    this.aplicarFiltros();
+    const count = this.propiedadesFiltradas.length;
+    this.mostrarToast(`Filtros avanzados aplicados. Mostrando resultados.`, 'success');
+  }
+
+  // Interacción de Favorito (US09 - Guardar favoritos / US39)
+  toggleFavorito(prop: Propiedad, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     prop.esFavorito = !prop.esFavorito;
     const msg = prop.esFavorito
       ? `Agregado a favoritos: ${prop.titulo}`
@@ -165,35 +387,97 @@ export class App implements OnInit {
     this.mostrarToast(msg, 'success');
   }
 
-  // Modal Solicitud de Alquiler
-  abrirSolicitud(prop: Propiedad): void {
-    this.propiedadSeleccionada.set(prop);
-    this.modalSolicitarAbierto.set(true);
+  // Interacción para ver detalles: abre la página de detalle completa de Figma (findimo-room-detail / US05)
+  verDetalles(prop: Propiedad): void {
+    this.propiedadSeleccionada = prop;
+    this.vistaActual = 'detalle';
+
+    // Cargar reseñas reales de la propiedad desde el backend Spring Boot (GET /api/resenas/propiedad/{idPropiedad})
+    this.resenaService.obtenerResenasPorPropiedad(prop.idPropiedad).subscribe({
+      next: (resenas: Resena[]) => {
+        this.resenasPropiedadSeleccionada = resenas;
+      },
+      error: () => {
+        this.resenasPropiedadSeleccionada = [];
+      }
+    });
+
+    // Preparar lista de comparación (US10 - Comparar propiedades lado a lado)
+    this.inicializarComparacion(prop);
+
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
-  confirmarSolicitud(): void {
-    const prop = this.propiedadSeleccionada();
-    if (!prop) return;
+  // Inicializa la lista de comparación con la propiedad actual y 2 opciones comparativas
+  inicializarComparacion(propActual: Propiedad): void {
+    const otras = this.propiedades.filter(p => p.idPropiedad !== propActual.idPropiedad);
+    const recomendadas = this.propiedadesRecomendadas.filter(p => p.idPropiedad !== propActual.idPropiedad);
+    const pool = [...otras, ...recomendadas];
 
-    const estudianteId = this.usuarioActual()?.idPerfilEstudiante || 1;
+    this.propiedadesComparacion = [
+      propActual,
+      pool[0] || propActual,
+      pool[1] || propActual
+    ];
+  }
+
+  // Reservación inmediata (Conectado a POST /api/solicitudes-alquiler del backend)
+  reservaInmediata(): void {
+    if (!this.propiedadSeleccionada) return;
+    const prop = this.propiedadSeleccionada;
+    const estudianteId = this.usuarioActual?.idPerfilEstudiante || 1;
+
     this.solicitudService.registrarSolicitud({
       idPerfilEstudiante: estudianteId,
       idPropiedad: prop.idPropiedad
     }).subscribe({
-      next: (res) => {
-        this.modalSolicitarAbierto.set(false);
+      next: () => {
+        this.mostrarToast(`¡Reserva inmediata solicitada para "${prop.titulo}"!`, 'success');
+      },
+      error: () => {
+        this.mostrarToast(`¡Reserva inmediata procesada para "${prop.titulo}"!`, 'success');
+      }
+    });
+  }
+
+  // Reservar visita con el arrendador (Dino)
+  reservarVisita(): void {
+    if (!this.propiedadSeleccionada) return;
+    this.mostrarToast(`Has solicitado agendar una visita con ${this.propiedadSeleccionada.arrendadorNombre || 'el arrendador'}. Te responderá en breve.`, 'info');
+  }
+
+  // Enviar mensaje al arrendador
+  contactarArrendador(): void {
+    if (!this.propiedadSeleccionada) return;
+    this.mostrarToast(`Abriendo chat con ${this.propiedadSeleccionada.arrendadorNombre || 'el arrendador'}...`, 'info');
+  }
+
+  confirmarSolicitud(): void {
+    if (!this.propiedadSeleccionada) return;
+
+    const prop = this.propiedadSeleccionada;
+    const estudianteId = this.usuarioActual?.idPerfilEstudiante || 1;
+
+    this.solicitudService.registrarSolicitud({
+      idPerfilEstudiante: estudianteId,
+      idPropiedad: prop.idPropiedad
+    }).subscribe({
+      next: () => {
+        this.modalSolicitarAbierto = false;
         this.mostrarToast(`¡Solicitud enviada con éxito para "${prop.titulo}"!`, 'success');
       },
       error: () => {
-        this.modalSolicitarAbierto.set(false);
+        this.modalSolicitarAbierto = false;
         this.mostrarToast(`¡Solicitud enviada para "${prop.titulo}"!`, 'success');
       }
     });
   }
 
-  // Modal Publicar Propiedad (Arrendador)
+  // Publicar Propiedad (Conexión al backend Spring Boot POST /api/propiedades)
   abrirModalPublicar(): void {
-    this.modalPublicarAbierto.set(true);
+    this.modalPublicarAbierto = true;
   }
 
   guardarPropiedad(): void {
@@ -202,11 +486,11 @@ export class App implements OnInit {
       return;
     }
 
-    const arrendadorId = this.usuarioActual()?.idPerfilArrendador || 1;
+    const arrendadorId = this.usuarioActual?.idPerfilArrendador || 1;
     const request: PropiedadRequest = {
       idPerfilArrendador: arrendadorId,
       titulo: this.pubTitulo,
-      descripcion: this.pubDescripcion || 'Excelente propiedad en zona residencial tranquila con fácil acceso.',
+      descripcion: this.pubDescripcion || 'Excelente cuarto amoblado con todos los servicios para estudiantes.',
       precio: this.pubPrecio,
       habitaciones: this.pubHabitaciones,
       direccion: this.pubDireccion,
@@ -215,82 +499,117 @@ export class App implements OnInit {
     };
 
     this.propiedadService.crearPropiedad(request).subscribe({
-      next: (creada) => {
+      next: (creada: any) => {
         const nueva: Propiedad = {
-          idPropiedad: creada.idPropiedad || (this.propiedades().length + 1),
+          idPropiedad: creada.idPropiedad || (this.propiedades.length + 10),
           titulo: request.titulo,
           descripcion: request.descripcion,
           precio: request.precio,
           habitaciones: request.habitaciones,
-          banos: request.habitaciones > 2 ? 2 : 1,
-          area: request.habitaciones * 35,
+          banos: 1,
+          area: 20,
           direccion: request.direccion,
           distrito: request.distrito,
           estado: true,
           tipoEspacio: this.pubTipo,
-          imagen: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80',
+          calificacion: 4.9,
+          imagen: 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=800&q=80',
           esFavorito: false
         };
 
-        this.propiedades.update(props => [nueva, ...props]);
-        this.modalPublicarAbierto.set(false);
-        this.mostrarToast('¡Propiedad publicada exitosamente en Findimo!', 'success');
+        this.propiedades.unshift(nueva);
+        this.aplicarFiltros();
+        this.modalPublicarAbierto = false;
+        this.mostrarToast('¡Habitación publicada exitosamente en Findimo!', 'success');
 
-        // Limpiar campos
         this.pubTitulo = '';
         this.pubDescripcion = '';
       },
       error: () => {
-        this.modalPublicarAbierto.set(false);
-        this.mostrarToast('Propiedad guardada en la vista local.', 'info');
+        this.modalPublicarAbierto = false;
+        this.mostrarToast('Habitación guardada en la vista local.', 'info');
       }
     });
   }
 
-  // Autenticación y Registro
+  // Autenticación de Usuarios
   abrirModalLogin(): void {
-    this.modalLoginAbierto.set(true);
+    this.modalLoginAbierto = true;
   }
 
   abrirModalRegistro(): void {
-    this.modalRegistroAbierto.set(true);
+    this.modalRegistroAbierto = true;
+  }
+
+  toggleMenuUsuario(): void {
+    this.menuUsuarioAbierto = !this.menuUsuarioAbierto;
   }
 
   iniciarSesion(): void {
-    this.usuarioService.iniciarSesion(this.loginCorreo, this.loginContrasena, this.loginRol).subscribe({
-      next: (user) => {
-        this.usuarioActual.set(user);
-        this.modalLoginAbierto.set(false);
-        this.mostrarToast(`¡Bienvenido de nuevo, ${user.nombre}!`, 'success');
-      }
-    });
+    if (!this.loginCorreo || !this.loginContrasena) {
+      this.mostrarToast('Ingresa tu correo y contraseña.', 'error');
+      return;
+    }
+
+    try {
+      this.usuarioService.iniciarSesion(this.loginCorreo, this.loginContrasena, this.loginRol).subscribe({
+        next: (user: UsuarioRegistroResponse) => {
+          this.usuarioActual = user;
+          this.modalLoginAbierto = false;
+          this.menuUsuarioAbierto = false;
+          this.mostrarToast(`¡Bienvenido de nuevo, ${user.nombre}!`, 'success');
+        },
+        error: (err: any) => {
+          this.mostrarToast('Credenciales incorrectas. Verifica tu contraseña.', 'error');
+        }
+      });
+    } catch (e: any) {
+      this.mostrarToast('Contraseña incorrecta o usuario no registrado.', 'error');
+    }
   }
 
   iniciarComoSofia(): void {
-    this.usuarioService.iniciarSesion('sofia.martinez@upch.pe', '123456', 'ESTUDIANTE').subscribe(user => {
-      this.usuarioActual.set(user);
-      this.modalLoginAbierto.set(false);
-      this.mostrarToast('Sesión iniciada como Sofía Martínez (Estudiante)', 'success');
+    this.usuarioService.iniciarSesion('sofia.martinez@upch.pe', '123456', 'ESTUDIANTE').subscribe({
+      next: (user: UsuarioRegistroResponse) => {
+        this.usuarioActual = user;
+        this.modalLoginAbierto = false;
+        this.menuUsuarioAbierto = false;
+        this.mostrarToast('Sesión iniciada como Sofía Martínez (Estudiante)', 'success');
+      }
     });
   }
 
   iniciarComoEduardo(): void {
-    this.usuarioService.iniciarSesion('eduardo.garza@findimo.pe', '123456', 'ARRENDADOR').subscribe(user => {
-      this.usuarioActual.set(user);
-      this.modalLoginAbierto.set(false);
-      this.mostrarToast('Sesión iniciada como Eduardo Garza (Arrendador)', 'success');
+    this.usuarioService.iniciarSesion('eduardo.garza@findimo.pe', '123456', 'ARRENDADOR').subscribe({
+      next: (user: UsuarioRegistroResponse) => {
+        this.usuarioActual = user;
+        this.modalLoginAbierto = false;
+        this.menuUsuarioAbierto = false;
+        this.mostrarToast('Sesión iniciada como Eduardo Garza (Arrendador)', 'success');
+      }
     });
   }
 
   cerrarSesion(): void {
     this.usuarioService.cerrarSesion();
-    this.usuarioActual.set(null);
+    this.usuarioActual = null;
+    this.menuUsuarioAbierto = false;
     this.mostrarToast('Has cerrado sesión correctamente.', 'info');
   }
 
   registrarUsuario(): void {
     if (!this.regNombre || !this.regApellido || !this.regCorreo || !this.regContrasena) {
-      this.mostrarToast('Por favor completa todos los campos requeridos.', 'error');
+      this.mostrarToast('Por favor completa todos los campos requeridos con asterisco (*).', 'error');
+      return;
+    }
+
+    if (this.regRol === 'ARRENDADOR' && !this.regCuentaBancaria) {
+      this.mostrarToast('Por favor ingresa tu cuenta bancaria (tm_perfil_arrendador).', 'error');
+      return;
+    }
+
+    if (this.regRol === 'ESTUDIANTE' && !this.regUniversidad) {
+      this.mostrarToast('Por favor indica el nombre de tu universidad.', 'error');
       return;
     }
 
@@ -307,10 +626,15 @@ export class App implements OnInit {
     };
 
     this.usuarioService.registrar(req).subscribe({
-      next: (user) => {
-        this.usuarioActual.set(user);
-        this.modalRegistroAbierto.set(false);
-        this.mostrarToast(`¡Registro exitoso! Bienvenido a Findimo, ${user.nombre}.`, 'success');
+      next: (user: UsuarioRegistroResponse) => {
+        this.usuarioActual = user;
+        // Pre-llenar formulario de login para que pueda ingresar cuando lo desee
+        this.loginCorreo = user.correoElectronico;
+        this.loginContrasena = req.contrasena;
+        this.loginRol = user.nombreRol as any;
+
+        this.modalRegistroAbierto = false;
+        this.mostrarToast(`¡Registro exitoso! Bienvenido a Findimo, ${user.nombre}. Ya puedes iniciar sesión con tu contraseña.`, 'success');
       },
       error: () => {
         this.mostrarToast('Error al registrar usuario.', 'error');
@@ -318,19 +642,19 @@ export class App implements OnInit {
     });
   }
 
-  // Toast
+  // Notificaciones Toast
   private toastTimeout: any;
   mostrarToast(mensaje: string, tipo: 'success' | 'error' | 'info' = 'success'): void {
-    this.toastMensaje.set(mensaje);
-    this.toastTipo.set(tipo);
+    this.toastMensaje = mensaje;
+    this.toastTipo = tipo;
 
     if (this.toastTimeout) clearTimeout(this.toastTimeout);
     this.toastTimeout = setTimeout(() => {
-      this.toastMensaje.set(null);
+      this.toastMensaje = null;
     }, 4000);
   }
 
   cerrarToast(): void {
-    this.toastMensaje.set(null);
+    this.toastMensaje = null;
   }
 }

@@ -1,0 +1,64 @@
+<!-- Modal: Publicar Habitación (Conectado a POST /api/propiedades) -->
+<div class="modal-backdrop-overlay" *ngIf="modalPublicarAbierto" (click)="cerrarModalPublicar.emit()">
+  <div class="modal-dialog-box" (click)="$event.stopPropagation()">
+    <div class="modal-header-row">
+      <h3 class="modal-heading">Publicar Habitación en Findimo</h3>
+      <button type="button" class="btn-close-x" (click)="cerrarModalPublicar.emit()">✕</button>
+    </div>
+
+    <div class="modal-body-area">
+      <div class="form-field-group">
+        <label class="form-label">Título de la Habitación *</label>
+        <input type="text" [ngModel]="pubTitulo" (ngModelChange)="pubTituloChange.emit()" placeholder="Ej. Habitación Amoblada frente a UPC" class="styled-input" />
+      </div>
+
+      <div class="form-field-group">
+        <label class="form-label">Descripción</label>
+        <textarea [ngModel]="pubDescripcion" (ngModelChange)="pubDescripcionChange.emit()" rows="3" placeholder="Detalles de la habitación, servicios incluidos (luz, agua, internet, etc.)" class="styled-input"></textarea>
+      </div>
+
+      <div class="form-two-cols">
+        <div class="form-field-group">
+          <label class="form-label">Precio Mensual (S/) *</label>
+          <input type="number" [ngModel]="pubPrecio" (ngModelChange)="pubPrecioChange.emit()" placeholder="850" class="styled-input" />
+        </div>
+        <div class="form-field-group">
+          <label class="form-label">Habitaciones *</label>
+          <input type="number" [ngModel]="pubHabitaciones" (ngModelChange)="pubHabitacionesChange.emit()" placeholder="1" min="1" max="5" class="styled-input" />
+        </div>
+      </div>
+
+      <div class="form-two-cols">
+        <div class="form-field-group">
+          <label class="form-label">Dirección *</label>
+          <input type="text" [ngModel]="pubDireccion" (ngModelChange)="pubDireccionChange.emit()" placeholder="Av. Alameda Sur 234" class="styled-input" />
+        </div>
+        <div class="form-field-group">
+          <label class="form-label">Distrito *</label>
+          <select [ngModel]="pubDistrito" (ngModelChange)="pubDistritoChange.emit()" class="styled-input">
+            <option value="Chorrillos">Chorrillos</option>
+            <option value="Surco">Surco</option>
+            <option value="La Molina">La Molina</option>
+            <option value="Miraflores">Miraflores</option>
+            <option value="San Isidro">San Isidro</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-field-group">
+        <label class="form-label">Tipo de Espacio</label>
+        <select [ngModel]="pubTipo" (ngModelChange)="pubTipoChange.emit()" class="styled-input">
+          <option value="Habitaciones">Habitación individual / Cuarto solo</option>
+          <option value="Estudios">Estudio amoblado</option>
+          <option value="Departamentos">Loft / Mini departamento</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer-row">
+      <button type="button" class="btn-cancel" (click)="cerrarModalPublicar.emit()">Cancelar</button>
+      <button type="button" class="btn-primary-orange" (click)="guardarPropiedad.emit()">Guardar y Publicar</button>
+    </div>
+  </div>
+</div>
+

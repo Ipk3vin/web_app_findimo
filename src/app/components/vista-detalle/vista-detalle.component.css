@@ -1,0 +1,1143 @@
+/* ==========================================================================
+   VISTA 3: DETALLE DE HABITACIÓN (findimo-room-detail / US05 / US06 / US10)
+   Diseño exacto al Figma con galería de fotos, tarjeta flotante de reserva,
+   conoce el entorno, comparador de habitaciones, opiniones y perfil de arrendador
+   ========================================================================== */
+
+.detail-page-main {
+  padding: 30px 0 80px 0;
+  background-color: #ffffff;
+}
+
+/* Mini Píldora de búsqueda en el Navbar */
+.header-search-mini-pill {
+  display: flex;
+  align-items: center;
+}
+
+.btn-back-to-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 30px;
+  padding: 6px 8px 6px 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  font-family: inherit;
+  transition: box-shadow 0.2s ease;
+}
+
+.btn-back-to-search:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.mini-pill-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #162b4d;
+}
+
+.mini-pill-sep {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.mini-pill-sub {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.mini-pill-search-btn {
+  background: #ea580c;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 1. Cabecera del Detalle */
+.detail-top-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 20px;
+}
+
+.detail-room-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #162b4d;
+  letter-spacing: -0.4px;
+  margin: 0 0 8px 0;
+}
+
+.detail-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.detail-star-val {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.detail-dot-sep {
+  color: #94a3b8;
+}
+
+.detail-reviews-link {
+  color: #162b4d;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.detail-location-str {
+  color: #64748b;
+}
+
+.detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-detail-action {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: underline;
+  font-family: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.btn-detail-action:hover {
+  background-color: #f1f5f9;
+}
+
+/* 2. Galería de Fotos de Figma */
+.detail-gallery-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 12px;
+  height: 440px;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 36px;
+}
+
+.gallery-hero-col {
+  height: 100%;
+}
+
+.gallery-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-sub-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+  height: 100%;
+}
+
+.gallery-sub-item {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.gallery-tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.gallery-sub-item:hover .gallery-tile-img {
+  transform: scale(1.03);
+}
+
+.gallery-last-item {
+  position: relative;
+}
+
+.btn-show-all-photos {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  background: #ffffff;
+  border: 1px solid #1e293b;
+  color: #1e293b;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: inherit;
+}
+
+.btn-show-all-photos:hover {
+  background: #f8fafc;
+}
+
+/* 3. Layout de 2 Columnas */
+.detail-two-col-layout {
+  display: grid;
+  grid-template-columns: 1.7fr 1.1fr;
+  gap: 60px;
+  margin-bottom: 60px;
+  align-items: flex-start;
+}
+
+.room-primary-spec {
+  margin-bottom: 24px;
+}
+
+.room-spec-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0 0 6px 0;
+}
+
+.room-spec-sub {
+  font-size: 14.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Banner: Favorito entre huéspedes */
+.guest-favorite-banner-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.gf-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gf-icon-flame {
+  color: #ea580c;
+}
+
+.gf-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.gf-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #162b4d;
+}
+
+.gf-desc {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.gf-right {
+  text-align: center;
+  padding-left: 20px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.gf-rating-num {
+  font-size: 18px;
+  font-weight: 800;
+  color: #162b4d;
+}
+
+.gf-stars-row {
+  color: #ea580c;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.gf-reviews-count {
+  font-size: 10px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+/* Fila de Arrendador */
+.landlord-summary-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.landlord-avatar-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ecfeff;
+  border: 2px solid #00b4b6;
+  color: #008f91;
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landlord-info-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.landlord-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #162b4d;
+  margin: 0;
+}
+
+.landlord-exp {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.detail-divider-solid {
+  height: 1px;
+  background: #eef2f6;
+  margin-bottom: 24px;
+}
+
+.room-description-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #334155;
+  white-space: pre-line;
+}
+
+/* Tarjeta Flotante de Reserva (Derecha) */
+.pricing-notice-pill {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12.5px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.booking-card-widget {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 26px;
+  position: sticky;
+  top: 90px;
+}
+
+.booking-prices-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.price-big-bold {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0284c7;
+}
+
+.price-orange-bold {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ea580c;
+}
+
+.price-unit-tag {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.btn-booking-instant-orange {
+  width: 100%;
+  background: #ea580c;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234, 88, 12, 0.3);
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.btn-booking-instant-orange:hover {
+  background: #c2410c;
+  transform: translateY(-1px);
+}
+
+.no-charge-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  margin: 10px 0 16px 0;
+}
+
+.booking-card-sep {
+  height: 1px;
+  background: #eef2f6;
+  margin-bottom: 16px;
+}
+
+.btn-booking-visit-outline {
+  width: 100%;
+  background: #ffffff;
+  color: #162b4d;
+  border: 1.6px solid #162b4d;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.btn-booking-visit-outline:hover {
+  background: #f8fafc;
+}
+
+/* 4. Conoce el entorno */
+.surroundings-section-block {
+  border: 2px solid #0284c7;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 60px;
+  background: #ffffff;
+}
+
+.surroundings-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0 0 6px 0;
+}
+
+.surroundings-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 24px 0;
+}
+
+.surroundings-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.surround-card {
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bg-blue-tint { background: #eff6ff; }
+.bg-green-tint { background: #ecfdf5; }
+.bg-amber-tint { background: #fffbeb; }
+.bg-emerald-tint { background: #f0fdf4; }
+.bg-purple-tint { background: #faf5ff; }
+.bg-sky-tint { background: #f0f9ff; }
+
+.surround-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.surround-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.surround-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #162b4d;
+}
+
+.surround-place {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.surround-mode {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+/* 5. Compara habitaciones */
+.compare-rooms-section {
+  margin-bottom: 60px;
+}
+
+.compare-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.compare-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0 0 4px 0;
+}
+
+.compare-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+.btn-add-compare {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0284c7;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.compare-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.compare-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.compare-card-image-box {
+  position: relative;
+  height: 190px;
+}
+
+.compare-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-remove-compare {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compare-card-body {
+  padding: 18px;
+}
+
+.compare-prop-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0 0 4px 0;
+}
+
+.compare-prop-loc {
+  font-size: 12.5px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 8px 0;
+}
+
+.compare-rating-line {
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.reviews-bracket {
+  color: #64748b;
+  font-size: 12px;
+  margin-left: 4px;
+}
+
+.compare-spec-group {
+  border-top: 1px solid #f1f5f9;
+  padding: 10px 0;
+}
+
+.spec-label-sm {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #64748b;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.spec-price-bold {
+  font-size: 20px;
+  font-weight: 800;
+  color: #162b4d;
+}
+
+.spec-distance-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #162b4d;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.compare-amenities-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.compare-amenities-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #334155;
+}
+
+.check-green {
+  color: #10b981;
+  font-weight: 800;
+}
+
+.security-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.security-score {
+  font-size: 12px;
+  font-weight: 700;
+  color: #162b4d;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 4px;
+}
+
+.compare-review-quote-box {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 14px 0;
+}
+
+.quote-text {
+  font-size: 12px;
+  color: #334155;
+  font-style: italic;
+  margin: 0 0 10px 0;
+}
+
+.quote-author-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quote-avatar-char {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-c1 { background: #059669; }
+.avatar-c2 { background: #0284c7; }
+.avatar-c3 { background: #ea580c; }
+
+.quote-author-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.quote-author-meta strong {
+  font-size: 12px;
+  color: #162b4d;
+}
+
+.quote-author-meta span {
+  font-size: 10.5px;
+  color: #94a3b8;
+}
+
+.compare-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-compare-contact {
+  width: 100%;
+  background: #162b4d;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-compare-status {
+  width: 100%;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 6. Opiniones de Inquilinos */
+.reviews-section-block {
+  margin-bottom: 60px;
+  padding: 40px 0;
+  border-top: 1px solid #eef2f6;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.reviews-header-center {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+}
+
+.reviews-badge-cyan {
+  border: 1px solid #00b4b6;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #008f91;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.reviews-big-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.reviews-big-number {
+  font-size: 46px;
+  font-weight: 800;
+  color: #162b4d;
+  letter-spacing: -1px;
+}
+
+.reviews-stars-wrap {
+  text-align: left;
+}
+
+.stars-gold-row {
+  color: #ea580c;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.favorite-subtext {
+  font-size: 12px;
+  font-weight: 700;
+  color: #162b4d;
+}
+
+.reviews-center-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+.review-ratings-subgrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.rating-subitem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-icon-teal {
+  font-size: 20px;
+}
+
+.rating-cat-name {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.rating-cat-score {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #162b4d;
+}
+
+.reviews-tag-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+
+.review-pill-btn {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12.5px;
+  color: #334155;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.review-pill-btn:hover,
+.review-pill-btn.pill-active {
+  border-color: #00b4b6;
+  background: #f0fdfa;
+  color: #008f91;
+  font-weight: 600;
+}
+
+.reviews-cards-list-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.single-review-card {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.single-review-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-full-name {
+  font-size: 13.5px;
+  color: #162b4d;
+  display: block;
+}
+
+.author-extra-info {
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+
+.single-review-stars {
+  color: #ea580c;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.single-review-comment {
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* 7. Perfil del Arrendador */
+.landlord-profile-section {
+  margin-bottom: 60px;
+}
+
+.landlord-section-badge {
+  font-size: 11px;
+  font-weight: 800;
+  color: #008f91;
+  border: 1px solid #00b4b6;
+  border-radius: 20px;
+  padding: 4px 12px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.landlord-section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0 0 24px 0;
+}
+
+.landlord-two-panel-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 30px;
+}
+
+.landlord-card-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+  text-align: center;
+}
+
+.landlord-badge-initial-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #ecfeff;
+  border: 3px solid #00b4b6;
+  color: #008f91;
+  font-size: 26px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.landlord-box-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0;
+}
+
+.landlord-box-role {
+  font-size: 13px;
+  color: #64748b;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.landlord-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px 0;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 20px;
+}
+
+.landlord-stat-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-size: 18px;
+  font-weight: 800;
+  color: #162b4d;
+}
+
+.stat-lbl {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.border-sides {
+  border-left: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  padding: 0 16px;
+}
+
+.landlord-attributes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.landlord-details-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+
+.landlord-info-heading {
+  font-size: 20px;
+  font-weight: 800;
+  color: #162b4d;
+  margin: 0;
+}
+
+.landlord-meta-stat {
+  font-size: 14px;
+  color: #334155;
+  margin: 0;
+}
+
+.btn-message-landlord-navy {
+  background: #162b4d;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 8px;
+  font-family: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.btn-message-landlord-navy:hover {
+  background: #0f1c33;
+}
+
+.safety-warning-banner {
+  margin-top: 20px;
+  background: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.warning-shield-icon {
+  font-size: 18px;
+}
+
+.warning-text {
+  font-size: 12px;
+  color: #92400e;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* 8. Recomendaciones al final del Detalle */
+.detail-recommendations-section {
+  padding-top: 20px;
+}
+
+

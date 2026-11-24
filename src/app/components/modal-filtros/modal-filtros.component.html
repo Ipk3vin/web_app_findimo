@@ -1,0 +1,208 @@
+<!-- Modal: findimo-modal-filtros (Figma: Búsqueda avanzada con más filtros - US15) -->
+<div class="modal-backdrop-overlay" *ngIf="modalFiltrosAbierto" (click)="cerrarModalFiltros.emit()">
+  <div class="findimo-filter-modal-dialog" (click)="$event.stopPropagation()">
+    <!-- Header: Botón X a la izquierda y Título "Filtros" centrado en azul marino -->
+    <div class="filter-modal-header">
+      <button type="button" class="btn-filter-modal-close" (click)="cerrarModalFiltros.emit()" aria-label="Cerrar filtros">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#162b4d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <h3 class="filter-modal-title">Filtros</h3>
+      <div class="filter-modal-header-spacer"></div>
+    </div>
+
+    <!-- Contenido scrolleable del modal con todas las secciones del Figma -->
+    <div class="filter-modal-body">
+      <!-- 1. Servicios -->
+      <section class="filter-section-block">
+        <h4 class="filter-section-heading">Servicios</h4>
+        <div class="filter-chips-wrap">
+          <button
+            type="button"
+            *ngFor="let s of serviciosDisponibles"
+            class="filter-pill-chip"
+            [class.chip-active]="estaServicioSeleccionado(s)"
+            (click)="toggleServicio.emit(s)">
+            {{ s }}
+          </button>
+          <!-- Servicios extra cuando expande -->
+          <ng-container *ngIf="mostrarMasServicios">
+            <button
+              type="button"
+              *ngFor="let s of serviciosExtra"
+              class="filter-pill-chip"
+              [class.chip-active]="estaServicioSeleccionado(s)"
+              (click)="toggleServicio.emit(s)">
+              {{ s }}
+            </button>
+          </ng-container>
+        </div>
+        <button type="button" class="btn-filter-show-more" (click)="toggleMostrarMasServicios.emit()">
+          <span>{{ mostrarMasServicios ? 'Muestra menos' : 'Muestra más' }}</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" [class.icon-rotated]="mostrarMasServicios">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+      </section>
+
+      <!-- 2. Opciones de reservación -->
+      <section class="filter-section-block">
+        <h4 class="filter-section-heading">Opciones de reservación</h4>
+        <div class="filter-chips-wrap">
+          <button
+            type="button"
+            *ngFor="let op of opcionesReservacionDisponibles"
+            class="filter-pill-chip"
+            [class.chip-active]="estaOpcionReservacionSeleccionada(op)"
+            (click)="toggleOpcionReservacion.emit(op)">
+            {{ op }}
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. Alojamientos destacados -->
+      <section class="filter-section-block">
+        <h4 class="filter-section-heading">Alojamientos destacados</h4>
+        <div class="featured-cards-grid">
+          <!-- Opción: Favorito entre huéspedes -->
+          <div
+            class="featured-selection-card"
+            [class.card-selected]="alojamientoDestacadoSeleccionado === 'favorito'"
+            (click)="seleccionarDestacado.emit('favorito')">
+            <div class="featured-card-icon-box bg-orange-soft">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/>
+              </svg>
+            </div>
+            <div class="featured-card-text">
+              <strong class="featured-card-name">Favorito entre huéspedes</strong>
+              <span class="featured-card-desc">Los alojamientos más populares en Findimo</span>
+            </div>
+          </div>
+
+          <!-- Opción: Luxe -->
+          <div
+            class="featured-selection-card"
+            [class.card-selected]="alojamientoDestacadoSeleccionado === 'luxe'"
+            (click)="seleccionarDestacado.emit('luxe')">
+            <div class="featured-card-icon-box bg-teal-soft">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 3h12l4 6-10 12L2 9z"/>
+                <path d="M11 3 8 9l4 12 4-12-3-6"/>
+                <path d="M2 9h20"/>
+              </svg>
+            </div>
+            <div class="featured-card-text">
+              <strong class="featured-card-name">Luxe</strong>
+              <span class="featured-card-desc">Alojamientos de lujo con un diseño excepcional</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Acordeón: Tipo de propiedad (Acorde a findimo(1).pdf y Figma) -->
+      <div class="filter-accordion-item">
+        <button type="button" class="filter-accordion-header" (click)="toggleTipoPropiedadModal.emit()">
+          <span class="filter-accordion-title">Tipo de propiedad</span>
+          <svg class="chevron-indicator" [class.chevron-open]="tipoPropiedadExpandido" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="filter-accordion-content" *ngIf="tipoPropiedadExpandido">
+          <div class="filter-chips-wrap">
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroTipoPropiedadModal === 'todos'"
+              (click)="seleccionarTipoPropiedadModal.emit('todos')">
+              Todos los tipos
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroTipoPropiedadModal === 'cuarto_solo'"
+              (click)="seleccionarTipoPropiedadModal.emit('cuarto_solo')">
+              Cuarto solo
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroTipoPropiedadModal === 'cuarto_compartido'"
+              (click)="seleccionarTipoPropiedadModal.emit('cuarto_compartido')">
+              Cuarto compartido
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroTipoPropiedadModal === 'mini_departamento'"
+              (click)="seleccionarTipoPropiedadModal.emit('mini_departamento')">
+              Mini departamento
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroTipoPropiedadModal === 'estudio_amoblado'"
+              (click)="seleccionarTipoPropiedadModal.emit('estudio_amoblado')">
+              Estudio amoblado
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Acordeón: Prestaciones de accesibilidad -->
+      <div class="filter-accordion-item">
+        <button type="button" class="filter-accordion-header" (click)="toggleAccesibilidadModal.emit()">
+          <span class="filter-accordion-title">Prestaciones de accesibilidad</span>
+          <svg class="chevron-indicator" [class.chevron-open]="accesibilidadExpandido" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="filter-accordion-content" *ngIf="accesibilidadExpandido">
+          <div class="filter-chips-wrap">
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroAccesibilidadModal === 'acceso_sin_escalones'"
+              (click)="seleccionarAccesibilidadModal.emit('acceso_sin_escalones')">
+              Acceso sin escalones
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroAccesibilidadModal === 'entrada_amplia'"
+              (click)="seleccionarAccesibilidadModal.emit('entrada_amplia')">
+              Entrada para huéspedes amplia
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroAccesibilidadModal === 'bano_adaptado'"
+              (click)="seleccionarAccesibilidadModal.emit('bano_adaptado')">
+              Baño adaptado
+            </button>
+            <button
+              type="button"
+              class="filter-pill-chip"
+              [class.chip-active]="filtroAccesibilidadModal === 'ascensor'"
+              (click)="seleccionarAccesibilidadModal.emit('ascensor')">
+              Ascensor disponible
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer: Limpiar filtros a la izquierda y Botón Naranja a la derecha -->
+    <div class="filter-modal-footer">
+      <button type="button" class="btn-clear-filters-link" (click)="limpiarFiltrosAvanzados.emit()">
+        Limpiar filtros
+      </button>
+      <button type="button" class="btn-apply-filters-orange" (click)="aplicarFiltrosAvanzados.emit()">
+        Mostrar más de 1000 alojamientos
+      </button>
+    </div>
+  </div>
+</div>
+

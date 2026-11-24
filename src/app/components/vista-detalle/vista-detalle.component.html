@@ -1,0 +1,565 @@
+<!-- ======================================================= -->
+<!-- VISTA 3: DETALLE DE HABITACIÓN (findimo-room-detail)    -->
+<!-- Se muestra cuando vistaActual === 'detalle' (US05/US06) -->
+<!-- ======================================================= -->
+<div class="detail-page-main" *ngIf="propiedadSeleccionada">
+  <div class="main-content-container">
+
+    <!-- 1. Cabecera del Detalle: Título, Calificación, Ubicación y Botones Compartir / Guardar -->
+    <header class="detail-top-header">
+      <div class="detail-top-info">
+        <h1 class="detail-room-title">{{ propiedadSeleccionada.titulo }}</h1>
+        <div class="detail-meta-line">
+          <span class="detail-star-val">★ {{ propiedadSeleccionada.calificacion || 4.91 }}</span>
+          <span class="detail-dot-sep">·</span>
+          <a href="#opiniones" class="detail-reviews-link">{{ propiedadSeleccionada.totalResenas || 22 }} Reseñas</a>
+          <span class="detail-dot-sep">·</span>
+          <span class="detail-location-str">{{ propiedadSeleccionada.direccion }}, {{ propiedadSeleccionada.distrito }}</span>
+        </div>
+      </div>
+
+      <div class="detail-header-actions">
+        <button type="button" class="btn-detail-action" (click)="mostrarToast.emit({ mensaje: 'Enlace de la habitación copiado al portapapeles', tipo: 'info' })">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <polyline points="16 6 12 2 8 6"/>
+            <line x1="12" y1="2" x2="12" y2="15"/>
+          </svg>
+          <span>Compartir</span>
+        </button>
+
+        <button type="button" class="btn-detail-action" (click)="toggleFavorito.emit(propiedadSeleccionada)">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            [attr.fill]="propiedadSeleccionada.esFavorito ? '#ea580c' : 'none'"
+            [attr.stroke]="propiedadSeleccionada.esFavorito ? '#ea580c' : 'currentColor'"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>{{ propiedadSeleccionada.esFavorito ? 'Guardado' : 'Guardar' }}</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. Galería de Fotos de Figma (1 Principal grande a la izquierda, 4 en grilla a la derecha) -->
+    <section class="detail-gallery-grid">
+      <div class="gallery-hero-col">
+        <img
+          [src]="propiedadSeleccionada.imagenesGaleria ? propiedadSeleccionada.imagenesGaleria[0] : propiedadSeleccionada.imagen"
+          [alt]="propiedadSeleccionada.titulo"
+          class="gallery-hero-img" />
+      </div>
+
+      <div class="gallery-sub-grid">
+        <div class="gallery-sub-item">
+          <img
+            [src]="(propiedadSeleccionada.imagenesGaleria && propiedadSeleccionada.imagenesGaleria[1]) ? propiedadSeleccionada.imagenesGaleria[1] : 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80'"
+            alt="Cocina y comedor compartidos"
+            class="gallery-tile-img" />
+        </div>
+        <div class="gallery-sub-item">
+          <img
+            [src]="(propiedadSeleccionada.imagenesGaleria && propiedadSeleccionada.imagenesGaleria[2]) ? propiedadSeleccionada.imagenesGaleria[2] : 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=600&q=80'"
+            alt="Baño propio completo"
+            class="gallery-tile-img" />
+        </div>
+        <div class="gallery-sub-item">
+          <img
+            [src]="(propiedadSeleccionada.imagenesGaleria && propiedadSeleccionada.imagenesGaleria[3]) ? propiedadSeleccionada.imagenesGaleria[3] : 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'"
+            alt="Área de estudio universitaria"
+            class="gallery-tile-img" />
+        </div>
+        <div class="gallery-sub-item gallery-last-item">
+          <img
+            [src]="(propiedadSeleccionada.imagenesGaleria && propiedadSeleccionada.imagenesGaleria[4]) ? propiedadSeleccionada.imagenesGaleria[4] : 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=600&q=80'"
+            alt="Edificio cerca de playa y campus"
+            class="gallery-tile-img" />
+          <button type="button" class="btn-show-all-photos" (click)="mostrarToast.emit({ mensaje: 'Visualizando las 14 fotos del alojamiento', tipo: 'info' })">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>Mostrar fotos</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Layout Principal de 2 Columnas: Información Izquierda + Tarjeta Flotante de Reserva Derecha -->
+    <div class="detail-two-col-layout">
+      <!-- Columna Izquierda: Información de Habitación, Arrendador y Descripción -->
+      <div class="detail-content-col">
+        <div class="room-primary-spec">
+          <h2 class="room-spec-title">Habitación en {{ propiedadSeleccionada.direccion }}, {{ propiedadSeleccionada.distrito }}</h2>
+          <p class="room-spec-sub">{{ propiedadSeleccionada.subtituloDetalle || '1 cama doble · Baño privado en el alojamiento' }}</p>
+        </div>
+
+        <!-- Tarjeta "Favorito entre huéspedes" -->
+        <div class="guest-favorite-banner-card">
+          <div class="gf-left">
+            <div class="gf-icon-flame">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="7"/>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+              </svg>
+            </div>
+            <div class="gf-text">
+              <strong class="gf-title">Favorito entre huéspedes</strong>
+              <span class="gf-desc">Según los huéspedes, uno de los alojamientos más populares en Findimo</span>
+            </div>
+          </div>
+          <div class="gf-right">
+            <div class="gf-rating-num">{{ propiedadSeleccionada.calificacion || 4.91 }}</div>
+            <div class="gf-stars-row">★★★★★</div>
+            <div class="gf-reviews-count">{{ propiedadSeleccionada.totalResenas || 22 }} RESEÑAS</div>
+          </div>
+        </div>
+
+        <!-- Fila de Arrendador: Dino -->
+        <div class="landlord-summary-row">
+          <div class="landlord-avatar-circle">
+            {{ propiedadSeleccionada.arrendadorInicial || 'D' }}
+          </div>
+          <div class="landlord-info-meta">
+            <h4 class="landlord-name">Arrendador: {{ propiedadSeleccionada.arrendadorNombre || 'Dino' }}</h4>
+            <span class="landlord-exp">{{ propiedadSeleccionada.arrendadorAntiguedad || '1 año como arrendador' }}</span>
+          </div>
+        </div>
+
+        <div class="detail-divider-solid"></div>
+
+        <!-- Descripción Completa -->
+        <div class="room-description-text">
+          <p>{{ propiedadSeleccionada.descripcion }}</p>
+        </div>
+      </div>
+
+      <!-- Columna Derecha: Tarjeta Flotante de Reserva (Figma) -->
+      <aside class="detail-booking-col">
+        <!-- Aviso de Precios con foco amigable -->
+        <div class="pricing-notice-pill">
+          <span class="bulb-icon">💡</span>
+          <span>Los precios incluyen todas las tasas locales y servicios básicos</span>
+        </div>
+
+        <div class="booking-card-widget">
+          <div class="booking-prices-header">
+            <div class="price-night-box">
+              <span class="price-big-bold">S/ {{ propiedadSeleccionada.precioNoche || 53 }}</span>
+              <span class="price-unit-tag">/ noche</span>
+            </div>
+            <div class="price-month-box">
+              <span class="price-orange-bold">S/ {{ propiedadSeleccionada.precio | number:'1.0-0' }}</span>
+              <span class="price-unit-tag">/ mes</span>
+            </div>
+          </div>
+
+          <!-- Botón 1: Reserva inmediata (Naranja) -->
+          <button type="button" class="btn-booking-instant-orange" (click)="reservaInmediata.emit()">
+            Reserva inmediata
+          </button>
+          <p class="no-charge-hint">No se hará ningún cargo por el momento</p>
+
+          <div class="booking-card-sep"></div>
+
+          <!-- Botón 2: Reservar una visita con Dino (Borde azul marino) -->
+          <button type="button" class="btn-booking-visit-outline" (click)="reservarVisita.emit()">
+            Reservar una visita con {{ propiedadSeleccionada.arrendadorNombre || 'Dino' }}
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 4. SECCIÓN FIGMA: CONOCE EL ENTORNO (US06 / US07) -->
+    <section class="surroundings-section-block">
+      <h2 class="surroundings-title">Conoce el entorno</h2>
+      <p class="surroundings-subtitle">Vive cerca de lo que necesitas. Explora los principales lugares alrededor del alojamiento.</p>
+
+      <div class="surroundings-cards-grid">
+        <!-- Tarjeta 1: Universidad cercana UPC -->
+        <div class="surround-card bg-blue-tint">
+          <div class="surround-icon-circle bg-blue-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div class="surround-info">
+            <strong class="surround-name">Universidad cercana</strong>
+            <span class="surround-place">UPC - 8 min</span>
+            <span class="surround-mode">Caminando</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Mercado -->
+        <div class="surround-card bg-green-tint">
+          <div class="surround-icon-circle bg-green-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"/>
+              <circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+          </div>
+          <div class="surround-info">
+            <strong class="surround-name">Mercado</strong>
+            <span class="surround-place">5 min</span>
+            <span class="surround-mode">Caminando</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: Bodega -->
+        <div class="surround-card bg-amber-tint">
+          <div class="surround-icon-circle bg-amber-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div class="surround-info">
+            <strong class="surround-name">Bodega</strong>
+            <span class="surround-place">2 min</span>
+            <span class="surround-mode">Caminando</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 4: Parque -->
+        <div class="surround-card bg-emerald-tint">
+          <div class="surround-icon-circle bg-emerald-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5"/>
+              <path d="M8 9a4 4 0 0 1 8 0c0 2-2 3-4 5-2-2-4-3-4-5z"/>
+            </svg>
+          </div>
+          <div class="surround-info">
+            <strong class="surround-name">Parque</strong>
+            <span class="surround-place">6 min</span>
+            <span class="surround-mode">Caminando</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 5: Caseta de seguridad -->
+        <div class="surround-card bg-purple-tint">
+          <div class="surround-icon-circle bg-purple-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="surround-info">
+            <strong class="surround-name">Caseta de seguridad</strong>
+            <span class="surround-place">3 min</span>
+            <span class="surround-mode">Caminando</span>
+          </div>
+        </div>
+
+        <!-- Tarjeta 6: Transporte público -->
+        <div class="surround-card bg-sky-tint">
+          <div class="surround-icon-circle bg-sky-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="14" rx="2"/>
+              <path d="M3 11h18"/>
+              <path d="M7 17v2"/>
+              <path d="M17 17v2"/>
+            </svg>
+          </div>
+          <div class="surround-info">
+            <strong class="surround-name">Transporte público</strong>
+            <span class="surround-place">4 min</span>
+            <span class="surround-mode">Caminando</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. SECCIÓN FIGMA: COMPARA HABITACIONES (US10 - Comparar propiedades lado a lado) -->
+    <section class="compare-rooms-section">
+      <div class="compare-header-row">
+        <div>
+          <h2 class="compare-title">Compara habitaciones</h2>
+          <p class="compare-subtitle">Analiza hasta 3 alojamientos y elige el que mejor se adapte a ti.</p>
+        </div>
+        <button type="button" class="btn-add-compare" (click)="mostrarToast.emit({ mensaje: 'Selecciona otra habitación para comparar', tipo: 'info' })">
+          + Agregar otra habitación
+        </button>
+      </div>
+
+      <div class="compare-cards-grid">
+        <!-- 3 Tarjetas de Comparación de Figma -->
+        <div class="compare-card" *ngFor="let item of propiedadesComparacion; let idx = index">
+          <div class="compare-card-image-box">
+            <img [src]="item.imagen" [alt]="item.titulo" class="compare-card-img" />
+            <button type="button" class="btn-remove-compare" (click)="mostrarToast.emit({ mensaje: 'Removido de la comparación', tipo: 'info' })">✕</button>
+          </div>
+
+          <div class="compare-card-body">
+            <h3 class="compare-prop-name">{{ item.titulo }}</h3>
+            <p class="compare-prop-loc">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M12 21s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 7.2c0 7.3-8 11.8-8 11.8z"/>
+              </svg>
+              <span>{{ item.direccion }}, {{ item.distrito }}</span>
+            </p>
+            <div class="compare-rating-line">
+              <span class="star-gold">★</span>
+              <strong>{{ item.calificacion || 4.91 }}</strong>
+              <span class="reviews-bracket">({{ item.totalResenas || 22 }} reseñas)</span>
+            </div>
+
+            <!-- Precio -->
+            <div class="compare-spec-group">
+              <span class="spec-label-sm">Precio mensual</span>
+              <div class="spec-price-bold">S/ {{ item.precio | number:'1.0-0' }}</div>
+            </div>
+
+            <!-- Distancia -->
+            <div class="compare-spec-group">
+              <span class="spec-label-sm">Distancia a la universidad</span>
+              <div class="spec-distance-val">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="5" r="3"/>
+                  <path d="M12 8v8M8 12l4 4 4-4"/>
+                </svg>
+                <span>{{ idx === 0 ? '8 min · Caminando' : (idx === 1 ? '25 min · En bus' : '20 min · En bus') }}</span>
+              </div>
+            </div>
+
+            <!-- Servicios incluidos -->
+            <div class="compare-spec-group">
+              <span class="spec-label-sm">Servicios incluidos</span>
+              <ul class="compare-amenities-list">
+                <li><span>📶 WiFi</span> <span class="check-green">✓</span></li>
+                <li><span>🚿 Baño privado</span> <span class="check-green">✓</span></li>
+                <li><span>🍳 Cocina compartida</span> <span class="check-green">✓</span></li>
+                <li><span>🛏️ Amoblado</span> <span class="check-green">✓</span></li>
+              </ul>
+            </div>
+
+            <!-- Seguridad del entorno -->
+            <div class="compare-spec-group">
+              <div class="security-label-row">
+                <span class="spec-label-sm">🛡️ Seguridad del entorno</span>
+                <span class="security-score">{{ idx === 0 ? '4.5 / 5' : (idx === 1 ? '4.2 / 5' : '4.7 / 5') }}</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" [style.width.%]="idx === 0 ? 90 : (idx === 1 ? 84 : 94)"></div>
+              </div>
+            </div>
+
+            <!-- Testimonio destacado dentro de la tarjeta de comparación -->
+            <div class="compare-review-quote-box">
+              <p class="quote-text">
+                {{ idx === 0 ? '“Excelente ubicación, muy cerca de la UPC. Zona tranquila y segura.”' : (idx === 1 ? '“Buen ambiente y convivencia. El condominio es muy seguro.”' : '“Muy buena relación calidad-precio. Todo en buen estado.”') }}
+              </p>
+              <div class="quote-author-row">
+                <div class="quote-avatar-char" [class.avatar-c1]="idx === 0" [class.avatar-c2]="idx === 1" [class.avatar-c3]="idx === 2">
+                  {{ idx === 0 ? 'S' : (idx === 1 ? 'L' : 'C') }}
+                </div>
+                <div class="quote-author-meta">
+                  <strong>{{ idx === 0 ? 'Sofía M.' : (idx === 1 ? 'Luciana R.' : 'Carlos D.') }}</strong>
+                  <span>{{ idx === 0 ? 'Hace 2 meses' : (idx === 1 ? 'Hace 1 mes' : 'Hace 3 semanas') }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones de la tarjeta -->
+            <div class="compare-card-actions">
+              <button type="button" class="btn-compare-contact" (click)="contactarArrendador.emit()">
+                💬 Contactar arrendador
+              </button>
+              <button type="button" class="btn-compare-status">
+                ✓ En comparación
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SECCIÓN FIGMA: OPINIONES DE INQUILINOS (US08 - Leer reseñas de propiedades) -->
+    <!-- Consumo de datos reales desde GET /api/resenas/propiedad/{idPropiedad} -->
+    <section id="opiniones" class="reviews-section-block">
+      <div class="reviews-header-center">
+        <span class="reviews-badge-cyan">OPINIONES DE INQUILINOS</span>
+        <div class="reviews-big-score-row">
+          <span class="reviews-big-number">{{ propiedadSeleccionada.calificacion || 4.91 }}</span>
+          <div class="reviews-stars-wrap">
+            <div class="stars-gold-row">★★★★★</div>
+            <span class="favorite-subtext">Favorito entre huéspedes</span>
+          </div>
+        </div>
+        <p class="reviews-center-desc">
+          Este espacio es considerado uno de los mejores alojamientos del distrito de Chorrillos por su limpieza y accesibilidad.
+        </p>
+      </div>
+
+      <!-- Métricas individuales de la reseña de Figma -->
+      <div class="review-ratings-subgrid">
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">🎖️</div>
+          <span class="rating-cat-name">Valoración general</span>
+          <strong class="rating-cat-score">4.9</strong>
+        </div>
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">✨</div>
+          <span class="rating-cat-name">Limpieza</span>
+          <strong class="rating-cat-score">4.8</strong>
+        </div>
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">✔️</div>
+          <span class="rating-cat-name">Exactitud</span>
+          <strong class="rating-cat-score">5.0</strong>
+        </div>
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">🔑</div>
+          <span class="rating-cat-name">Check-in</span>
+          <strong class="rating-cat-score">4.9</strong>
+        </div>
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">💬</div>
+          <span class="rating-cat-name">Comunicación</span>
+          <strong class="rating-cat-score">4.9</strong>
+        </div>
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">📍</div>
+          <span class="rating-cat-name">Ubicación</span>
+          <strong class="rating-cat-score">4.9</strong>
+        </div>
+        <div class="rating-subitem">
+          <div class="rating-icon-teal">🏷️</div>
+          <span class="rating-cat-name">Precio</span>
+          <strong class="rating-cat-score">5.0</strong>
+        </div>
+      </div>
+
+      <!-- Filtros de Categorías de Reseñas (Pills) -->
+      <div class="reviews-tag-pills-row">
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'todas'" (click)="filtroResenaActivo = 'todas'; filtroResenaActivoChange.emit('todas')">Ubicación 9</button>
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'hospitalidad'" (click)="filtroResenaActivo = 'hospitalidad'; filtroResenaActivoChange.emit('hospitalidad')">Hospitalidad 15</button>
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'limpieza'" (click)="filtroResenaActivo = 'limpieza'; filtroResenaActivoChange.emit('limpieza')">Limpieza 4</button>
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'ruido'" (click)="filtroResenaActivo = 'ruido'; filtroResenaActivoChange.emit('ruido')">Ruido 3</button>
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'cercania'" (click)="filtroResenaActivo = 'cercania'; filtroResenaActivoChange.emit('cercania')">En la cercanía 2</button>
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'moverse'" (click)="filtroResenaActivo = 'moverse'; filtroResenaActivoChange.emit('moverse')">Moverse por la zona 2</button>
+        <button type="button" class="review-pill-btn" [class.pill-active]="filtroResenaActivo === 'comodidad'" (click)="filtroResenaActivo = 'comodidad'; filtroResenaActivoChange.emit('comodidad')">Comodidad 5</button>
+      </div>
+
+      <!-- Listado de Reseñas de la BD / Servicio -->
+      <div class="reviews-cards-list-grid">
+        <div class="single-review-card" *ngFor="let rev of resenasPropiedadSeleccionada">
+          <div class="single-review-author">
+            <img [src]="rev.avatar" [alt]="rev.nombreAutor" class="review-avatar-img" />
+            <div>
+              <strong class="author-full-name">{{ rev.nombreAutor }} {{ rev.apellidoAutor }}</strong>
+              <span class="author-extra-info">{{ rev.rolAutor || 'Estudiante UPC' }} · {{ rev.fechaCreacion || 'Hace 1 mes' }}</span>
+            </div>
+          </div>
+          <div class="single-review-stars">
+            <span *ngFor="let st of [1,2,3,4,5]">★</span>
+          </div>
+          <p class="single-review-comment">{{ rev.comentario }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. SECCIÓN FIGMA: PERFIL DEL ARRENDADOR (US23 - Ver perfil de arrendador) -->
+    <section class="landlord-profile-section">
+      <span class="landlord-section-badge">PERFIL DEL ARRENDADOR</span>
+      <h2 class="landlord-section-title">Conoce al arrendador</h2>
+
+      <div class="landlord-two-panel-grid">
+        <!-- Tarjeta de Perfil Izquierda -->
+        <div class="landlord-card-box">
+          <div class="landlord-badge-initial-large">
+            {{ propiedadSeleccionada.arrendadorInicial || 'D' }}
+          </div>
+          <h3 class="landlord-box-name">{{ propiedadSeleccionada.arrendadorNombre || 'Dino' }}</h3>
+          <span class="landlord-box-role">Arrendador</span>
+
+          <div class="landlord-stats-row">
+            <div class="landlord-stat-cell">
+              <strong class="stat-number">33</strong>
+              <span class="stat-lbl">Reseñas</span>
+            </div>
+            <div class="landlord-stat-cell border-sides">
+              <strong class="stat-number">4.85</strong>
+              <span class="stat-lbl">Calificación</span>
+            </div>
+            <div class="landlord-stat-cell">
+              <strong class="stat-number">1</strong>
+              <span class="stat-lbl">Año</span>
+            </div>
+          </div>
+
+          <ul class="landlord-attributes-list">
+            <li>👤 Nació el 2000</li>
+            <li>📖 Estudié en la UPC</li>
+            <li>💼 Me dedico a: estudiante</li>
+            <li>🏠 Vive en Chorrillos, Lima, Perú</li>
+            <li>🐾 Mascotas: gato y perro</li>
+          </ul>
+        </div>
+
+        <!-- Información y Políticas Derecha -->
+        <div class="landlord-details-right-panel">
+          <h3 class="landlord-info-heading">Información sobre el arrendador</h3>
+          <p class="landlord-meta-stat">Índice de respuesta: 50%</p>
+          <p class="landlord-meta-stat">Responde en menos de 24 horas</p>
+
+          <button type="button" class="btn-message-landlord-navy" (click)="contactarArrendador.emit()">
+            Mensajea con el arrendador
+          </button>
+
+          <div class="safety-warning-banner">
+            <span class="warning-shield-icon">🛡️</span>
+            <p class="warning-text">
+              Para proteger tus pagos, usa siempre Findimo para tus transacciones, reservas y comunicación oficial con los arrendadores.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. SECCIÓN FIGMA: NUEVAS OPCIONES DE CUARTOS (RECOMENDACIONES) -->
+    <section class="detail-recommendations-section">
+      <span class="rec-badge-tag">RECOMENDACIONES</span>
+      <h2 class="rec-section-title">Nuevas opciones de cuartos</h2>
+
+      <div class="rec-cards-grid">
+        <article class="findimo-rec-card" *ngFor="let rec of propiedadesRecomendadas">
+          <div class="rec-image-container">
+            <img [src]="rec.imagen" [alt]="rec.titulo" class="rec-img" loading="lazy" />
+          </div>
+
+          <div class="rec-card-body">
+            <div class="rec-title-row">
+              <h3 class="rec-title">{{ rec.titulo }}</h3>
+              <span class="rec-rating-badge">
+                <span class="star-char">★</span> {{ rec.calificacion ? (rec.calificacion | number:'1.1-1') : '4.8' }}
+              </span>
+            </div>
+
+            <p class="rec-location-text">{{ rec.direccion }}, {{ rec.distrito }}</p>
+
+            <div class="rec-footer-row">
+              <div class="rec-price-text">
+                <span class="rec-price-orange">S/ {{ rec.precio | number:'1.0-0' }}</span>
+                <span class="rec-per-month">/ mes</span>
+              </div>
+
+              <button type="button" class="btn-rec-details" (click)="verDetalles.emit(rec)">
+                Ver detalles
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+

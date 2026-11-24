@@ -1,0 +1,473 @@
+/* ======================================================== */
+/* 3. BREADCRUMB Y CONTADOR DE CUARTOS (VISTA BÚSQUEDA)     */
+/* ======================================================== */
+.breadcrumb-bar-section {
+  padding: 18px 0 10px 0;
+}
+
+.breadcrumb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.crumb-link {
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.crumb-link:hover {
+  color: var(--navy-dark);
+}
+
+.crumb-separator {
+  color: #cbd5e1;
+}
+
+.crumb-current {
+  color: var(--navy-dark);
+  font-weight: 600;
+}
+
+.breadcrumb-counter-teal {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0891b2;
+}
+
+/* ======================================================== */
+/* 4. BARRA DE FILTROS FLOTANTE (ESTILO PÍLDORA FIGMA)      */
+/* ======================================================== */
+.filter-pill-section {
+  padding: 12px 0 28px 0;
+}
+
+.filter-pill-card {
+  background: #ffffff;
+  border: 1px solid #e6ecf2;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  padding: 10px 14px 10px 28px;
+  gap: 14px;
+}
+
+.filter-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.filter-field-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.filter-field-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-icon-teal {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.filter-select {
+  border: none;
+  background: transparent;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  padding-right: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.filter-divider-line {
+  width: 1px;
+  height: 38px;
+  background-color: #e2e8f0;
+  flex-shrink: 0;
+}
+
+.btn-filter-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border-radius: 30px;
+  border: 1.5px solid var(--navy-dark);
+  background-color: #ffffff;
+  color: var(--navy-dark);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-filter-pill:hover {
+  background-color: #f8fafc;
+}
+
+.btn-orange-circle-search {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--orange-accent);
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(242, 100, 34, 0.35);
+  transition: background-color 0.2s, transform 0.15s;
+}
+
+.btn-orange-circle-search:hover {
+  background-color: var(--orange-hover);
+  transform: scale(1.04);
+}
+
+/* ======================================================== */
+/* 5. SECCIÓN: RESULTADOS DE BÚSQUEDA EN CHORRILLOS         */
+/* ======================================================== */
+.search-results-section {
+  padding: 10px 0 48px 0;
+}
+
+.search-section-title {
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--navy-dark);
+  margin-bottom: 22px;
+  letter-spacing: -0.3px;
+}
+
+.property-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.findimo-room-card {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #edf2f7;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.findimo-room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+.room-image-container {
+  position: relative;
+  width: 100%;
+  height: 195px;
+  background-color: #e2e8f0;
+}
+
+.room-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.btn-heart-favorite {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.btn-heart-favorite:hover {
+  transform: scale(1.1);
+}
+
+.btn-heart-favorite.favorite-active svg {
+  fill: var(--orange-accent);
+}
+
+.room-card-content {
+  padding: 16px 18px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.room-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.price-amount {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--orange-accent);
+}
+
+.price-frequency {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--orange-accent);
+}
+
+.room-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.room-location {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.room-stats-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.stat-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.star-svg {
+  width: 15px;
+  height: 15px;
+}
+
+.stat-area {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.btn-link-details {
+  background: none;
+  border: none;
+  color: var(--navy-dark);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.btn-link-details:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.no-results-alert {
+  text-align: center;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
+  margin-top: 20px;
+}
+
+/* ======================================================== */
+/* 6. SECCIÓN: RECOMENDACIONES - NUEVAS OPCIONES CUARTOS    */
+/* ======================================================== */
+.recommendations-section {
+  padding: 20px 0 60px 0;
+}
+
+.rec-section-header {
+  margin-bottom: 20px;
+}
+
+.rec-badge-tag {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #0891b2;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.rec-section-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--navy-dark);
+  letter-spacing: -0.3px;
+}
+
+.rec-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.findimo-rec-card {
+  background: #ffffff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #edf2f7;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.findimo-rec-card:hover {
+  transform: translateY(-3px);
+}
+
+.rec-image-container {
+  width: 100%;
+  height: 160px;
+  background-color: #e2e8f0;
+}
+
+.rec-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rec-card-body {
+  padding: 14px 16px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.rec-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.rec-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rec-rating-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.star-char {
+  color: var(--orange-accent);
+  font-size: 14px;
+}
+
+.rec-location-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.rec-footer-row {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rec-price-text {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.rec-price-orange {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--orange-accent);
+}
+
+.rec-per-month {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.btn-rec-details {
+  background: none;
+  border: none;
+  color: var(--navy-dark);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.btn-rec-details:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+

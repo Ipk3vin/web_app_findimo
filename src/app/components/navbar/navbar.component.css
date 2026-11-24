@@ -1,0 +1,320 @@
+/* ======================================================== */
+/* 1. BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR)                 */
+/* ======================================================== */
+.navbar-wrapper {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--gray-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.navbar-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logo-icon {
+  position: relative;
+  width: 32px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.roof-svg {
+  width: 30px;
+  height: 20px;
+}
+
+.pin-dot {
+  position: absolute;
+  bottom: 2px;
+  width: 7px;
+  height: 7px;
+  background-color: var(--orange-accent);
+  border-radius: 50%;
+}
+
+.logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--navy-dark);
+}
+
+.logo-orange-dot {
+  font-size: 20px;
+  color: var(--orange-accent);
+  margin-left: -2px;
+  font-weight: 900;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+  position: relative;
+  padding: 6px 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: var(--navy-dark);
+}
+
+.nav-link.active {
+  color: var(--navy-dark);
+  font-weight: 700;
+}
+
+.nav-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background-color: var(--navy-dark);
+  border-radius: 2px;
+}
+
+/* Mini buscador central en detalle */
+.header-search-mini-pill {
+  display: flex;
+  align-items: center;
+}
+
+.btn-back-to-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--gray-border);
+  padding: 6px 10px 6px 14px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.mini-pill-tag {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--navy-dark);
+}
+
+.mini-pill-sep {
+  color: #cbd5e1;
+}
+
+.mini-pill-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.mini-pill-search-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--teal-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ======================================================== */
+/* 2. PÍLDORA DE PERFIL Y HAMBURGUESA (DISEÑO FIGMA CAPTURA 4)*/
+/* ======================================================== */
+.nav-actions {
+  position: relative;
+}
+
+.user-control-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 5px 4px 14px;
+  background-color: #ffffff;
+  border: 1.8px solid #00b4b6; /* Borde turquesa característico */
+  border-radius: 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.user-control-pill:hover,
+.user-control-pill.pill-active {
+  box-shadow: 0 4px 14px rgba(0, 180, 182, 0.22);
+}
+
+.pill-hamburger-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar-wrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e2e8f0;
+}
+
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ======================================================== */
+/* 3. MENÚ DESPLEGABLE FLOTANTE (FIGMA CAPTURA 4)           */
+/* ======================================================== */
+.user-dropdown-menu {
+  position: absolute;
+  top: 52px;
+  right: 0;
+  width: 290px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 12px 32px rgba(16, 42, 67, 0.12);
+  padding: 10px 0;
+  z-index: 250;
+  animation: dropdownFadeIn 0.18s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-section {
+  padding: 4px 0;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 6px 0;
+}
+
+.dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 20px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: #102a43;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8fafc;
+}
+
+.dropdown-item-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.dropdown-item-text {
+  flex: 1;
+}
+
+/* Banner: Conviértete en anfitrión */
+.dropdown-host-card {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.dropdown-host-card:hover {
+  background-color: #f8fafc;
+}
+
+.host-title {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #102a43;
+  margin-bottom: 4px;
+}
+
+.host-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.host-banner-preview {
+  width: 100%;
+  height: 72px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.host-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Logout */
+.logout-item {
+  color: #ea580c;
+}
+
+.logout-item:hover {
+  background-color: #fff7ed;
+}
+
+.logout-icon {
+  stroke: #ea580c;
+}
+
+.logout-text {
+  color: #ea580c;
+  font-weight: 700;
+}
