@@ -22,43 +22,21 @@
       <div class="main-header-row">
         <h1 id="perfil-seccion-titulo" class="main-title">{{ tituloSeccion }}</h1>
       </div>
-    <div *ngIf="seccionActiva === 'sobreMi'" class="perfil-cards-grid">
-      <!-- Tarjeta de Identidad -->
-      <div class="perfil-card identity-card">
-        <div class="avatar-circle">
-          <span>{{ obtenerInicial() }}</span>
+      @if (seccionActiva === 'sobreMi') {
+        <div class="identity-card">
+          <div class="identity-avatar" aria-hidden="true">{{ obtenerInicial() }}</div>
+          <div class="identity-details">
+            <h2 class="identity-name">{{ obtenerNombreCompleto() || 'Sin nombre registrado' }}</h2>
+            @if (usuarioActual?.nombreUniversidad; as universidad) {
+              <p class="identity-university">{{ universidad }}</p>
+            }
+          </div>
+          <button type="button" class="identity-edit" (click)="seleccionarSeccion('personal')">
+            Editar información personal
+          </button>
         </div>
-        <h2 class="identity-name">{{ obtenerNombreCompleto() || 'Sin nombre registrado' }}</h2>
-        <p class="identity-badge">Huésped verificado · Lima, PE</p>
-      </div>
+      }
 
-      <!-- Tarjeta Completa tu perfil -->
-      <div class="perfil-card complete-profile-card">
-        <h3 class="complete-title">Completa tu perfil</h3>
-        <p class="complete-desc">
-          Un perfil verificado y completo ayuda a que los arrendadores confíen más rápido en tu solicitud de alquiler. ¡Toma solo 2 minutos!
-        </p>
-        <button type="button" class="btn-primary-orange" (click)="seleccionarSeccion('personal')">
-          Conozcamos
-        </button>
-      </div>
-    </div>
-
-    <!-- Conexiones (si se selecciona la pestaña Conexiones) -->
-    <div *ngIf="seccionActiva === 'conexiones'" class="perfil-conexiones-panel">
-      <div class="empty-state-box">
-        <div class="empty-state-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2" width="40" height="40">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-          </svg>
-        </div>
-        <h3>Tus conexiones universitarias</h3>
-        <p>Conéctate con otros estudiantes y arrendadores verificados de tu universidad para compartir recomendaciones.</p>
-      </div>
-    </div>
     <div *ngIf="seccionActiva === 'personal'" class="personal-info-card">
       <!-- Campo 1: Nombre completo -->
       <div class="info-row">
@@ -113,11 +91,6 @@
               <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
             </div>
           </div>
-          <div *ngIf="campoEditando !== 'correo'" class="mt-2">
-            <button type="button" class="btn-confirm-address" (click)="confirmarDireccion()">
-              CONFIRMAR DIRECCIÓN
-            </button>
-          </div>
         </div>
         <button
           type="button"
@@ -166,20 +139,9 @@
         <div class="info-content">
           <span class="info-label">Contraseña</span>
           <div class="info-value">••••••••••••</div>
-          <p class="info-subtext">Última actualización hace 1 mes</p>
         </div>
         <button type="button" class="btn-row-action" (click)="cambiarContrasena()">
           Actualizar
-        </button>
-      </div>
-      <div class="info-row">
-        <div class="info-content">
-          <span class="info-label">Autenticación de dos pasos</span>
-          <div class="info-value text-muted-value">Desactivada</div>
-          <p class="info-subtext">Añade un nivel extra de seguridad a tu cuenta estudiantil</p>
-        </div>
-        <button type="button" class="btn-row-action" (click)="activar2FA()">
-          Configurar
         </button>
       </div>
     </div>

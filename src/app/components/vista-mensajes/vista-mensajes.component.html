@@ -65,13 +65,16 @@
                   @if (chat.reservaFinalizadaEn) {
                     <p>{{ chat.reservaFinalizadaEn | date:'dd/MM/yyyy' }}</p>
                   }
-                  @if (esArrendador() && chat.arrendador) {
-                    @if (reserva === 'CONFIRMADA' && !accionAlquiler) {
-                      <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('finalizar')">Finalizar alquiler</button>
-                    } @else if (reserva === 'FINALIZADA' && chat.resenaRegistrada) {
-                      <p>Reseña del estudiante publicada.</p>
-                    } @else if (reserva === 'FINALIZADA' && !accionAlquiler) {
-                      <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('resena')">Dejar reseña al estudiante</button>
+                  @if (esArrendador() && chat.arrendador && reserva === 'CONFIRMADA' && !accionAlquiler) {
+                    <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('finalizar')">Finalizar alquiler</button>
+                  }
+                  @if (reserva === 'FINALIZADA') {
+                    @if (chat.resenaRegistrada) {
+                      <p>Tu reseña fue publicada.</p>
+                    } @else if (!accionAlquiler) {
+                      <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('resena')">
+                        Dejar reseña al {{ chat.arrendador ? 'estudiante' : 'arrendador' }}
+                      </button>
                     }
                   }
                 </article>
@@ -92,18 +95,18 @@
                   <button type="submit" class="chat-aceptar" [disabled]="procesandoReserva() || codigoLiberacion.trim() !== ('LIBERAR-' + chat.idSolicitud)">Finalizar y liberar vivienda</button>
                 </div>
               </form>
-            } @else if (esArrendador() && chat.arrendador && accionAlquiler === 'resena' && chat.reserva === 'FINALIZADA' && !chat.resenaRegistrada) {
+            } @else if (accionAlquiler === 'resena' && chat.reserva === 'FINALIZADA' && !chat.resenaRegistrada) {
               <form class="chat-accion-alquiler" (ngSubmit)="dejarResena(chat)">
-                <strong>Dejar reseña al estudiante</strong>
-                <label for="nota-estudiante">Calificación</label>
-                <select id="nota-estudiante" name="notaEstudiante" [(ngModel)]="calificacionResena" required>
+                <strong>Dejar reseña al {{ chat.arrendador ? 'estudiante' : 'arrendador' }}</strong>
+                <label for="nota-resena">Calificación</label>
+                <select id="nota-resena" name="notaResena" [(ngModel)]="calificacionResena" required>
                   <option [ngValue]="null">Elige una calificación</option>
                   @for (nota of [5, 4, 3, 2, 1]; track nota) {
                     <option [ngValue]="nota">{{ nota }} / 5</option>
                   }
                 </select>
-                <label for="comentario-estudiante">Comentario (opcional)</label>
-                <textarea id="comentario-estudiante" name="comentarioEstudiante" rows="3" maxlength="255"
+                <label for="comentario-resena">Comentario (opcional)</label>
+                <textarea id="comentario-resena" name="comentarioResena" rows="3" maxlength="255"
                   [(ngModel)]="comentarioResena"></textarea>
                 <div class="chat-decisiones">
                   <button type="button" class="chat-cancelar" [disabled]="procesandoReserva()" (click)="cerrarAccionAlquiler()">Cancelar</button>

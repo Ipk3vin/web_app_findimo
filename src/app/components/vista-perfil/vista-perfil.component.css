@@ -96,141 +96,81 @@
   letter-spacing: -0.5px;
 }
 
-
-
-
-
-/* Modo 1: Cards */
-.perfil-cards-grid {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: 28px;
-  align-items: stretch;
-}
-
-.perfil-card {
-  background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  padding: 36px 28px;
-}
-
 .identity-card {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-  text-align: center;
+  gap: 20px 24px;
+  padding: clamp(20px, 4vw, 44px);
+  border: 1px solid #d5e9eb;
+  border-top: 4px solid #00858b;
   border-radius: 24px;
+  background: linear-gradient(125deg, #e6f7f7 0%, #fff 68%);
+  box-shadow: 0 12px 32px rgba(16, 42, 67, 0.07);
 }
 
-.avatar-circle {
-  width: 90px;
-  height: 90px;
+.identity-avatar {
+  display: grid;
+  place-items: center;
+  width: clamp(60px, 9vw, 88px);
+  aspect-ratio: 1;
+  border: 3px solid #fff;
   border-radius: 50%;
-  background: #ecfeff;
-  border: 2px solid #00b4b6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.avatar-circle span {
-  font-size: 2.2rem;
-  font-weight: 850;
-  color: #102a43;
+  background: #006b72;
+  color: #fff;
+  font-size: clamp(1.65rem, 4vw, 2.35rem);
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 107, 114, 0.2);
 }
 
 .identity-name {
-  font-size: 1.45rem;
-  font-weight: 800;
+  margin: 0;
   color: #102a43;
-  margin-bottom: 6px;
-}
-
-.identity-badge {
-  font-size: 0.85rem;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.complete-profile-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border-radius: 24px;
-}
-
-.complete-title {
-  font-size: 1.35rem;
+  font-size: clamp(1.3rem, 3vw, 2rem);
   font-weight: 800;
-  color: #102a43;
-  margin-bottom: 12px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
-.complete-desc {
-  font-size: 0.92rem;
-  color: #64748b;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  max-width: 480px;
+.identity-university {
+  margin: 6px 0 0;
+  color: #486581;
+  overflow-wrap: anywhere;
 }
 
-.btn-primary-orange {
-  align-self: flex-start;
-  background: #f26422;
-  color: #ffffff;
-  border: none;
-  padding: 10px 24px;
-  border-radius: 22px;
-  font-size: 0.95rem;
+.identity-edit {
+  grid-column: 2;
+  justify-self: start;
+  max-width: 100%;
+  padding: 10px 16px;
+  border: 1px solid #9ccacd;
+  border-radius: 10px;
+  background: #fff;
+  color: #006b72;
+  font: inherit;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  box-shadow: 0 4px 12px rgba(242, 100, 34, 0.25);
 }
 
-.btn-primary-orange:hover {
-  background: #d95318;
-  transform: translateY(-1px);
+.identity-edit:hover {
+  background: #e6f7f7;
+  border-color: #006b72;
 }
 
-/* Conexiones */
-.perfil-conexiones-panel {
-  background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  padding: 48px;
-  text-align: center;
+.identity-edit:focus-visible {
+  outline: 2px solid #006b72;
+  outline-offset: 3px;
 }
 
-.empty-state-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  max-width: 450px;
-  margin: 0 auto;
-}
+@media (max-width: 480px) {
+  .identity-card {
+    gap: 16px;
+  }
 
-.empty-state-icon {
-  margin-bottom: 16px;
-}
-
-.empty-state-box h3 {
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: #102a43;
-  margin-bottom: 8px;
-}
-
-.empty-state-box p {
-  font-size: 0.9rem;
-  color: #64748b;
-  line-height: 1.5;
+  .identity-edit {
+    grid-column: 1 / -1;
+  }
 }
 
 /* Modo 2: Personal Info Card */
@@ -273,10 +213,6 @@
   color: #486581;
 }
 
-.text-muted-value {
-  color: #94a3b8;
-}
-
 .info-subtext {
   font-size: 0.8rem;
   color: #94a3b8;
@@ -297,28 +233,6 @@
 
 .btn-row-action:hover {
   opacity: 0.85;
-}
-
-.mt-2 {
-  margin-top: 10px;
-}
-
-.btn-confirm-address {
-  background: #f26422;
-  color: #ffffff;
-  border: none;
-  padding: 7px 16px;
-  border-radius: 16px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-}
-
-.btn-confirm-address:hover {
-  background: #d95318;
 }
 
 /* Edición en línea */
@@ -376,8 +290,5 @@
   .perfil-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 32px;
-  }
-  .perfil-cards-grid {
-    grid-template-columns: 1fr;
   }
 }
