@@ -1,3 +1,12 @@
+export type ModoCuenta = 'ESTUDIANTE' | 'ARRENDADOR';
+
+export interface ActivarPerfilRequest {
+  tipo: ModoCuenta;
+  nombreUniversidad?: string;
+  presupuestoMaximo?: number;
+  cuentaBancaria?: string;
+}
+
 export interface UsuarioRegistroRequest {
   correoElectronico: string;
   contrasena: string;

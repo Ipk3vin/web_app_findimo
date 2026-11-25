@@ -1,63 +1,160 @@
 <!-- Modal: Publicar Habitación (Conectado a POST /api/propiedades) -->
-<div class="modal-backdrop-overlay" *ngIf="modalPublicarAbierto" (click)="cerrarModalPublicar.emit()">
-  <div class="modal-dialog-box" (click)="$event.stopPropagation()">
+<div class="modal-backdrop-overlay" *ngIf="modalPublicarAbierto" (click)="!publicando && cerrarModalPublicar.emit()">
+  <div class="modal-dialog-box publicar-dialog" (click)="$event.stopPropagation()">
     <div class="modal-header-row">
-      <h3 class="modal-heading">Publicar Habitación en Findimo</h3>
-      <button type="button" class="btn-close-x" (click)="cerrarModalPublicar.emit()">✕</button>
+      <h3 class="modal-heading">{{ vivienda ? 'Editar vivienda' : 'Publicar Habitación en Findimo' }}</h3>
+      <button type="button" class="btn-close-x" (click)="!publicando && cerrarModalPublicar.emit()">✕</button>
     </div>
 
     <div class="modal-body-area">
       <div class="form-field-group">
         <label class="form-label">Título de la Habitación *</label>
-        <input type="text" [ngModel]="pubTitulo" (ngModelChange)="pubTituloChange.emit()" placeholder="Ej. Habitación Amoblada frente a UPC" class="styled-input" />
+        <input type="text" [ngModel]="pubTitulo" (ngModelChange)="pubTituloChange.emit($event)" placeholder="Ej. Habitación Amoblada frente a UPC" class="styled-input" />
       </div>
 
       <div class="form-field-group">
-        <label class="form-label">Descripción</label>
-        <textarea [ngModel]="pubDescripcion" (ngModelChange)="pubDescripcionChange.emit()" rows="3" placeholder="Detalles de la habitación, servicios incluidos (luz, agua, internet, etc.)" class="styled-input"></textarea>
+        <label class="form-label" for="pub-descripcion">Descripción *</label>
+        <textarea id="pub-descripcion" required [ngModel]="pubDescripcion" (ngModelChange)="pubDescripcionChange.emit($event)" rows="3" placeholder="Detalles de la habitación, servicios incluidos (luz, agua, internet, etc.)" class="styled-input"></textarea>
       </div>
 
       <div class="form-two-cols">
         <div class="form-field-group">
           <label class="form-label">Precio Mensual (S/) *</label>
-          <input type="number" [ngModel]="pubPrecio" (ngModelChange)="pubPrecioChange.emit()" placeholder="850" class="styled-input" />
+          <input type="number" [ngModel]="pubPrecio" (ngModelChange)="pubPrecioChange.emit($event)" placeholder="850" class="styled-input" />
         </div>
         <div class="form-field-group">
           <label class="form-label">Habitaciones *</label>
-          <input type="number" [ngModel]="pubHabitaciones" (ngModelChange)="pubHabitacionesChange.emit()" placeholder="1" min="1" max="5" class="styled-input" />
+          <input type="number" [ngModel]="pubHabitaciones" (ngModelChange)="pubHabitacionesChange.emit($event)" placeholder="1" min="1" max="5" class="styled-input" />
         </div>
+      </div>
+
+      <div class="form-field-group">
+        <label class="form-label" for="pub-area">Área de la vivienda (m²) *</label>
+        <input id="pub-area" type="number" required class="styled-input" min="0.01" max="999999.99" step="0.01"
+          [ngModel]="pubArea" (ngModelChange)="pubAreaChange.emit($event)" />
       </div>
 
       <div class="form-two-cols">
         <div class="form-field-group">
           <label class="form-label">Dirección *</label>
-          <input type="text" [ngModel]="pubDireccion" (ngModelChange)="pubDireccionChange.emit()" placeholder="Av. Alameda Sur 234" class="styled-input" />
+          <input type="text" [ngModel]="pubDireccion" (ngModelChange)="pubDireccionChange.emit($event)" placeholder="Av. Alameda Sur 234" class="styled-input" />
         </div>
         <div class="form-field-group">
           <label class="form-label">Distrito *</label>
-          <select [ngModel]="pubDistrito" (ngModelChange)="pubDistritoChange.emit()" class="styled-input">
-            <option value="Chorrillos">Chorrillos</option>
-            <option value="Surco">Surco</option>
-            <option value="La Molina">La Molina</option>
-            <option value="Miraflores">Miraflores</option>
-            <option value="San Isidro">San Isidro</option>
+          <select [ngModel]="pubDistrito" (ngModelChange)="pubDistritoChange.emit($event)" class="styled-input">
+            @if (pubDistrito && !distritos.includes(pubDistrito)) {
+              <option [value]="pubDistrito">{{ pubDistrito }}</option>
+            }
+            @for (distrito of distritos; track distrito) {
+              <option [value]="distrito">{{ distrito }}</option>
+            }
           </select>
         </div>
       </div>
 
-      <div class="form-field-group">
-        <label class="form-label">Tipo de Espacio</label>
-        <select [ngModel]="pubTipo" (ngModelChange)="pubTipoChange.emit()" class="styled-input">
-          <option value="Habitaciones">Habitación individual / Cuarto solo</option>
-          <option value="Estudios">Estudio amoblado</option>
-          <option value="Departamentos">Loft / Mini departamento</option>
-        </select>
+      <div class="form-field-group publicar-fotos">
+        <label class="form-label" for="publicar-fotos">Fotos de la vivienda *</label>
+        @if (vivienda?.fotosGuardadas?.length) {
+          <ul class="publicar-fotos-lista fotos-guardadas">
+            @for (foto of vivienda?.fotosGuardadas; track foto.ruta; let i = $index) {
+              <li [class.foto-retirada]="fotosRetiradas.has(foto.ruta)">
+                @if (fotosNoDisponibles.has(foto.ruta)) {
+                  <span class="foto-guardada-preview foto-sin-archivo">Sin vista previa</span>
+                } @else {
+                  <img class="foto-guardada-preview" [src]="foto.url" [alt]="'Foto guardada ' + (i + 1)"
+                    (error)="fotosNoDisponibles.add(foto.ruta)" />
+                }
+                <span>
+                  Foto {{ i + 1 }}
+                  @if (fotosRetiradas.has(foto.ruta)) { · Se quitará }
+                  @else if (primeraFotoGuardada === foto.ruta) { · Portada }
+                </span>
+                <button type="button" class="btn-link-details" [disabled]="publicando"
+                  [attr.aria-label]="(fotosRetiradas.has(foto.ruta) ? 'Restaurar foto ' : 'Quitar foto ') + (i + 1)"
+                  (click)="alternarFotoRetirada(foto.ruta)">
+                  {{ fotosRetiradas.has(foto.ruta) ? 'Deshacer' : 'Quitar' }}
+                </button>
+              </li>
+            }
+          </ul>
+        }
+        <p id="publicar-fotos-ayuda">Se requiere al menos una foto. Puedes agregar hasta 5 JPG o PNG de 5 MB cada una.
+          {{ primeraFotoGuardada ? 'Las fotos nuevas se agregarán a la galería actual.' : 'La primera será la portada.' }}</p>
+        <input #selectorFotos id="publicar-fotos" class="styled-input" type="file" multiple
+          accept="image/jpeg,image/png" aria-describedby="publicar-fotos-ayuda"
+          [disabled]="publicando" (change)="agregarFotos(selectorFotos)" />
+        @if (errorFotos) {
+          <p class="publicar-entorno-error" role="alert">{{ errorFotos }}</p>
+        }
+        @if (fotos.length) {
+          <ul class="publicar-fotos-lista">
+            @for (foto of fotos; track $index; let i = $index) {
+              <li>
+                <span>{{ foto.name }}{{ i === 0 && !primeraFotoGuardada ? ' · Portada' : '' }}</span>
+                <button type="button" class="btn-link-details" [disabled]="publicando"
+                  [attr.aria-label]="'Quitar ' + foto.name" (click)="quitarFoto(i)">Quitar</button>
+              </li>
+            }
+          </ul>
+        }
       </div>
+
+      @if (cargandoCatalogos) {
+        <p role="status">Cargando tipos y servicios…</p>
+      } @else if (errorCatalogos) {
+        <p role="status">No se pudieron cargar los tipos y servicios.</p>
+        <button type="button" class="btn-link-details" (click)="reintentarCatalogos.emit()">Reintentar</button>
+      } @else {
+        <div class="form-field-group">
+          <label class="form-label" for="publicar-tipo">Tipo de propiedad (opcional)</label>
+          <select id="publicar-tipo" [ngModel]="pubIdTipoPropiedad" (ngModelChange)="pubIdTipoPropiedadChange.emit($event)" class="styled-input">
+            <option [ngValue]="null">Sin especificar</option>
+            @for (tipo of catalogos.tipos; track tipo.id) {
+              <option [ngValue]="tipo.id">{{ tipo.nombre }}</option>
+            }
+          </select>
+        </div>
+        <details class="publicar-entorno">
+          <summary>Servicios (opcional)</summary>
+          <div class="publicar-servicios">
+            @for (servicio of catalogos.servicios; track servicio.id) {
+              <label>
+                <input type="checkbox" [checked]="pubIdsServicios.includes(servicio.id)"
+                  (change)="alternarServicio(servicio.id)" />
+                {{ servicio.nombre }}
+              </label>
+            }
+          </div>
+        </details>
+      }
+
+      <details class="publicar-entorno">
+        <summary>Conoce el entorno (opcional)</summary>
+        <p>Agrega los lugares cercanos que quieras mostrar. Indica el tiempo a pie y, si lo conoces, el nombre del lugar.</p>
+        @for (lugar of entorno; track lugar.tipo) {
+          <fieldset class="publicar-lugar">
+            <legend>{{ tiposEntorno[lugar.tipo].etiqueta }}</legend>
+            <div class="form-two-cols">
+              <label class="form-label">
+                Nombre (opcional)
+                <input type="text" class="styled-input" maxlength="120" [(ngModel)]="lugar.nombre" />
+              </label>
+              <label class="form-label">
+                Minutos a pie
+                <input type="number" class="styled-input" min="1" max="1440" step="1" [(ngModel)]="lugar.minutos" />
+              </label>
+            </div>
+          </fieldset>
+        }
+      </details>
+      @if (errorEntorno) {
+        <p role="alert" class="publicar-entorno-error">{{ errorEntorno }}</p>
+      }
     </div>
 
     <div class="modal-footer-row">
-      <button type="button" class="btn-cancel" (click)="cerrarModalPublicar.emit()">Cancelar</button>
-      <button type="button" class="btn-primary-orange" (click)="guardarPropiedad.emit()">Guardar y Publicar</button>
+      <button type="button" class="btn-cancel" (click)="!publicando && cerrarModalPublicar.emit()">Cancelar</button>
+      <button type="button" class="btn-primary-orange" [disabled]="publicando" (click)="publicar()">{{ publicando ? 'Guardando…' : (vivienda ? 'Guardar cambios' : 'Guardar y Publicar') }}</button>
     </div>
   </div>
 </div>

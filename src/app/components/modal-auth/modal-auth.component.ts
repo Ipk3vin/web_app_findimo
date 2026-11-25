@@ -14,16 +14,14 @@ import { FormsModule } from '@angular/forms';
 export class ModalAuthComponent {
   @Input() modalLoginAbierto: boolean = false;
   @Input() modalRegistroAbierto: boolean = false;
+  @Input() registrandoUsuario = false;
 
-  // Formulario Login
+  // Formulario Login (Solo Correo y Contraseña conectados a la BD)
   @Input() loginCorreo: string = '';
   @Output() loginCorreoChange = new EventEmitter<string>();
 
   @Input() loginContrasena: string = '';
   @Output() loginContrasenaChange = new EventEmitter<string>();
-
-  @Input() loginRol: 'ESTUDIANTE' | 'ARRENDADOR' = 'ARRENDADOR';
-  @Output() loginRolChange = new EventEmitter<'ESTUDIANTE' | 'ARRENDADOR'>();
 
   // Formulario Registro
   @Input() regNombre: string = '';
@@ -53,11 +51,11 @@ export class ModalAuthComponent {
   @Input() regCuentaBancaria: string = '';
   @Output() regCuentaBancariaChange = new EventEmitter<string>();
 
-  // Eventos
+  // Eventos de control y cambio entre modales
   @Output() cerrarLogin = new EventEmitter<void>();
   @Output() cerrarRegistro = new EventEmitter<void>();
+  @Output() abrirLogin = new EventEmitter<void>();
+  @Output() abrirRegistro = new EventEmitter<void>();
   @Output() iniciarSesion = new EventEmitter<void>();
-  @Output() iniciarComoSofia = new EventEmitter<void>();
-  @Output() iniciarComoEduardo = new EventEmitter<void>();
   @Output() registrarUsuario = new EventEmitter<void>();
 }

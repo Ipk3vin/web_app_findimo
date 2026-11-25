@@ -9,57 +9,6 @@
   background-color: #ffffff;
 }
 
-/* Mini Píldora de búsqueda en el Navbar */
-.header-search-mini-pill {
-  display: flex;
-  align-items: center;
-}
-
-.btn-back-to-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 30px;
-  padding: 6px 8px 6px 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  font-family: inherit;
-  transition: box-shadow 0.2s ease;
-}
-
-.btn-back-to-search:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.mini-pill-tag {
-  font-size: 13px;
-  font-weight: 700;
-  color: #162b4d;
-}
-
-.mini-pill-sep {
-  color: #cbd5e1;
-  font-size: 12px;
-}
-
-.mini-pill-sub {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.mini-pill-search-btn {
-  background: #ea580c;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* 1. Cabecera del Detalle */
 .detail-top-header {
   display: flex;
@@ -280,12 +229,6 @@
   color: #162b4d;
 }
 
-.gf-stars-row {
-  color: #ea580c;
-  font-size: 12px;
-  letter-spacing: 1px;
-}
-
 .gf-reviews-count {
   font-size: 10px;
   font-weight: 800;
@@ -466,10 +409,15 @@
   margin: 0 0 24px 0;
 }
 
-.surroundings-cards-grid {
+.surroundings-section-block .surroundings-cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 16px;
+}
+
+.surroundings-empty {
+  color: #64748b;
+  margin: 0;
 }
 
 .surround-card {
@@ -488,6 +436,7 @@
 .bg-sky-tint { background: #f0f9ff; }
 
 .surround-icon-circle {
+  flex-shrink: 0;
   width: 44px;
   height: 44px;
   border-radius: 50%;
@@ -510,6 +459,7 @@
 }
 
 .surround-place {
+  overflow-wrap: anywhere;
   font-size: 13px;
   font-weight: 800;
   color: #0f172a;
@@ -706,57 +656,6 @@
   border-radius: 4px;
 }
 
-.compare-review-quote-box {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 12px;
-  margin: 14px 0;
-}
-
-.quote-text {
-  font-size: 12px;
-  color: #334155;
-  font-style: italic;
-  margin: 0 0 10px 0;
-}
-
-.quote-author-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.quote-avatar-char {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar-c1 { background: #059669; }
-.avatar-c2 { background: #0284c7; }
-.avatar-c3 { background: #ea580c; }
-
-.quote-author-meta {
-  display: flex;
-  flex-direction: column;
-}
-
-.quote-author-meta strong {
-  font-size: 12px;
-  color: #162b4d;
-}
-
-.quote-author-meta span {
-  font-size: 10.5px;
-  color: #94a3b8;
-}
-
 .compare-card-actions {
   display: flex;
   flex-direction: column;
@@ -830,87 +729,6 @@
   letter-spacing: -1px;
 }
 
-.reviews-stars-wrap {
-  text-align: left;
-}
-
-.stars-gold-row {
-  color: #ea580c;
-  font-size: 18px;
-  letter-spacing: 2px;
-}
-
-.favorite-subtext {
-  font-size: 12px;
-  font-weight: 700;
-  color: #162b4d;
-}
-
-.reviews-center-desc {
-  font-size: 13.5px;
-  color: #64748b;
-  margin: 0;
-}
-
-.review-ratings-subgrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 12px;
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-.rating-subitem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.rating-icon-teal {
-  font-size: 20px;
-}
-
-.rating-cat-name {
-  font-size: 11.5px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.rating-cat-score {
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #162b4d;
-}
-
-.reviews-tag-pills-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 36px;
-}
-
-.review-pill-btn {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 6px 16px;
-  font-size: 12.5px;
-  color: #334155;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s ease;
-}
-
-.review-pill-btn:hover,
-.review-pill-btn.pill-active {
-  border-color: #00b4b6;
-  background: #f0fdfa;
-  color: #008f91;
-  font-weight: 600;
-}
-
 .reviews-cards-list-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -930,13 +748,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.review-avatar-img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
 }
 
 .author-full-name {
@@ -1140,4 +951,260 @@
   padding-top: 20px;
 }
 
+.detail-page-main .detail-reviews-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
 
+.detail-photos {
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+}
+
+.detail-main-photo {
+  width: 100%;
+  height: clamp(240px, 42vw, 520px);
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+
+.detail-photo-placeholder {
+  display: grid;
+  min-height: 140px;
+  place-items: center;
+  border-radius: 20px;
+  background: #f1f5f9;
+  color: #52637a;
+  padding: 1rem;
+  text-align: center;
+}
+
+.detail-photo-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 8px 2px 3px;
+}
+
+.detail-photo-strip button {
+  width: 78px;
+  height: 58px;
+  flex: 0 0 auto;
+  padding: 2px;
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.detail-photo-strip button[aria-pressed="true"] {
+  border-color: #0284c7;
+}
+
+.detail-photo-strip img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.detail-page-main .detail-two-col-layout {
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  margin-bottom: 2.5rem;
+}
+
+.detail-page-main .landlord-summary-row {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.25rem;
+  margin-top: 1.75rem;
+}
+
+.detail-page-main .surroundings-section-block {
+  border: 1px solid #e2e8f0;
+}
+
+.detail-page-main .compare-header-row {
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.compare-picker {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  color: #162b4d;
+  font-weight: 650;
+}
+
+.compare-picker select {
+  padding: 0.65rem 0.8rem;
+  max-width: min(430px, 80vw);
+  border-radius: 8px;
+  background: white;
+  border: 1px solid #cbd5e1;
+  color: #162b4d;
+  font: inherit;
+}
+
+.detail-page-main .compare-cards-grid,
+.detail-page-main .rec-cards-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 235px), 1fr));
+}
+
+.compare-facts {
+  margin: 1rem 0;
+}
+
+.compare-facts div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.5rem 0;
+}
+
+.compare-facts dd {
+  margin: 0;
+  font-weight: 650;
+  text-align: right;
+}
+
+.detail-page-main .rec-title-row {
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.detail-page-main .rec-title {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.detail-page-main .rec-section-title {
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 720px) {
+  .detail-page-main .detail-two-col-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detail-page-main .detail-top-header {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+}
+
+
+.opiniones-vivienda {
+  padding-block: clamp(1.5rem, 4vw, 2.5rem);
+  border-block: 1px solid #e2e8f0;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
+  scroll-margin-top: 90px;
+}
+
+.opiniones-encabezado,
+.opinion-encabezado,
+.opinion-autor,
+.opiniones-resumen {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.opiniones-encabezado {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.opiniones-encabezado h2 {
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  color: var(--navy-dark);
+  margin: 0;
+}
+
+.opiniones-resumen {
+  gap: 0.45rem;
+  color: #9a3d10;
+  margin: 0.35rem 0 0;
+}
+
+.opiniones-total {
+  margin-inline-start: 0.35rem;
+  color: #52647b;
+}
+
+.opiniones-lista {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.opinion-vivienda,
+.opiniones-estado {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.opinion-encabezado {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.opinion-autor {
+  min-width: 0;
+}
+
+.opinion-inicial {
+  display: grid;
+  place-items: center;
+  flex: 0 0 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e4f4f2;
+  color: #14645f;
+  font-weight: 700;
+}
+
+.opinion-autor h3 {
+  margin: 0;
+  color: var(--navy-dark);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.opinion-autor time {
+  font-size: 0.8rem;
+  color: #52647b;
+}
+
+.opinion-nota {
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fff0e6;
+  color: #9a3d10;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.opinion-comentario {
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 650px) {
+  .opiniones-lista { grid-template-columns: minmax(0, 1fr); }
+}

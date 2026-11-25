@@ -452,38 +452,6 @@
   gap: 16px;
 }
 
-.demo-pills-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #f1f5f9;
-  padding: 10px 14px;
-  border-radius: 12px;
-  margin-bottom: 6px;
-  flex-wrap: wrap;
-}
-
-.demo-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.btn-demo-pill {
-  padding: 5px 12px;
-  border-radius: 20px;
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--navy-dark);
-  transition: all 0.15s;
-}
-
-.btn-demo-pill:hover {
-  background-color: #e2e8f0;
-}
 
 .form-field-group {
   display: flex;
@@ -1074,3 +1042,71 @@
   transform: translateY(-1px);
 }
 
+
+/* Tabs para selección de rol en Registro: Estudiante vs Anfitrión */
+.role-selector-tabs {
+  display: flex;
+  gap: 10px;
+  background-color: #f1f5f9;
+  padding: 6px;
+  border-radius: 14px;
+  margin-bottom: 8px;
+}
+
+.role-tab-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.role-tab-btn:hover {
+  color: #102a43;
+}
+
+.role-tab-btn.active {
+  background: #ffffff;
+  color: #102a43;
+  border-color: #00b4b6;
+  box-shadow: 0 2px 8px rgba(0, 180, 182, 0.18);
+}
+
+.modal-helper-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.helper-link {
+  color: #00b4b6;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.helper-link:hover {
+  color: #008789;
+}
+
+button.helper-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}

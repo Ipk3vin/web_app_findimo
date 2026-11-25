@@ -1,4 +1,4 @@
-<!-- Modal: Iniciar Sesión -->
+<!-- Modal: Iniciar Sesión (Solo correo y contraseña conectados a la Base de Datos) -->
 <div class="modal-backdrop-overlay" *ngIf="modalLoginAbierto" (click)="cerrarLogin.emit()">
   <div class="modal-dialog-box" (click)="$event.stopPropagation()">
     <div class="modal-header-row">
@@ -7,28 +7,33 @@
     </div>
 
     <div class="modal-body-area">
-      <div class="demo-pills-row">
-        <span class="demo-title">Accesos Rápidos Demo:</span>
-        <button type="button" class="btn-demo-pill" (click)="iniciarComoSofia.emit()">Sofía (Estudiante)</button>
-        <button type="button" class="btn-demo-pill" (click)="iniciarComoEduardo.emit()">Eduardo (Arrendador)</button>
+      <div class="form-field-group">
+        <label class="form-label">Correo Electrónico *</label>
+        <input
+          type="email"
+          [ngModel]="loginCorreo"
+          (ngModelChange)="loginCorreoChange.emit($event)"
+          placeholder="ejemplo@findimo.pe"
+          class="styled-input"
+          autocomplete="username"
+        />
       </div>
 
       <div class="form-field-group">
-        <label class="form-label">Correo Electrónico</label>
-        <input type="email" [ngModel]="loginCorreo" (ngModelChange)="loginCorreoChange.emit()" placeholder="ejemplo@findimo.pe" class="styled-input" />
+        <label class="form-label">Contraseña *</label>
+        <input
+          type="password"
+          [ngModel]="loginContrasena"
+          (ngModelChange)="loginContrasenaChange.emit($event)"
+          placeholder="******"
+          class="styled-input"
+          autocomplete="current-password"
+        />
       </div>
 
-      <div class="form-field-group">
-        <label class="form-label">Contraseña</label>
-        <input type="password" [ngModel]="loginContrasena" (ngModelChange)="loginContrasenaChange.emit()" placeholder="******" class="styled-input" />
-      </div>
-
-      <div class="form-field-group">
-        <label class="form-label">Rol en Findimo</label>
-        <select [ngModel]="loginRol" (ngModelChange)="loginRolChange.emit()" class="styled-input">
-          <option value="ESTUDIANTE">Estudiante (Buscador)</option>
-          <option value="ARRENDADOR">Arrendador (Propietario)</option>
-        </select>
+      <div class="modal-helper-links">
+        <span>¿No tienes una cuenta aún?</span>
+        <button type="button" class="helper-link" (click)="abrirRegistro.emit()">Registrarme</button>
       </div>
     </div>
 
@@ -39,80 +44,148 @@
   </div>
 </div>
 
-<!-- Modal: Registro de Usuario (Conectado a POST /api/usuarios/registro) -->
+<!-- Modal: Registro de Usuario (Estudiante o Anfitrión) -->
 <div class="modal-backdrop-overlay" *ngIf="modalRegistroAbierto" (click)="cerrarRegistro.emit()">
   <div class="modal-dialog-box" (click)="$event.stopPropagation()">
     <div class="modal-header-row">
-      <h3 class="modal-heading">Crear Cuenta en Findimo</h3>
+      <h3 class="modal-heading">
+        {{ regRol === 'ESTUDIANTE' ? 'Registro para Estudiantes' : 'Registro para Anfitriones' }}
+      </h3>
       <button type="button" class="btn-close-x" (click)="cerrarRegistro.emit()">✕</button>
     </div>
 
     <div class="modal-body-area">
+      <!-- Selector de Tipo de Cuenta: Estudiante vs Anfitrión -->
+      <div class="role-selector-tabs">
+        <button
+          type="button"
+          class="role-tab-btn"
+          [class.active]="regRol === 'ESTUDIANTE'"
+          (click)="regRolChange.emit('ESTUDIANTE')"
+        >
+          🎓 Soy Estudiante
+        </button>
+        <button
+          type="button"
+          class="role-tab-btn"
+          [class.active]="regRol === 'ARRENDADOR'"
+          (click)="regRolChange.emit('ARRENDADOR')"
+        >
+          🏠 Soy Anfitrión / Propietario
+        </button>
+      </div>
+
       <div class="form-two-cols">
         <div class="form-field-group">
           <label class="form-label">Nombre *</label>
-          <input type="text" [ngModel]="regNombre" (ngModelChange)="regNombreChange.emit()" placeholder="Tu nombre" class="styled-input" />
+          <input
+            type="text"
+            [ngModel]="regNombre"
+            (ngModelChange)="regNombreChange.emit($event)"
+            placeholder="Tu nombre"
+            class="styled-input"
+          />
         </div>
         <div class="form-field-group">
           <label class="form-label">Apellido *</label>
-          <input type="text" [ngModel]="regApellido" (ngModelChange)="regApellidoChange.emit()" placeholder="Tu apellido" class="styled-input" />
+          <input
+            type="text"
+            [ngModel]="regApellido"
+            (ngModelChange)="regApellidoChange.emit($event)"
+            placeholder="Tu apellido"
+            class="styled-input"
+          />
         </div>
       </div>
 
       <div class="form-field-group">
         <label class="form-label">Correo Electrónico *</label>
-        <input type="email" [ngModel]="regCorreo" (ngModelChange)="regCorreoChange.emit()" placeholder="usuario@upc.edu.pe" class="styled-input" />
+        <input
+          type="email"
+          [ngModel]="regCorreo"
+          (ngModelChange)="regCorreoChange.emit($event)"
+          [placeholder]="regRol === 'ESTUDIANTE' ? 'usuario@upc.edu.pe' : 'anfitrion@findimo.pe'"
+          class="styled-input"
+        />
       </div>
 
       <div class="form-two-cols">
         <div class="form-field-group">
           <label class="form-label">Contraseña *</label>
-          <input type="password" [ngModel]="regContrasena" (ngModelChange)="regContrasenaChange.emit()" placeholder="Contraseña segura" class="styled-input" />
+          <input
+            type="password"
+            [ngModel]="regContrasena"
+            (ngModelChange)="regContrasenaChange.emit($event)"
+            placeholder="Mínimo 6 caracteres"
+            class="styled-input"
+          />
         </div>
         <div class="form-field-group">
-          <label class="form-label">Teléfono</label>
-          <input type="tel" [ngModel]="regTelefono" (ngModelChange)="regTelefonoChange.emit()" placeholder="987654321" class="styled-input" />
+          <label class="form-label">Teléfono *</label>
+          <input
+            type="tel"
+            [ngModel]="regTelefono"
+            (ngModelChange)="regTelefonoChange.emit($event)"
+            placeholder="987654321"
+            class="styled-input"
+          />
         </div>
       </div>
 
-      <div class="form-field-group">
-        <label class="form-label">Tipo de Cuenta</label>
-        <div class="radio-options-row">
-          <label class="radio-item">
-            <input type="radio" name="rol" value="ESTUDIANTE" [ngModel]="regRol" (ngModelChange)="regRolChange.emit()" />
-            <span>Estudiante</span>
-          </label>
-          <label class="radio-item">
-            <input type="radio" name="rol" value="ARRENDADOR" [ngModel]="regRol" (ngModelChange)="regRolChange.emit()" />
-            <span>Arrendador</span>
-          </label>
-        </div>
-      </div>
-
+      <!-- Campos específicos si es ESTUDIANTE -->
       <div class="form-two-cols" *ngIf="regRol === 'ESTUDIANTE'">
         <div class="form-field-group">
-          <label class="form-label">Universidad *</label>
-          <input type="text" [ngModel]="regUniversidad" (ngModelChange)="regUniversidadChange.emit()" placeholder="Universidad Peruana de Ciencias Aplicadas (UPC)" class="styled-input" />
+          <label class="form-label">Universidad / Instituto *</label>
+          <input
+            type="text"
+            [ngModel]="regUniversidad"
+            (ngModelChange)="regUniversidadChange.emit($event)"
+            placeholder="Ej: UPC, PUCP, San Marcos, UTEC..."
+            class="styled-input"
+          />
         </div>
         <div class="form-field-group">
           <label class="form-label">Presupuesto Máximo (S/)</label>
-          <input type="number" [ngModel]="regPresupuesto" (ngModelChange)="regPresupuestoChange.emit()" placeholder="850" class="styled-input" />
+          <input
+            type="number"
+            [ngModel]="regPresupuesto"
+            (ngModelChange)="regPresupuestoChange.emit($event)"
+            placeholder="850"
+            class="styled-input"
+          />
         </div>
       </div>
 
+      <!-- Campos específicos si es ARRENDADOR -->
       <div class="form-field-group" *ngIf="regRol === 'ARRENDADOR'">
         <label class="form-label">Cuenta Bancaria para Depósitos de Alquiler *</label>
-        <input type="text" [ngModel]="regCuentaBancaria" (ngModelChange)="regCuentaBancariaChange.emit()" placeholder="BCP-191-88492019-0-45 / CCI" class="styled-input" />
+        <input
+          type="text"
+          [ngModel]="regCuentaBancaria"
+          (ngModelChange)="regCuentaBancariaChange.emit($event)"
+          placeholder="BCP-191-88492019-0-45 / CCI"
+          class="styled-input"
+        />
         <small style="color: #64748b; font-size: 11.5px; margin-top: 4px; display: block;">
           ✓ Requerido para crear tu perfil de arrendador (tm_perfil_arrendador) y recibir pagos 100% seguros.
         </small>
+      </div>
+
+      <div class="modal-helper-links">
+        <span>¿Ya tienes una cuenta registrada?</span>
+        <a href="javascript:void(0)" class="helper-link" (click)="abrirLogin.emit()">Iniciar Sesión</a>
       </div>
     </div>
 
     <div class="modal-footer-row">
       <button type="button" class="btn-cancel" (click)="cerrarRegistro.emit()">Cancelar</button>
-      <button type="button" class="btn-primary-orange" (click)="registrarUsuario.emit()">Registrarse Gratis</button>
+      <button type="button" class="btn-primary-orange" [disabled]="registrandoUsuario" (click)="registrarUsuario.emit()">
+        @if (registrandoUsuario) {
+          Registrando…
+        } @else {
+          {{ regRol === 'ESTUDIANTE' ? 'Registrarme como Estudiante' : 'Registrarme como Anfitrión' }}
+        }
+      </button>
     </div>
   </div>
 </div>
-

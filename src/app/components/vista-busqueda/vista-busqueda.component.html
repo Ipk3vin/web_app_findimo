@@ -6,18 +6,13 @@
   <!-- BREADCRUMB Y CONTADOR DE DISPONIBILIDAD -->
   <section class="breadcrumb-bar-section">
     <div class="main-content-container breadcrumb-row">
-      <!-- Migas de pan: Inicio / Lima / Chorrillos -->
+      <!-- Migas de pan: Inicio / Lima / Cuartos -->
       <div class="breadcrumb-trail">
         <a href="javascript:void(0)" class="crumb-link" (click)="irAInicio.emit()">Inicio</a>
         <span class="crumb-separator">/</span>
         <span class="crumb-link">Lima</span>
         <span class="crumb-separator">/</span>
-        <span class="crumb-current">Chorrillos</span>
-      </div>
-
-      <!-- Contador en texto turquesa -->
-      <div class="breadcrumb-counter-teal">
-        Explorando 124 habitaciones cerca de UPC, Universidad de Piura y UCSUR
+        <span class="crumb-current">Cuartos</span>
       </div>
     </div>
   </section>
@@ -34,12 +29,11 @@
               <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
               <path d="M9 21V12h6v9"/>
             </svg>
-            <select [ngModel]="filtroTipoHabitacion" (ngModelChange)="filtroTipoHabitacionChange.emit()" class="filter-select">
-              <option value="Cuarto solo">Cuarto solo</option>
-              <option value="Cuarto compartido">Cuarto compartido</option>
-              <option value="Estudio amoblado">Estudio amoblado</option>
-              <option value="Loft moderno">Loft moderno</option>
+            <select [ngModel]="filtroTipoHabitacion" (ngModelChange)="filtroTipoHabitacionChange.emit($event)" class="filter-select">
               <option value="todos">Todos los tipos</option>
+              @for (tipo of tiposPropiedad; track tipo.id) {
+                <option [value]="tipo.id">{{ tipo.nombre }}</option>
+              }
             </select>
           </div>
         </div>
@@ -55,7 +49,7 @@
               <line x1="2" y1="10" x2="22" y2="10"/>
               <circle cx="6" cy="15" r="1" fill="#00b4b6"/>
             </svg>
-            <select [ngModel]="filtroPrecioMensual" (ngModelChange)="filtroPrecioMensualChange.emit()" class="filter-select">
+            <select [ngModel]="filtroPrecioMensual" (ngModelChange)="filtroPrecioMensualChange.emit($event)" class="filter-select">
               <option value="500-1500">S/ 500 - S/ 1500</option>
               <option value="hasta-600">Hasta S/ 600</option>
               <option value="600-1000">S/ 600 - S/ 1000</option>
@@ -75,7 +69,7 @@
               <path d="M12 21s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 7.2c0 7.3-8 11.8-8 11.8z"/>
               <circle cx="12" cy="10" r="3"/>
             </svg>
-            <select [ngModel]="filtroUniversidad" (ngModelChange)="filtroUniversidadChange.emit()" class="filter-select">
+            <select [ngModel]="filtroUniversidad" (ngModelChange)="filtroUniversidadChange.emit($event)" class="filter-select">
               <option value="UPC Chorrillos">UPC Chorrillos</option>
               <option value="Universidad de Piura">Universidad de Piura</option>
               <option value="UCSUR">UCSUR</option>
@@ -111,103 +105,75 @@
     </div>
   </section>
 
-  <!-- SECCIÓN 1 FIGMA: RESULTADOS DE BÚSQUEDA EN CHORRILLOS -->
-  <section id="propiedades" class="search-results-section">
+  <section id="propiedades" class="search-results-section" aria-labelledby="cuartos-titulo">
     <div class="main-content-container">
-      <h2 class="search-section-title">Resultados de búsqueda en Chorrillos</h2>
-
-      <div class="property-cards-grid">
-        <article class="findimo-room-card" *ngFor="let prop of propiedadesFiltradas">
-          <div class="room-image-container">
-            <img [src]="prop.imagen" [alt]="prop.titulo" class="room-img" loading="lazy" />
-            <button
-              type="button"
-              class="btn-heart-favorite"
-              [class.favorite-active]="prop.esFavorito"
-              (click)="toggleFavorito.emit({ prop: prop, event: $event })"
-              aria-label="Marcar favorito"
-            >
-              <svg viewBox="0 0 24 24" [attr.fill]="prop.esFavorito ? '#f26422' : 'none'" [attr.stroke]="prop.esFavorito ? '#f26422' : '#f26422'" stroke-width="2" width="18" height="18">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-            </button>
-          </div>
-
-          <div class="room-card-content">
-            <div class="room-price-row">
-              <span class="price-amount">S/{{ prop.precio | number:'1.0-0' }}</span>
-              <span class="price-frequency">mes</span>
-            </div>
-            <h3 class="room-title">{{ prop.titulo }}</h3>
-            <p class="room-location">{{ prop.direccion }}, {{ prop.distrito }}</p>
-
-            <div class="room-stats-row">
-              <div class="stat-rating">
-                <svg class="star-svg" viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2" width="16" height="16">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-                <span>{{ prop.calificacion ? (prop.calificacion | number:'1.2-2') : '4.85' }}</span>
-              </div>
-              <div class="stat-area">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                </svg>
-                <span>{{ prop.area }} m²</span>
-              </div>
-              <button type="button" class="btn-link-details" (click)="verDetalles.emit(prop)">
-                Ver detalles
-              </button>
-            </div>
-          </div>
-        </article>
+      <div class="cuartos-header">
+        <h1 id="cuartos-titulo" class="search-section-title">Cuartos</h1>
+        <button type="button" class="btn-see-all" (click)="irAComparacion.emit()">Comparar viviendas ({{ idsComparacion.length }}/3)</button>
       </div>
 
-      <div class="no-results-alert" *ngIf="propiedadesFiltradas.length === 0">
-        <p>No se encontraron habitaciones con los filtros especificados.</p>
-        <button type="button" class="btn-primary-orange" (click)="limpiarFiltros.emit()">Restablecer búsqueda</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- SECCIÓN 2 FIGMA: RECOMENDACIONES - NUEVAS OPCIONES DE CUARTOS -->
-  <section class="recommendations-section">
-    <div class="main-content-container">
-      <div class="rec-section-header">
-        <span class="rec-badge-tag">RECOMENDACIONES</span>
-        <h2 class="rec-section-title">Nuevas opciones de cuartos</h2>
-      </div>
-
-      <div class="rec-cards-grid">
-        <article class="findimo-rec-card" *ngFor="let rec of propiedadesRecomendadas">
-          <div class="rec-image-container">
-            <img [src]="rec.imagen" [alt]="rec.titulo" class="rec-img" loading="lazy" />
-          </div>
-
-          <div class="rec-card-body">
-            <div class="rec-title-row">
-              <h3 class="rec-title">{{ rec.titulo }}</h3>
-              <span class="rec-rating-badge">
-                <span class="star-char">★</span> {{ rec.calificacion ? (rec.calificacion | number:'1.1-1') : '4.8' }}
-              </span>
-            </div>
-
-            <p class="rec-location-text">{{ rec.direccion }}, {{ rec.distrito }}</p>
-
-            <div class="rec-footer-row">
-              <div class="rec-price-text">
-                <span class="rec-price-orange">S/ {{ rec.precio | number:'1.0-0' }}</span>
-                <span class="rec-per-month">/ mes</span>
+      @if (cargando) {
+        <p role="status">Cargando viviendas…</p>
+      } @else if (errorCarga) {
+        <div class="no-results-alert">
+          <p role="status">No se pudieron cargar las viviendas.</p>
+          <button type="button" class="btn-link-details" (click)="reintentar.emit()">Reintentar</button>
+        </div>
+      } @else if (!propiedadesFiltradas.length) {
+        <p class="no-results-alert">No se encontraron habitaciones con los filtros seleccionados.</p>
+      } @else {
+        <div class="property-cards-grid cuartos-grid">
+          @for (prop of propiedadesFiltradas; track prop.idPropiedad) {
+            <article class="findimo-room-card">
+              <div class="room-image-container">
+                <app-foto-vivienda [fotos]="prop.imagenesGaleria" [titulo]="prop.titulo"></app-foto-vivienda>
+                <app-boton-comparar [seleccionada]="idsComparacion.includes(prop.idPropiedad)"
+                  (alternar)="alternarComparacion.emit(prop)"></app-boton-comparar>
+                <button
+                  type="button"
+                  class="btn-heart-favorite"
+                  [class.favorite-active]="prop.esFavorito"
+                  (click)="toggleFavorito.emit({ prop: prop, event: $event })"
+                  aria-label="Marcar favorito"
+                >
+                  <svg viewBox="0 0 24 24" [attr.fill]="prop.esFavorito ? '#f26422' : 'none'" [attr.stroke]="prop.esFavorito ? '#f26422' : '#f26422'" stroke-width="2" width="18" height="18">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </button>
               </div>
 
-              <button type="button" class="btn-rec-details" (click)="verDetalles.emit(rec)">
-                Ver detalles
-              </button>
-            </div>
-          </div>
-        </article>
-      </div>
+              <div class="room-card-content">
+                <div class="room-price-row">
+                  <span class="price-amount">S/{{ prop.precio | number:'1.0-0' }}</span>
+                  <span class="price-frequency">mes</span>
+                </div>
+                <h3 class="room-title">{{ prop.titulo }}</h3>
+                <p class="room-location">{{ prop.direccion }}, {{ prop.distrito }}</p>
+
+                <div class="room-stats-row">
+                  <div class="stat-rating">
+                    <svg class="star-svg" viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2" width="16" height="16">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                    <span>{{ prop.calificacion ? (prop.calificacion | number:'1.2-2') : 'Sin reseñas' }}</span>
+                  </div>
+                  @if (prop.area != null) {
+                    <div class="stat-area">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                      </svg>
+                      <span>{{ prop.area | number:'1.0-2' }} m²</span>
+                    </div>
+                  }
+                  <button type="button" class="btn-link-details" (click)="verDetalles.emit(prop)">
+                    Ver detalles
+                  </button>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      }
     </div>
   </section>
 </div>
-
-

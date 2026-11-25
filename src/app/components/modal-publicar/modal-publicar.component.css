@@ -1074,3 +1074,103 @@
   transform: translateY(-1px);
 }
 
+
+.publicar-dialog {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 40px);
+}
+
+.publicar-entorno summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--navy-dark);
+}
+
+.publicar-entorno p {
+  margin: 0.65rem 0;
+  color: var(--text-muted);
+}
+
+.publicar-lugar {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem 0.75rem;
+  min-width: 0;
+  border: 1px solid var(--gray-border);
+  border-radius: 10px;
+}
+
+.publicar-lugar legend {
+  padding: 0 0.25rem;
+  font-weight: 600;
+}
+
+.publicar-lugar input {
+  width: 100%;
+}
+
+.publicar-entorno-error {
+  color: #b91c1c;
+}
+
+.publicar-fotos p {
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem;
+}
+
+.publicar-fotos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.publicar-fotos-lista li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0;
+  overflow-wrap: anywhere;
+}
+
+.publicar-fotos-lista.fotos-guardadas {
+  margin: 0 0 0.75rem;
+}
+
+.fotos-guardadas li {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  gap: 0.65rem;
+}
+
+.foto-guardada-preview {
+  width: 68px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.foto-sin-archivo {
+  display: grid;
+  place-items: center;
+  background: #eef2f7;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.foto-retirada .foto-guardada-preview {
+  opacity: 0.5;
+}
+
+.publicar-servicios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+}
+
+.publicar-servicios label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}

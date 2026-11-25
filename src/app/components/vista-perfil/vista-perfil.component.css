@@ -7,7 +7,7 @@
 
 .perfil-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 60px;
   align-items: start;
 }
@@ -76,13 +76,6 @@
   background-color: transparent;
 }
 
-.sidebar-icon {
-  width: 18px;
-  height: 18px;
-  stroke: #64748b;
-  flex-shrink: 0;
-}
-
 /* Main Content */
 .perfil-main-content {
   display: flex;
@@ -103,41 +96,9 @@
   letter-spacing: -0.5px;
 }
 
-.btn-link-orange {
-  background: none;
-  border: none;
-  color: #f26422;
-  font-size: 1rem;
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 6px 10px;
-  font-family: inherit;
-  transition: opacity 0.2s;
-}
 
-.btn-link-orange:hover {
-  opacity: 0.85;
-}
 
-.btn-done-orange {
-  background: #f26422;
-  color: #ffffff;
-  border: none;
-  padding: 9px 24px;
-  border-radius: 20px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit;
-  box-shadow: 0 4px 12px rgba(242, 100, 34, 0.3);
-}
 
-.btn-done-orange:hover {
-  background: #d95318;
-  transform: translateY(-1px);
-}
 
 /* Modo 1: Cards */
 .perfil-cards-grid {
@@ -235,36 +196,6 @@
 .btn-primary-orange:hover {
   background: #d95318;
   transform: translateY(-1px);
-}
-
-.perfil-bottom-link-row {
-  margin-top: 48px;
-}
-
-.link-show-reviews {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: none;
-  border: none;
-  color: #102a43;
-  font-size: 1.05rem;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: underline;
-  padding: 4px 0;
-  font-family: inherit;
-  transition: color 0.15s;
-}
-
-.link-show-reviews:hover {
-  color: #f26422;
-}
-
-.chat-icon-teal {
-  width: 22px;
-  height: 22px;
-  flex-shrink: 0;
 }
 
 /* Conexiones */
@@ -443,7 +374,7 @@
 
 @media (max-width: 900px) {
   .perfil-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 32px;
   }
   .perfil-cards-grid {

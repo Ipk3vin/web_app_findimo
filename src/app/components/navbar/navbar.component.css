@@ -101,51 +101,8 @@
   border-radius: 2px;
 }
 
-/* Mini buscador central en detalle */
-.header-search-mini-pill {
-  display: flex;
-  align-items: center;
-}
-
-.btn-back-to-search {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #ffffff;
-  border: 1px solid var(--gray-border);
-  padding: 6px 10px 6px 14px;
-  border-radius: 24px;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.mini-pill-tag {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--navy-dark);
-}
-
-.mini-pill-sep {
-  color: #cbd5e1;
-}
-
-.mini-pill-sub {
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
-.mini-pill-search-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--teal-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* ======================================================== */
-/* 2. PÍLDORA DE PERFIL Y HAMBURGUESA (DISEÑO FIGMA CAPTURA 4)*/
+/* 2. PÍLDORA DE PERFIL Y HAMBURGUESA                       */
 /* ======================================================== */
 .nav-actions {
   position: relative;
@@ -154,19 +111,28 @@
 .user-control-pill {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 4px 5px 4px 14px;
+  gap: 10px;
+  padding: 6px 16px 6px 12px;
   background-color: #ffffff;
   border: 1.8px solid #00b4b6; /* Borde turquesa característico */
   border-radius: 32px;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  min-height: 42px;
+}
+
+/* Si no hay sesión iniciada: píldora compacta que muestra solo las 3 rayitas */
+.user-control-pill.pill-compact {
+  padding: 8px 12px;
+  gap: 0;
+  justify-content: center;
 }
 
 .user-control-pill:hover,
 .user-control-pill.pill-active {
   box-shadow: 0 4px 14px rgba(0, 180, 182, 0.22);
+  border-color: #008789;
 }
 
 .pill-hamburger-icon {
@@ -175,36 +141,36 @@
   justify-content: center;
 }
 
-.user-avatar-wrapper {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  overflow: hidden;
+/* Nombre del usuario cuando está logueado */
+.user-pill-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #e2e8f0;
 }
 
-.user-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.user-pill-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #102a43;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ======================================================== */
-/* 3. MENÚ DESPLEGABLE FLOTANTE (FIGMA CAPTURA 4)           */
+/* 3. MENÚ DESPLEGABLE FLOTANTE                            */
 /* ======================================================== */
 .user-dropdown-menu {
   position: absolute;
   top: 52px;
   right: 0;
-  width: 290px;
+  width: 300px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
-  box-shadow: 0 12px 32px rgba(16, 42, 67, 0.12);
-  padding: 10px 0;
+  box-shadow: 0 12px 32px rgba(16, 42, 67, 0.14);
+  padding: 8px 0;
   z-index: 250;
   animation: dropdownFadeIn 0.18s ease-out;
 }
@@ -218,6 +184,28 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.dropdown-user-header {
+  padding: 12px 20px 8px 20px;
+  background: #f8fafc;
+  border-top-left-radius: 19px;
+  border-top-right-radius: 19px;
+}
+
+.dropdown-greeting-name {
+  font-size: 15px;
+  font-weight: 750;
+  color: #102a43;
+}
+
+.dropdown-greeting-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00b4b6;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .dropdown-section {
@@ -260,6 +248,31 @@
 
 .dropdown-item-text {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-item-sub {
+  font-size: 11.5px;
+  color: #64748b;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.btn-menu-login {
+  background-color: #f0fdfa;
+}
+
+.btn-menu-login:hover {
+  background-color: #ccfbf1;
+}
+
+.btn-menu-student:hover {
+  background-color: #f0fdfa;
+}
+
+.btn-menu-host:hover {
+  background-color: #fff7ed;
 }
 
 /* Banner: Conviértete en anfitrión */
