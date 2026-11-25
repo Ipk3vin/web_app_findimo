@@ -4,7 +4,7 @@
 <!-- ======================================================= -->
 <div>
   <!-- SECCIÓN HERO -->
-  <section class="hero-section">
+  <section class="hero-section" aria-labelledby="inicio-titulo">
     <div class="hero-overlay"></div>
 
     <div class="hero-content">
@@ -14,7 +14,7 @@
       </div>
 
       <!-- Título Principal -->
-      <h1 class="hero-title">Encuentra tu espacio ideal</h1>
+      <h1 id="inicio-titulo" class="hero-title">Encuentra tu espacio ideal</h1>
 
       <!-- BARRA FLOTANTE DE BÚSQUEDA DEL HERO -->
       <div class="search-bar-card">
@@ -98,7 +98,7 @@
     </div>
   </section>
 
-  <!-- SECCIÓN: ULTIMAS PROPIEDDADES -->
+  <!-- SECCIÓN: ULTIMAS -->
   <section class="properties-section">
     <div class="main-content-container">
       <div class="section-header-row">
@@ -178,87 +178,37 @@
     </div>
   </section>
 
-  <!-- SECCIÓN: ¿POR QUÉ ELEGIRNOS? -->
-  <section class="why-us-section">
-    <div class="main-content-container why-us-grid">
-      <div class="why-us-visual">
-        <div class="visual-card">
-          <img
-            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=80"
-            alt="Estudiantes en Findimo"
-            class="family-photo"
-          />
-          <div class="floating-trust-card">
-            <div class="shield-circle-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="m9 12 2 2 4-4"/>
-              </svg>
-            </div>
-            <div class="trust-text-group">
-              <h4 class="trust-card-title">Transacciones Seguras</h4>
-              <p class="trust-card-sub">Respaldadas por Findimo Pay</p>
-            </div>
-          </div>
+  <section id="nosotros" class="findimo-about" aria-labelledby="nosotros-titulo" tabindex="-1">
+    <div class="main-content-container">
+      <div class="findimo-about-panel">
+        <div class="findimo-about-copy">
+          <h2 id="nosotros-titulo">Nosotros</h2>
+          <p class="findimo-about-lead">Estudiar en Lima empieza por encontrar dónde vivir.</p>
+          <p>Findimo conecta a estudiantes que buscan un lugar cerca de sus estudios con arrendadores que tienen un espacio disponible.</p>
+          <p>Compara viviendas por distrito y presupuesto, y coordina una visita con el arrendador desde tu cuenta.</p>
+          <button type="button" class="findimo-about-action" (click)="irABusqueda.emit()">
+            Explorar viviendas
+          </button>
         </div>
-      </div>
-
-      <div class="why-us-content">
-        <span class="section-tag-teal">¿POR QUÉ ELEGIRNOS?</span>
-        <h2 class="why-us-heading">La evolución digital del mercado inmobiliario</h2>
-
-        <div class="features-list">
-          <div class="feature-item">
-            <div class="feature-icon-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="m9 12 2 2 4-4"/>
-              </svg>
-            </div>
-            <div class="feature-text">
-              <h3 class="feature-title">Arrendamiento Garantizado</h3>
-              <p class="feature-desc">Filtramos a cada arrendatario para tu completa seguridad. Cero preocupaciones con depósitos de garantía ágiles.</p>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <div class="feature-icon-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="16" y1="13" x2="8" y2="13"/>
-                <line x1="16" y1="17" x2="8" y2="17"/>
-              </svg>
-            </div>
-            <div class="feature-text">
-              <h3 class="feature-title">Contrato con Firma Digital</h3>
-              <p class="feature-desc">Olvídate de notarías y firmas presenciales. Firma tu contrato digital legalmente válido en minutos desde tu celular.</p>
-            </div>
-          </div>
-
-          <div class="feature-item">
-            <div class="feature-icon-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#f26422" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-              </svg>
-            </div>
-            <div class="feature-text">
-              <h3 class="feature-title">Proceso 100% Ágil</h3>
-              <p class="feature-desc">Visitas virtuales y físicas agendadas de forma automática. Un buscador inteligente que ahorra tu valioso tiempo.</p>
-            </div>
-          </div>
+        <div class="findimo-about-photo">
+          <img
+            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1000&q=85"
+            alt=""
+            width="1000"
+            height="750"
+            loading="lazy"
+            decoding="async" />
         </div>
       </div>
     </div>
   </section>
 
   <!-- SECCIÓN: TESTIMONIOS -->
-  <section class="testimonials-section">
+  <section id="testimonios" class="testimonials-section" aria-labelledby="testimonios-titulo" tabindex="-1">
     <div class="main-content-container">
       <div class="testimonials-header">
         <span class="section-tag-teal">TESTIMONIOS</span>
-        <h2 class="section-heading-navy">Lo que dicen nuestros usuarios</h2>
+        <h2 id="testimonios-titulo" class="section-heading-navy">Lo que dicen nuestros usuarios</h2>
       </div>
 
       <div class="testimonials-grid">
@@ -302,30 +252,4 @@
       </div>
     </div>
   </section>
-
-  <!-- SECCIÓN: BANNER CTA -->
-  <section class="cta-banner-section">
-    <div class="main-content-container cta-container">
-      <h2 class="cta-title">¿Listo para encontrar tu espacio ideal?</h2>
-      <p class="cta-subtitle">
-        Únete a miles de personas que ya disfrutan de un arrendamiento rápido, transparente y con total seguridad legal.
-      </p>
-
-      <div class="cta-buttons-row">
-        <button type="button" class="btn-cta-orange" (click)="abrirModalRegistro.emit()">
-          <span>Crear una cuenta gratis</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </button>
-
-        <button type="button" class="btn-cta-outline" (click)="irABusqueda.emit()">
-          Explorar habitaciones
-        </button>
-      </div>
-    </div>
-  </section>
 </div>
-
-

@@ -198,10 +198,10 @@ export class VistaMensajesComponent implements OnInit {
 
   dejarResena(chat: Conversacion): void {
     const nota = this.calificacionResena;
-    if (!chat.arrendador || chat.reserva !== 'FINALIZADA' || chat.resenaRegistrada ||
+    if (chat.reserva !== 'FINALIZADA' || chat.resenaRegistrada ||
         nota === null || !Number.isInteger(nota) || nota < 1 || nota > 5) return;
     this.procesarAccionAlquiler(chat, this.api.dejarResena(
-      this.cuenta(), chat.idSolicitud, nota, this.comentarioResena.trim()), 'No se pudo guardar la reseña.');
+      this.cuenta(), chat.idSolicitud, chat.arrendador ? 'estudiante' : 'arrendador', nota, this.comentarioResena.trim()), 'No se pudo guardar la reseña.');
   }
 
   private procesarAccionAlquiler(chat: Conversacion, solicitud: Observable<Conversacion>, mensaje: string): void {

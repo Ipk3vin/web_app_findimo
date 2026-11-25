@@ -31,7 +31,6 @@ export class VistaInicioComponent {
 
   @Output() buscarDesdeHero = new EventEmitter<void>();
   @Output() irABusqueda = new EventEmitter<void>();
-  @Output() abrirModalRegistro = new EventEmitter<void>();
   @Output() verDetalles = new EventEmitter<Propiedad>();
   @Input() idsComparacion: readonly number[] = [];
   @Output() alternarComparacion = new EventEmitter<Propiedad>();

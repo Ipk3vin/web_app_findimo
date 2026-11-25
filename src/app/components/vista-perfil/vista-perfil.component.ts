@@ -5,7 +5,7 @@ import { UsuarioRegistroResponse } from '../../models/usuario.model';
 
 import { VistaResenasComponent } from '../vista-resenas/vista-resenas.component';
 
-export type SeccionPerfil = 'sobreMi' | 'conexiones' | 'personal' | 'seguridad' | 'resenas';
+export type SeccionPerfil = 'sobreMi' | 'personal' | 'seguridad' | 'resenas';
 
 @Component({
   selector: 'app-vista-perfil',
@@ -26,7 +26,6 @@ export class VistaPerfilComponent implements OnChanges {
 
   readonly secciones: ReadonlyArray<{ id: SeccionPerfil; titulo: string }> = [
     { id: 'sobreMi', titulo: 'Información sobre mí' },
-    { id: 'conexiones', titulo: 'Conexiones' },
     { id: 'personal', titulo: 'Información personal' },
     { id: 'seguridad', titulo: 'Inicio de sesión y seguridad' },
     { id: 'resenas', titulo: 'Reseñas' }
@@ -126,24 +125,10 @@ export class VistaPerfilComponent implements OnChanges {
     });
   }
 
-  confirmarDireccion(): void {
-    this.mostrarToast.emit({
-      mensaje: 'Se ha enviado un enlace de confirmación a tu correo electrónico.',
-      tipo: 'info'
-    });
-  }
-
   cambiarContrasena(): void {
     this.mostrarToast.emit({
       mensaje: 'Se ha enviado un código para restablecer contraseña a tu celular.',
       tipo: 'info'
-    });
-  }
-
-  activar2FA(): void {
-    this.mostrarToast.emit({
-      mensaje: 'Autenticación de dos pasos activada.',
-      tipo: 'success'
     });
   }
 }

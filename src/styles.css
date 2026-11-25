@@ -2609,6 +2609,12 @@ button {
   object-fit: cover;
 }
 
+.room-image-container .room-img,
+.room-image-container .room-photo-empty {
+  position: absolute;
+  inset: 0;
+}
+
 .btn-heart-favorite {
   position: absolute;
   top: 12px;

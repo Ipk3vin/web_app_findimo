@@ -1,6 +1,6 @@
 import { FotoViviendaComponent } from './components/foto-vivienda/foto-vivienda.component';
 import { Subject, Subscription, takeUntil } from 'rxjs';
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { afterNextRender, ChangeDetectorRef, Component, HostListener, Injector, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FavoritoService } from './services/favorito.service';
@@ -195,9 +195,36 @@ export class App implements OnInit {
     this.cargarCatalogos();
   }
 
+  private readonly inyector = inject(Injector);
+
+  @HostListener('window:hashchange')
+  alCambiarFragmento(): void {
+    this.recuperarVistaGuardada();
+  }
+
+  private recuperarSeccionInicio(): boolean {
+    const seccion = window.location.hash.slice(1);
+    if (seccion !== 'nosotros' && seccion !== 'testimonios') {
+      return false;
+    }
+
+    this.vistaActual = 'inicio';
+    this.menuUsuarioAbierto = false;
+    localStorage.setItem('findimo_vista_actual', 'inicio');
+    afterNextRender(() => {
+      const destino = document.getElementById(seccion);
+      if (window.location.hash === '#' + seccion && destino) {
+        destino.focus({ preventScroll: true });
+        destino.scrollIntoView();
+      }
+    }, { injector: this.inyector });
+    return true;
+  }
+
   // Recupera la vista actual tras recargar la página (F5 / botón recargar del navegador)
   recuperarVistaGuardada(): void {
     if (typeof window !== 'undefined') {
+      if (this.recuperarSeccionInicio()) return;
       const hash = window.location.hash.replace('#', '');
       const guardada = typeof localStorage !== 'undefined' ? localStorage.getItem('findimo_vista_actual') : null;
       const vistasValidas = ['inicio', 'busqueda', 'detalle', 'perfil', 'resenas', 'favoritos', 'mensajes', 'mis-viviendas', 'comparacion'];

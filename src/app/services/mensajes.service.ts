@@ -60,8 +60,8 @@ export class MensajesService {
       { withCredentials: true, params: { cuenta } });
   }
 
-  dejarResena(cuenta: number, solicitud: number, calificacion: number, comentario: string) {
-    return this.http.post<Conversacion>(`${this.url}/${solicitud}/resena-estudiante`, { calificacion, comentario },
+  dejarResena(cuenta: number, solicitud: number, destino: 'estudiante' | 'arrendador', calificacion: number, comentario: string) {
+    return this.http.post<Conversacion>(`${this.url}/${solicitud}/resena-${destino}`, { calificacion, comentario },
       { withCredentials: true, params: { cuenta } });
   }
 
