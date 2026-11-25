@@ -162,3 +162,17 @@
   font-weight: bold;
 }
 
+
+.property-cards-grid.featured-properties-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 245px), 1fr));
+}
+
+.featured-properties-grid .room-image-container {
+  height: auto;
+  aspect-ratio: 1.45;
+}
+
+.featured-properties-grid .room-stats-row {
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}

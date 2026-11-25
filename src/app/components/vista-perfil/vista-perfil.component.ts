@@ -1,68 +1,77 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuarioRegistroResponse } from '../../models/usuario.model';
 
+import { VistaResenasComponent } from '../vista-resenas/vista-resenas.component';
+
+export type SeccionPerfil = 'sobreMi' | 'conexiones' | 'personal' | 'seguridad' | 'resenas';
+
 @Component({
   selector: 'app-vista-perfil',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, VistaResenasComponent],
   templateUrl: './vista-perfil.component.html',
   styleUrl: './vista-perfil.component.css'
 })
-export class VistaPerfilComponent implements OnInit {
+export class VistaPerfilComponent implements OnChanges {
   @Input() usuarioActual: UsuarioRegistroResponse | null = null;
-  @Input() modoInicial: 'resumen' | 'detalle' = 'resumen';
+  @Input() seccionActiva: SeccionPerfil = 'sobreMi';
+  @Input() pestanaResenas: 'sobreTi' | 'escritas' = 'escritas';
 
-  @Output() irAResenas = new EventEmitter<'sobreTi' | 'escritas'>();
+  @Output() seccionActivaChange = new EventEmitter<SeccionPerfil>();
+  @Output() pestanaResenasChange = new EventEmitter<'sobreTi' | 'escritas'>();
   @Output() perfilActualizado = new EventEmitter<UsuarioRegistroResponse>();
   @Output() mostrarToast = new EventEmitter<{ mensaje: string; tipo: 'success' | 'error' | 'info' }>();
 
-  modoEdicion: 'resumen' | 'detalle' = 'resumen';
-  tabLateral: 'sobreMi' | 'conexiones' = 'sobreMi';
-  tabConfiguracion: 'personal' | 'seguridad' = 'personal';
+  readonly secciones: ReadonlyArray<{ id: SeccionPerfil; titulo: string }> = [
+    { id: 'sobreMi', titulo: 'Información sobre mí' },
+    { id: 'conexiones', titulo: 'Conexiones' },
+    { id: 'personal', titulo: 'Información personal' },
+    { id: 'seguridad', titulo: 'Inicio de sesión y seguridad' },
+    { id: 'resenas', titulo: 'Reseñas' }
+  ];
 
-  campoEditando: 'nombre' | 'preferido' | 'correo' | 'telefono' | null = null;
+  get tituloSeccion(): string {
+    return this.secciones.find(seccion => seccion.id === this.seccionActiva)?.titulo ?? 'Perfil';
+  }
+
+  campoEditando: 'nombre' | 'correo' | 'telefono' | null = null;
 
   editNombre: string = '';
   editApellido: string = '';
-  editNombrePreferido: string = '';
   editCorreo: string = '';
   editTelefono: string = '';
 
-  ngOnInit(): void {
-    this.modoEdicion = this.modoInicial;
-    this.sincronizarCampos();
-  }
-
-  ngOnChanges(): void {
-    this.sincronizarCampos();
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['seccionActiva']) {
+      this.campoEditando = null;
+    }
+    if (changes['usuarioActual'] || changes['seccionActiva']) {
+      this.sincronizarCampos();
+    }
   }
 
   sincronizarCampos(): void {
     if (this.usuarioActual) {
-      this.editNombre = this.usuarioActual.nombre || 'Kevin Arturo';
-      this.editApellido = this.usuarioActual.apellido || 'Palomino Ilacupe';
+      this.editNombre = this.usuarioActual.nombre ?? '';
+      this.editApellido = this.usuarioActual.apellido ?? '';
       this.editCorreo = this.usuarioActual.correoElectronico || 'p***5@gmail.com';
       this.editTelefono = this.usuarioActual.telefono || '+51 987 654 390';
     } else {
-      this.editNombre = 'Kevin Arturo';
-      this.editApellido = 'Palomino Ilacupe';
+      this.editNombre = '';
+      this.editApellido = '';
       this.editCorreo = 'p***5@gmail.com';
       this.editTelefono = '+51 987 654 390';
     }
   }
 
   obtenerNombreCompleto(): string {
-    if (this.usuarioActual && (this.usuarioActual.nombre || this.usuarioActual.apellido)) {
-      return `${this.usuarioActual.nombre || ''} ${this.usuarioActual.apellido || ''}`.trim();
-    }
-    return `${this.editNombre} ${this.editApellido}`.trim() || 'Kevin Arturo Palomino Ilacupe';
+    return `${this.usuarioActual?.nombre ?? ''} ${this.usuarioActual?.apellido ?? ''}`.trim();
   }
 
   obtenerInicial(): string {
-    const nombre = this.obtenerNombreCompleto();
-    return nombre ? nombre.charAt(0).toUpperCase() : 'K';
+    return this.obtenerNombreCompleto().charAt(0).toUpperCase() || '?';
   }
 
   obtenerCorreo(): string {
@@ -94,21 +103,11 @@ export class VistaPerfilComponent implements OnInit {
     return tel;
   }
 
-  activarEdicion(): void {
-    this.modoEdicion = 'detalle';
-    this.tabConfiguracion = 'personal';
+  seleccionarSeccion(seccion: SeccionPerfil): void {
+    this.seccionActivaChange.emit(seccion);
   }
 
-  guardarYFinalizar(): void {
-    this.modoEdicion = 'resumen';
-    this.campoEditando = null;
-    this.mostrarToast.emit({
-      mensaje: 'Cambios del perfil guardados correctamente',
-      tipo: 'success'
-    });
-  }
-
-  guardarCampo(campo: 'nombre' | 'preferido' | 'correo' | 'telefono'): void {
+  guardarCampo(campo: 'nombre' | 'correo' | 'telefono'): void {
     if (this.usuarioActual) {
       if (campo === 'nombre') {
         this.usuarioActual.nombre = this.editNombre;

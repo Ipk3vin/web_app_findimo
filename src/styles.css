@@ -2887,57 +2887,6 @@ button {
   background-color: #ffffff;
 }
 
-/* Mini Píldora de búsqueda en el Navbar */
-.header-search-mini-pill {
-  display: flex;
-  align-items: center;
-}
-
-.btn-back-to-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 30px;
-  padding: 6px 8px 6px 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  font-family: inherit;
-  transition: box-shadow 0.2s ease;
-}
-
-.btn-back-to-search:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.mini-pill-tag {
-  font-size: 13px;
-  font-weight: 700;
-  color: #162b4d;
-}
-
-.mini-pill-sep {
-  color: #cbd5e1;
-  font-size: 12px;
-}
-
-.mini-pill-sub {
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 500;
-}
-
-.mini-pill-search-btn {
-  background: #ea580c;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* 1. Cabecera del Detalle */
 .detail-top-header {
   display: flex;
@@ -4019,3 +3968,25 @@ button {
 }
 
 
+
+.room-photo-empty {
+  display: grid;
+  min-height: 90px;
+  height: 100%;
+  place-items: center;
+  background: #f1f5f9;
+  color: #52637a;
+  font-size: 0.85rem;
+}
+
+.vivienda-reservada {
+  display: inline-block;
+  align-self: flex-start;
+  margin-block: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 8px;
+  background: #e4f4f2;
+  color: #14645f;
+  font-size: 0.8rem;
+  font-weight: 700;
+}

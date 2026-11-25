@@ -1,25 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface ResenaArrendadorSobreEstudiante {
-  id: number;
-  arrendadorNombre: string;
-  arrendadorAvatar: string;
-  propiedadNombre: string;
-  calificacion: number;
-  comentario: string;
-  fecha: string;
-  etiquetas: string[];
-}
-
-export interface ResenaEscritaPorEstudiante {
-  id: number;
-  propiedadTitulo: string;
-  arrendadorNombre: string;
-  calificacion: number;
-  comentario: string;
-  fecha: string;
-}
+import { Subscription } from 'rxjs';
+import { ResenasPerfil } from '../../models/resena.model';
+import { ResenaService } from '../../services/resena.service';
 
 @Component({
   selector: 'app-vista-resenas',
@@ -28,34 +11,48 @@ export interface ResenaEscritaPorEstudiante {
   templateUrl: './vista-resenas.component.html',
   styleUrl: './vista-resenas.component.css'
 })
-export class VistaResenasComponent {
+export class VistaResenasComponent implements OnChanges, OnDestroy {
+  private readonly resenaService = inject(ResenaService);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private solicitud?: Subscription;
+
+  @Input({ required: true }) idUsuario!: number;
   @Input() pestanaActiva: 'sobreTi' | 'escritas' = 'escritas';
-  @Output() volverAlPerfil = new EventEmitter<void>();
+  @Output() pestanaActivaChange = new EventEmitter<'sobreTi' | 'escritas'>();
 
-  // Reseñas que arrendadores dejaron exclusivamente sobre el estudiante inquilino
-  resenasSobreTi: ResenaArrendadorSobreEstudiante[] = [
-    {
-      id: 1,
-      arrendadorNombre: 'Eduardo Garza',
-      arrendadorAvatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80',
-      propiedadNombre: 'Habitación iluminada frente de la UPC Chorrillos',
-      calificacion: 5.0,
-      comentario: 'Excelente huésped e inquilino. Siempre muy ordenado, respetuoso con los horarios de silencio y cumplió puntualmente con el pago de todos los meses. 100% recomendado para cualquier arrendador.',
-      fecha: 'Hace 3 semanas',
-      etiquetas: ['Pago puntual', 'Muy limpio y ordenado', 'Comunicativo', 'Cuidadoso del mobiliario']
-    },
-    {
-      id: 2,
-      arrendadorNombre: 'Dino Bianchi',
-      arrendadorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80',
-      propiedadNombre: 'Habitación frente al Parque',
-      calificacion: 4.9,
-      comentario: 'Un joven estudiante muy educado y tranquilo. Dejó la habitación en perfectas condiciones y siempre mantuvo una excelente convivencia con los demás estudiantes del edificio.',
-      fecha: 'Hace 2 meses',
-      etiquetas: ['Excelente convivencia', 'Responsable', 'Cuida las instalaciones']
+  resenas: ResenasPerfil | null = null;
+  errorCarga = '';
+  cargando = true;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['idUsuario']) {
+      this.cargarResenas();
     }
-  ];
+  }
 
-  // Reseñas escritas anteriormente por el estudiante
-  resenasEscritas: ResenaEscritaPorEstudiante[] = [];
+  ngOnDestroy(): void {
+    this.solicitud?.unsubscribe();
+  }
+
+  cargarResenas(): void {
+    this.solicitud?.unsubscribe();
+    this.resenas = null;
+    this.errorCarga = '';
+    this.cargando = true;
+
+    this.solicitud = this.resenaService.obtenerResenasDePerfil(this.idUsuario).subscribe({
+      next: resenas => {
+        this.resenas = resenas;
+        this.cargando = false;
+        this.changeDetector.markForCheck();
+      },
+      error: error => {
+        this.errorCarga = error.status === 401
+          ? 'Vuelve a iniciar sesión para ver tus reseñas.'
+          : 'No se pudieron cargar tus reseñas.';
+        this.cargando = false;
+        this.changeDetector.markForCheck();
+      }
+    });
+  }
 }

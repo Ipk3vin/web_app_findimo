@@ -3,13 +3,17 @@ export interface Resena {
   idUsuarioAutor?: number;
   nombreAutor: string;
   apellidoAutor?: string;
-  rolAutor?: string;
-  avatar?: string;
   idPropiedad?: number;
+  tituloPropiedad?: string;
+  nombreObjetivo?: string;
   idUsuarioObjetivo?: number;
   calificacion: number;
   comentario: string;
-  destacado?: boolean;
   fechaCreacion?: string;
   estado?: boolean;
+}
+
+export interface ResenasPerfil {
+  recibidas: Resena[];
+  escritas: Resena[];
 }

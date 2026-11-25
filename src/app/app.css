@@ -1,8 +1,156 @@
 /* Componente Raiz App */
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+app-footer {
+  margin-top: auto;
 }
 
 
 
+
+
+.favoritos-page {
+  width: 100%;
+  box-sizing: border-box;
+  padding-block: 3rem 5rem;
+  min-height: 50vh;
+}
+
+.favoritos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.favoritos-header h1 {
+  color: var(--navy-dark);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+}
+
+.favoritos-header p {
+  color: var(--text-muted);
+}
+
+.favoritos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.favoritos-grid > .no-results-alert {
+  grid-column: 1 / -1;
+}
+
+.favoritos-actions {
+  gap: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .favoritos-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 840px) {
+  .favoritos-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .favoritos-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.mis-viviendas-page .favoritos-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.4rem 0.75rem;
+  text-align: start;
+}
+
+.mis-viviendas-page .favoritos-actions button {
+  text-align: start;
+}
+
+.mis-viviendas-page .vivienda-estado {
+  grid-column: 1 / -1;
+  color: var(--text-muted);
+}
+
+.comparacion-page {
+  width: 100%;
+  padding-block: 3rem 5rem;
+  min-height: 50vh;
+  box-sizing: border-box;
+}
+
+.comparacion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.comparacion-grid > .no-results-alert {
+  grid-column: 1 / -1;
+}
+
+.comparacion-quitar {
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--navy-dark);
+}
+
+.comparacion-datos {
+  margin: 0 0 1rem;
+}
+
+.comparacion-datos div {
+  display: grid;
+  gap: 0.2rem;
+  border-top: 1px solid #e2e8f0;
+  padding: 0.65rem 0;
+}
+
+.comparacion-datos dt {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--navy-dark);
+}
+
+.comparacion-datos dd {
+  margin: 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.comparacion-datos ul {
+  padding-inline-start: 1rem;
+}
+
+.comparacion-detalles {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+@media (max-width: 850px) {
+  .comparacion-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .comparacion-grid { grid-template-columns: minmax(0, 1fr); }
+}

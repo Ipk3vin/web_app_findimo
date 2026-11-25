@@ -1,0 +1,183 @@
+<section class="main-content-container mensajes-page" aria-labelledby="mensajes-titulo">
+  <h1 id="mensajes-titulo">Mensajes</h1>
+  @if (errorLista()) {
+    <p role="status">{{ errorLista() }}</p>
+  }
+  @if (conversaciones(); as lista) {
+    @if (lista.length) {
+      <div class="chat-layout">
+        <nav class="chat-list" aria-label="Conversaciones">
+          @for (item of lista; track item.idSolicitud) {
+            <button type="button" [disabled]="enviando()" [attr.aria-current]="item.idSolicitud === activa() ? 'true' : null"
+              (click)="abrir(item.idSolicitud)">
+              <strong>{{ item.contacto || 'Participante' }}</strong>
+              <span>{{ item.vivienda }} · {{ item.distrito }}</span>
+              <small>{{ item.reserva ? etiquetasReserva[item.reserva] : etiquetas[item.situacion] }}</small>
+            </button>
+          }
+        </nav>
+        @if (conversacion(); as chat) {
+          <section class="chat-panel" aria-label="Conversación">
+            <header>
+              <h2>{{ chat.contacto || 'Participante' }}</h2>
+              <a class="chat-vivienda" [href]="'?propiedad=' + chat.idPropiedad + '#detalle'">{{ chat.vivienda }} · {{ chat.distrito }}</a>
+              @if (chat.arrendador) {
+                <button type="button" class="chat-enlace" aria-haspopup="dialog" (click)="verPerfil(chat)" [disabled]="cargandoPerfil()">
+                  {{ cargandoPerfil() ? 'Cargando perfil…' : 'Ver perfil del estudiante' }}
+                </button>
+              }
+            </header>
+            <section class="chat-solicitud" aria-label="Solicitud de alquiler">
+              <p><strong>Solicitud #{{ chat.idSolicitud }}</strong> · {{ etiquetas[chat.situacion] }}</p>
+              @if (chat.arrendador && chat.situacion === 'PENDIENTE') {
+                <div class="chat-decisiones">
+                  <button type="button" class="chat-aceptar" [disabled]="procesandoDecision()" (click)="decidir(chat, 'ACEPTADA')">Aceptar solicitud</button>
+                  <button type="button" class="chat-cancelar" [disabled]="procesandoDecision()" (click)="decidir(chat, 'CANCELADA')">Cancelar solicitud</button>
+                </div>
+              }
+              @if (errorSolicitud()) {
+                <p class="chat-error" role="alert">{{ errorSolicitud() }}</p>
+              }
+            </section>
+            <div #historial class="chat-history" aria-label="Historial de mensajes" role="log">
+              @if (mensajes(); as mensajesChat) {
+                @for (mensaje of mensajesChat; track mensaje.idMensaje) {
+                  <div class="chat-bubble" [class.propio]="mensaje.propio">
+                    <p>{{ mensaje.texto }}</p>
+                    <time [attr.datetime]="mensaje.fecha">{{ mensaje.fecha | date:'short' }}</time>
+                  </div>
+                } @empty {
+                  <p>Escribe un mensaje para iniciar la conversación.</p>
+                }
+              } @else if (!errorChat()) {
+                <p>Cargando mensajes…</p>
+              }
+              @if (chat.reserva; as reserva) {
+                <article class="chat-reserva" aria-label="Reserva de vivienda">
+                  <strong>{{ etiquetasReserva[reserva] }}</strong>
+                  <p>{{ chat.vivienda }}</p>
+                  @if (esArrendador() && chat.arrendador && reserva === 'PENDIENTE') {
+                    <div class="chat-decisiones">
+                      <button type="button" class="chat-aceptar" [disabled]="procesandoReserva()" (click)="gestionarReserva(chat, 'CONFIRMADA')">Confirmar reserva</button>
+                      <button type="button" class="chat-cancelar" [disabled]="procesandoReserva()" (click)="gestionarReserva(chat, 'RECHAZADA')">Rechazar reserva</button>
+                    </div>
+                  }
+                  @if (chat.reservaFinalizadaEn) {
+                    <p>{{ chat.reservaFinalizadaEn | date:'dd/MM/yyyy' }}</p>
+                  }
+                  @if (esArrendador() && chat.arrendador) {
+                    @if (reserva === 'CONFIRMADA' && !accionAlquiler) {
+                      <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('finalizar')">Finalizar alquiler</button>
+                    } @else if (reserva === 'FINALIZADA' && chat.resenaRegistrada) {
+                      <p>Reseña del estudiante publicada.</p>
+                    } @else if (reserva === 'FINALIZADA' && !accionAlquiler) {
+                      <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('resena')">Dejar reseña al estudiante</button>
+                    }
+                  }
+                </article>
+              }
+            </div>
+            @if (errorChat() || errorEnvio()) {
+              <p class="chat-error" role="status">{{ errorEnvio() || errorChat() }}</p>
+            }
+            @if (esArrendador() && chat.arrendador && accionAlquiler === 'finalizar' && chat.reserva === 'CONFIRMADA') {
+              <form class="chat-accion-alquiler" (ngSubmit)="finalizarAlquiler(chat)">
+                <strong>Confirmar que la vivienda está desocupada</strong>
+                <p>Al finalizar el alquiler, la vivienda volverá a estar disponible.</p>
+                <label for="codigo-liberacion">Escribe el código <code>LIBERAR-{{ chat.idSolicitud }}</code></label>
+                <input id="codigo-liberacion" name="codigoLiberacion" type="text" autocomplete="off" spellcheck="false"
+                  [(ngModel)]="codigoLiberacion" />
+                <div class="chat-decisiones">
+                  <button type="button" class="chat-cancelar" [disabled]="procesandoReserva()" (click)="cerrarAccionAlquiler()">Cancelar</button>
+                  <button type="submit" class="chat-aceptar" [disabled]="procesandoReserva() || codigoLiberacion.trim() !== ('LIBERAR-' + chat.idSolicitud)">Finalizar y liberar vivienda</button>
+                </div>
+              </form>
+            } @else if (esArrendador() && chat.arrendador && accionAlquiler === 'resena' && chat.reserva === 'FINALIZADA' && !chat.resenaRegistrada) {
+              <form class="chat-accion-alquiler" (ngSubmit)="dejarResena(chat)">
+                <strong>Dejar reseña al estudiante</strong>
+                <label for="nota-estudiante">Calificación</label>
+                <select id="nota-estudiante" name="notaEstudiante" [(ngModel)]="calificacionResena" required>
+                  <option [ngValue]="null">Elige una calificación</option>
+                  @for (nota of [5, 4, 3, 2, 1]; track nota) {
+                    <option [ngValue]="nota">{{ nota }} / 5</option>
+                  }
+                </select>
+                <label for="comentario-estudiante">Comentario (opcional)</label>
+                <textarea id="comentario-estudiante" name="comentarioEstudiante" rows="3" maxlength="255"
+                  [(ngModel)]="comentarioResena"></textarea>
+                <div class="chat-decisiones">
+                  <button type="button" class="chat-cancelar" [disabled]="procesandoReserva()" (click)="cerrarAccionAlquiler()">Cancelar</button>
+                  <button type="submit" class="chat-aceptar" [disabled]="procesandoReserva() || calificacionResena === null">Publicar reseña</button>
+                </div>
+              </form>
+            }
+            @if (errorReserva()) {
+              <p class="chat-error" role="alert">{{ errorReserva() }}</p>
+            }
+            <form class="chat-form" (ngSubmit)="enviar()">
+              <input type="text" name="borrador" [(ngModel)]="borrador" aria-label="Mensaje"
+                placeholder="Escribe un mensaje" maxlength="1000" [disabled]="enviando() || mensajes() === null" />
+              @if (!esArrendador() && !chat.arrendador && chat.situacion === 'ACEPTADA' && !chat.reserva) {
+                <button type="button" class="chat-reservar" [disabled]="procesandoReserva()"
+                  (click)="gestionarReserva(chat, 'PENDIENTE')">Solicitar reserva</button>
+              }
+              <button type="submit" [disabled]="!borrador.trim() || enviando() || mensajes() === null">Enviar</button>
+            </form>
+          </section>
+        } @else {
+          <p class="chat-selector">Selecciona una conversación.</p>
+        }
+      </div>
+    } @else {
+      <p class="chat-empty">{{ esArrendador() ? 'Aún no has recibido solicitudes de alquiler.' : 'Aún no has solicitado ninguna reserva.' }}</p>
+    }
+  } @else if (!errorLista()) {
+    <p role="status">Cargando conversaciones…</p>
+  }
+</section>
+
+<dialog #dialogoPerfil class="estudiante-dialog" aria-labelledby="estudiante-dialog-titulo" (close)="perfil.set(null)">
+  <div class="estudiante-dialog-header">
+    <h2 id="estudiante-dialog-titulo">Perfil del estudiante</h2>
+    <button type="button" class="estudiante-cerrar" aria-label="Cerrar perfil" autofocus (click)="dialogoPerfil.close()">×</button>
+  </div>
+  @if (perfil(); as estudiante) {
+    <div class="estudiante-dialog-body">
+      <div class="estudiante-identidad">
+        <span class="estudiante-avatar" aria-hidden="true">{{ estudiante.nombre.charAt(0).toUpperCase() || '?' }}</span>
+        <div>
+          <h3>{{ estudiante.nombre || 'Estudiante' }}</h3>
+          <p>Estudiante</p>
+        </div>
+      </div>
+
+      @if (estudiante.universidad; as universidad) {
+        <dl class="estudiante-datos">
+          <div>
+            <dt>Universidad o instituto</dt>
+            <dd>{{ universidad }}</dd>
+          </div>
+        </dl>
+      }
+
+      <section aria-labelledby="estudiante-resenas-titulo">
+        <h3 id="estudiante-resenas-titulo">Reseñas recibidas</h3>
+        <div class="estudiante-resenas">
+          @for (resena of estudiante.resenas ?? []; track resena.id) {
+            <article class="estudiante-resena">
+              <div>
+                <strong>★ {{ resena.calificacion }}/5</strong>
+                @if (resena.fecha) {
+                  <time [attr.datetime]="resena.fecha">{{ resena.fecha | date:'dd/MM/yyyy' }}</time>
+                }
+              </div>
+              @if (resena.comentario) { <p>{{ resena.comentario }}</p> }
+            </article>
+          } @empty {
+            <p>Este estudiante aún no tiene reseñas recibidas.</p>
+          }
+        </div>
+      </section>
+    </div>
+  }
+</dialog>

@@ -1,10 +1,15 @@
+:host {
+  display: block;
+  margin-top: auto;
+}
+
 /* 8. PIE DE PÁGINA (FOOTER AZUL MARINO EXACTO FIGMA)       */
 /* ======================================================== */
 .findimo-footer {
   background-color: var(--navy-dark);
   color: #ffffff;
   padding: 56px 0 32px 0;
-  margin-top: 40px;
+  margin-top: auto;
 }
 
 .footer-columns-grid {

@@ -1,296 +1,196 @@
 <div class="perfil-page-container">
-  <!-- MODO 1: INFORMACIÓN SOBRE MÍ / CONEXIONES -->
-  <ng-container *ngIf="modoEdicion === 'resumen'">
-    <div class="perfil-layout">
-      <!-- Menú Lateral -->
-      <aside class="perfil-sidebar">
-        <h2 class="sidebar-title">Perfil</h2>
-        <nav class="sidebar-nav">
+  <div class="perfil-layout">
+    <aside class="perfil-sidebar">
+      <h2 class="sidebar-title">Perfil</h2>
+      <nav class="sidebar-nav" aria-label="Secciones del perfil">
+        @for (seccion of secciones; track seccion.id) {
           <button
             type="button"
             class="sidebar-nav-item"
-            [class.active]="tabLateral === 'sobreMi'"
-            (click)="tabLateral = 'sobreMi'"
+            [class.active]="seccionActiva === seccion.id"
+            [attr.aria-current]="seccionActiva === seccion.id ? 'true' : null"
+            (click)="seleccionarSeccion(seccion.id)"
           >
-            <span class="nav-dot" [class.dot-active]="tabLateral === 'sobreMi'"></span>
-            <span>Información sobre mí</span>
+            <span class="nav-dot" [class.dot-active]="seccionActiva === seccion.id" aria-hidden="true"></span>
+            {{ seccion.titulo }}
           </button>
-          <button
-            type="button"
-            class="sidebar-nav-item"
-            [class.active]="tabLateral === 'conexiones'"
-            (click)="tabLateral = 'conexiones'"
-          >
-            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-            <span>Conexiones</span>
-          </button>
-        </nav>
-      </aside>
+        }
+      </nav>
+    </aside>
 
-      <!-- Contenido Principal -->
-      <section class="perfil-main-content">
-        <div class="main-header-row">
-          <h1 class="main-title">
-            {{ tabLateral === 'sobreMi' ? 'Información sobre mí' : 'Conexiones' }}
-          </h1>
-          <button type="button" class="btn-link-orange" (click)="activarEdicion()">
-            Editar
-          </button>
+    <section class="perfil-main-content" aria-labelledby="perfil-seccion-titulo">
+      <div class="main-header-row">
+        <h1 id="perfil-seccion-titulo" class="main-title">{{ tituloSeccion }}</h1>
+      </div>
+    <div *ngIf="seccionActiva === 'sobreMi'" class="perfil-cards-grid">
+      <!-- Tarjeta de Identidad -->
+      <div class="perfil-card identity-card">
+        <div class="avatar-circle">
+          <span>{{ obtenerInicial() }}</span>
         </div>
+        <h2 class="identity-name">{{ obtenerNombreCompleto() || 'Sin nombre registrado' }}</h2>
+        <p class="identity-badge">Huésped verificado · Lima, PE</p>
+      </div>
 
-        <div *ngIf="tabLateral === 'sobreMi'" class="perfil-cards-grid">
-          <!-- Tarjeta de Identidad -->
-          <div class="perfil-card identity-card">
-            <div class="avatar-circle">
-              <span>{{ obtenerInicial() }}</span>
-            </div>
-            <h2 class="identity-name">{{ obtenerNombreCompleto() }}</h2>
-            <p class="identity-badge">Huésped verificado · Lima, PE</p>
-          </div>
-
-          <!-- Tarjeta Completa tu perfil -->
-          <div class="perfil-card complete-profile-card">
-            <h3 class="complete-title">Completa tu perfil</h3>
-            <p class="complete-desc">
-              Un perfil verificado y completo ayuda a que los arrendadores confíen más rápido en tu solicitud de alquiler. ¡Toma solo 2 minutos!
-            </p>
-            <button type="button" class="btn-primary-orange" (click)="activarEdicion()">
-              Conozcamos
-            </button>
-          </div>
-        </div>
-
-        <!-- Conexiones (si se selecciona la pestaña Conexiones) -->
-        <div *ngIf="tabLateral === 'conexiones'" class="perfil-conexiones-panel">
-          <div class="empty-state-box">
-            <div class="empty-state-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2" width="40" height="40">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-              </svg>
-            </div>
-            <h3>Tus conexiones universitarias</h3>
-            <p>Conéctate con otros estudiantes y arrendadores verificados de tu universidad para compartir recomendaciones.</p>
-          </div>
-        </div>
-
-        <!-- Enlace inferior: Mostrar reseñas escritas por mí -->
-        <div class="perfil-bottom-link-row">
-          <button type="button" class="link-show-reviews" (click)="irAResenas.emit('escritas')">
-            <svg class="chat-icon-teal" viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-            </svg>
-            <span>Mostrar reseñas escritas por mí</span>
-          </button>
-        </div>
-      </section>
+      <!-- Tarjeta Completa tu perfil -->
+      <div class="perfil-card complete-profile-card">
+        <h3 class="complete-title">Completa tu perfil</h3>
+        <p class="complete-desc">
+          Un perfil verificado y completo ayuda a que los arrendadores confíen más rápido en tu solicitud de alquiler. ¡Toma solo 2 minutos!
+        </p>
+        <button type="button" class="btn-primary-orange" (click)="seleccionarSeccion('personal')">
+          Conozcamos
+        </button>
+      </div>
     </div>
-  </ng-container>
 
-  <!-- MODO 2: INFORMACIÓN PERSONAL (CONFIGURACIÓN / EDICIÓN) -->
-  <ng-container *ngIf="modoEdicion === 'detalle'">
-    <div class="perfil-layout">
-      <!-- Menú Lateral -->
-      <aside class="perfil-sidebar">
-        <h2 class="sidebar-title">Configuración de la cuenta</h2>
-        <nav class="sidebar-nav">
-          <button
-            type="button"
-            class="sidebar-nav-item"
-            [class.active]="tabConfiguracion === 'personal'"
-            (click)="tabConfiguracion = 'personal'"
-          >
-            <span class="nav-dot" [class.dot-active]="tabConfiguracion === 'personal'"></span>
-            <span>Información personal</span>
-          </button>
-          <button
-            type="button"
-            class="sidebar-nav-item"
-            [class.active]="tabConfiguracion === 'seguridad'"
-            (click)="tabConfiguracion = 'seguridad'"
-          >
-            <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-            <span>Inicio de sesión y seguridad</span>
-          </button>
-        </nav>
-      </aside>
-
-      <!-- Contenido Principal de Configuración -->
-      <section class="perfil-main-content">
-        <div class="main-header-row">
-          <h1 class="main-title">
-            {{ tabConfiguracion === 'personal' ? 'Información personal' : 'Inicio de sesión y seguridad' }}
-          </h1>
-          <button type="button" class="btn-done-orange" (click)="guardarYFinalizar()">
-            Listo
-          </button>
+    <!-- Conexiones (si se selecciona la pestaña Conexiones) -->
+    <div *ngIf="seccionActiva === 'conexiones'" class="perfil-conexiones-panel">
+      <div class="empty-state-box">
+        <div class="empty-state-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#00b4b6" stroke-width="2" width="40" height="40">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
         </div>
-
-        <!-- Pestaña Información Personal -->
-        <div *ngIf="tabConfiguracion === 'personal'" class="personal-info-card">
-          <!-- Campo 1: Nombre legal -->
-          <div class="info-row">
-            <div class="info-content">
-              <span class="info-label">Nombre legal</span>
-              <div *ngIf="campoEditando !== 'nombre'" class="info-value">
-                {{ obtenerNombreCompleto() }}
-              </div>
-              <div *ngIf="campoEditando === 'nombre'" class="info-inline-edit">
-                <input
-                  type="text"
-                  [(ngModel)]="editNombre"
-                  placeholder="Nombres"
-                  class="edit-input"
-                />
-                <input
-                  type="text"
-                  [(ngModel)]="editApellido"
-                  placeholder="Apellidos"
-                  class="edit-input"
-                />
-                <div class="inline-actions">
-                  <button type="button" class="btn-inline-save" (click)="guardarCampo('nombre')">Guardar</button>
-                  <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
-                </div>
-              </div>
-            </div>
-            <button
-              type="button"
-              class="btn-row-action"
-              (click)="campoEditando = (campoEditando === 'nombre' ? null : 'nombre')"
-            >
-              {{ campoEditando === 'nombre' ? 'Cerrar' : 'Edita' }}
-            </button>
-          </div>
-
-          <!-- Campo 2: Nombre preferido -->
-          <div class="info-row">
-            <div class="info-content">
-              <span class="info-label">Nombre preferido</span>
-              <div *ngIf="campoEditando !== 'preferido'" class="info-value text-muted-value">
-                {{ editNombrePreferido || 'No proporcionado' }}
-              </div>
-              <div *ngIf="campoEditando === 'preferido'" class="info-inline-edit">
-                <input
-                  type="text"
-                  [(ngModel)]="editNombrePreferido"
-                  placeholder="¿Cómo te gusta que te llamen?"
-                  class="edit-input"
-                />
-                <div class="inline-actions">
-                  <button type="button" class="btn-inline-save" (click)="guardarCampo('preferido')">Guardar</button>
-                  <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
-                </div>
-              </div>
-            </div>
-            <button
-              type="button"
-              class="btn-row-action"
-              (click)="campoEditando = (campoEditando === 'preferido' ? null : 'preferido')"
-            >
-              {{ editNombrePreferido ? 'Edita' : 'Agregar' }}
-            </button>
-          </div>
-
-          <!-- Campo 3: Dirección de correo electrónico -->
-          <div class="info-row">
-            <div class="info-content">
-              <span class="info-label">Dirección de correo electrónico</span>
-              <div *ngIf="campoEditando !== 'correo'" class="info-value">
-                {{ ocultarCorreo(obtenerCorreo()) }}
-              </div>
-              <div *ngIf="campoEditando === 'correo'" class="info-inline-edit">
-                <input
-                  type="email"
-                  [(ngModel)]="editCorreo"
-                  class="edit-input"
-                />
-                <div class="inline-actions">
-                  <button type="button" class="btn-inline-save" (click)="guardarCampo('correo')">Guardar</button>
-                  <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
-                </div>
-              </div>
-              <div *ngIf="campoEditando !== 'correo'" class="mt-2">
-                <button type="button" class="btn-confirm-address" (click)="confirmarDireccion()">
-                  CONFIRMAR DIRECCIÓN
-                </button>
-              </div>
-            </div>
-            <button
-              type="button"
-              class="btn-row-action"
-              (click)="campoEditando = (campoEditando === 'correo' ? null : 'correo')"
-            >
-              {{ campoEditando === 'correo' ? 'Cerrar' : 'Edita' }}
-            </button>
-          </div>
-
-          <!-- Campo 4: Número de teléfono -->
-          <div class="info-row">
-            <div class="info-content">
-              <span class="info-label">Número de teléfono</span>
-              <div *ngIf="campoEditando !== 'telefono'" class="info-value">
-                {{ formatearTelefono(obtenerTelefono()) }}
-              </div>
-              <div *ngIf="campoEditando === 'telefono'" class="info-inline-edit">
-                <input
-                  type="tel"
-                  [(ngModel)]="editTelefono"
-                  class="edit-input"
-                />
-                <div class="inline-actions">
-                  <button type="button" class="btn-inline-save" (click)="guardarCampo('telefono')">Guardar</button>
-                  <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
-                </div>
-              </div>
-              <p class="info-subtext">
-                Para notificaciones de visitas y confirmaciones legales de arrendamiento.
-              </p>
-            </div>
-            <button
-              type="button"
-              class="btn-row-action"
-              (click)="campoEditando = (campoEditando === 'telefono' ? null : 'telefono')"
-            >
-              {{ campoEditando === 'telefono' ? 'Cerrar' : 'Edita' }}
-            </button>
-          </div>
-        </div>
-
-        <!-- Pestaña Seguridad -->
-        <div *ngIf="tabConfiguracion === 'seguridad'" class="personal-info-card">
-          <div class="info-row">
-            <div class="info-content">
-              <span class="info-label">Contraseña</span>
-              <div class="info-value">••••••••••••</div>
-              <p class="info-subtext">Última actualización hace 1 mes</p>
-            </div>
-            <button type="button" class="btn-row-action" (click)="cambiarContrasena()">
-              Actualizar
-            </button>
-          </div>
-          <div class="info-row">
-            <div class="info-content">
-              <span class="info-label">Autenticación de dos pasos</span>
-              <div class="info-value text-muted-value">Desactivada</div>
-              <p class="info-subtext">Añade un nivel extra de seguridad a tu cuenta estudiantil</p>
-            </div>
-            <button type="button" class="btn-row-action" (click)="activar2FA()">
-              Configurar
-            </button>
-          </div>
-        </div>
-      </section>
+        <h3>Tus conexiones universitarias</h3>
+        <p>Conéctate con otros estudiantes y arrendadores verificados de tu universidad para compartir recomendaciones.</p>
+      </div>
     </div>
-  </ng-container>
+    <div *ngIf="seccionActiva === 'personal'" class="personal-info-card">
+      <!-- Campo 1: Nombre completo -->
+      <div class="info-row">
+        <div class="info-content">
+          <span class="info-label">Nombre completo</span>
+          <div *ngIf="campoEditando !== 'nombre'" class="info-value">
+            {{ obtenerNombreCompleto() || 'Sin nombre registrado' }}
+          </div>
+          <div *ngIf="campoEditando === 'nombre'" class="info-inline-edit">
+            <input
+              type="text"
+              [(ngModel)]="editNombre"
+              placeholder="Nombres"
+              class="edit-input"
+            />
+            <input
+              type="text"
+              [(ngModel)]="editApellido"
+              placeholder="Apellidos"
+              class="edit-input"
+            />
+            <div class="inline-actions">
+              <button type="button" class="btn-inline-save" (click)="guardarCampo('nombre')">Guardar</button>
+              <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn-row-action"
+          (click)="campoEditando = (campoEditando === 'nombre' ? null : 'nombre')"
+        >
+          {{ campoEditando === 'nombre' ? 'Cerrar' : 'Editar' }}
+        </button>
+      </div>
+
+      <!-- Campo 2: Dirección de correo electrónico -->
+      <div class="info-row">
+        <div class="info-content">
+          <span class="info-label">Dirección de correo electrónico</span>
+          <div *ngIf="campoEditando !== 'correo'" class="info-value">
+            {{ ocultarCorreo(obtenerCorreo()) }}
+          </div>
+          <div *ngIf="campoEditando === 'correo'" class="info-inline-edit">
+            <input
+              type="email"
+              [(ngModel)]="editCorreo"
+              class="edit-input"
+            />
+            <div class="inline-actions">
+              <button type="button" class="btn-inline-save" (click)="guardarCampo('correo')">Guardar</button>
+              <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
+            </div>
+          </div>
+          <div *ngIf="campoEditando !== 'correo'" class="mt-2">
+            <button type="button" class="btn-confirm-address" (click)="confirmarDireccion()">
+              CONFIRMAR DIRECCIÓN
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn-row-action"
+          (click)="campoEditando = (campoEditando === 'correo' ? null : 'correo')"
+        >
+          {{ campoEditando === 'correo' ? 'Cerrar' : 'Editar' }}
+        </button>
+      </div>
+
+      <!-- Campo 3: Número de teléfono -->
+      <div class="info-row">
+        <div class="info-content">
+          <span class="info-label">Número de teléfono</span>
+          <div *ngIf="campoEditando !== 'telefono'" class="info-value">
+            {{ formatearTelefono(obtenerTelefono()) }}
+          </div>
+          <div *ngIf="campoEditando === 'telefono'" class="info-inline-edit">
+            <input
+              type="tel"
+              [(ngModel)]="editTelefono"
+              class="edit-input"
+            />
+            <div class="inline-actions">
+              <button type="button" class="btn-inline-save" (click)="guardarCampo('telefono')">Guardar</button>
+              <button type="button" class="btn-inline-cancel" (click)="campoEditando = null">Cancelar</button>
+            </div>
+          </div>
+          <p class="info-subtext">
+            Para notificaciones de visitas y confirmaciones legales de arrendamiento.
+          </p>
+        </div>
+        <button
+          type="button"
+          class="btn-row-action"
+          (click)="campoEditando = (campoEditando === 'telefono' ? null : 'telefono')"
+        >
+          {{ campoEditando === 'telefono' ? 'Cerrar' : 'Editar' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Pestaña Seguridad -->
+    <div *ngIf="seccionActiva === 'seguridad'" class="personal-info-card">
+      <div class="info-row">
+        <div class="info-content">
+          <span class="info-label">Contraseña</span>
+          <div class="info-value">••••••••••••</div>
+          <p class="info-subtext">Última actualización hace 1 mes</p>
+        </div>
+        <button type="button" class="btn-row-action" (click)="cambiarContrasena()">
+          Actualizar
+        </button>
+      </div>
+      <div class="info-row">
+        <div class="info-content">
+          <span class="info-label">Autenticación de dos pasos</span>
+          <div class="info-value text-muted-value">Desactivada</div>
+          <p class="info-subtext">Añade un nivel extra de seguridad a tu cuenta estudiantil</p>
+        </div>
+        <button type="button" class="btn-row-action" (click)="activar2FA()">
+          Configurar
+        </button>
+      </div>
+    </div>
+
+      @if (seccionActiva === 'resenas' && usuarioActual) {
+        <app-vista-resenas
+          [idUsuario]="usuarioActual.idUsuario"
+          [pestanaActiva]="pestanaResenas"
+          (pestanaActivaChange)="pestanaResenasChange.emit($event)">
+        </app-vista-resenas>
+      }
+    </section>
+  </div>
 </div>
