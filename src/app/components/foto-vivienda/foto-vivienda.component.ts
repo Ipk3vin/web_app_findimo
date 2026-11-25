@@ -13,7 +13,7 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
   `
 })
 export class FotoViviendaComponent implements OnChanges {
-  @Input() fotos?: readonly string[];
+  @Input() fotos: readonly string[] | undefined;
   @Input() titulo = '';
   @Input() clase = 'room-img';
 
