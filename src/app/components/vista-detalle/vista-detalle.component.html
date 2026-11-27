@@ -10,10 +10,10 @@
       <div class="detail-top-info">
         <h1 class="detail-room-title">{{ propiedadSeleccionada.titulo }}</h1>
         <div class="detail-meta-line">
-          <span class="detail-star-val">★ {{ (propiedadSeleccionada.calificacion | number:'1.1-2') ?? 'Sin reseñas' }}</span>
+          <span class="detail-star-val">★ {{ (calificacionVivienda | number:'1.1-2') ?? 'Sin reseñas' }}</span>
           <span class="detail-dot-sep">·</span>
           <button type="button" class="detail-reviews-link" (click)="opiniones.scrollIntoView({ behavior: 'smooth' })">
-            {{ propiedadSeleccionada.totalResenas ?? 0 }} {{ propiedadSeleccionada.totalResenas === 1 ? 'reseña' : 'reseñas' }}
+            {{ totalResenasVivienda }} {{ totalResenasVivienda === 1 ? 'reseña' : 'reseñas' }}
           </button>
           <span class="detail-dot-sep">·</span>
           <span class="detail-location-str">{{ propiedadSeleccionada.direccion }}, {{ propiedadSeleccionada.distrito }}</span>
@@ -83,7 +83,7 @@
             <div class="landlord-avatar-circle" aria-hidden="true">{{ nombre.charAt(0) | uppercase }}</div>
             <div class="landlord-info-meta">
               <span class="landlord-exp">Arrendador</span>
-              <h3 class="landlord-name">{{ nombre }}</h3>
+              <span class="landlord-name">{{ nombre }}</span>
             </div>
           </div>
         }
@@ -118,7 +118,7 @@
 
       @if (propiedadSeleccionada.entorno?.length) {
         <div class="surroundings-cards-grid">
-          @for (lugar of propiedadSeleccionada.entorno; track lugar.tipo) {
+          @for (lugar of propiedadSeleccionada.entorno; track $index) {
             <div class="surround-card" [class]="'bg-' + tiposEntorno[lugar.tipo].color + '-tint'">
               <div class="surround-icon-circle" aria-hidden="true">
                 @switch (lugar.tipo) {
@@ -160,10 +160,13 @@
                       <path d="M17 17v2"/>
                     </svg>
                   }
+                  @case ('PERSONALIZADO') {
+                    <span>{{ lugar.categoria?.charAt(0) | uppercase }}</span>
+                  }
                 }
               </div>
               <div class="surround-info">
-                <strong class="surround-name">{{ tiposEntorno[lugar.tipo].etiqueta }}</strong>
+                <strong class="surround-name">{{ lugar.categoria || tiposEntorno[lugar.tipo].etiqueta }}</strong>
                 <span class="surround-place">{{ lugar.nombre ? lugar.nombre + ' · ' : '' }}{{ lugar.minutos }} min</span>
                 <span class="surround-mode">Caminando</span>
               </div>
@@ -175,32 +178,60 @@
       }
     </section>
 
+    @if (serviciosVivienda.length) {
+      <section class="opiniones-vivienda" aria-labelledby="servicios-vivienda-titulo">
+        <header class="opiniones-encabezado"><h2 id="servicios-vivienda-titulo">Servicios de la vivienda</h2></header>
+        <ul class="detail-servicios">
+          @for (servicio of serviciosVivienda; track servicio) {
+            <li>{{ servicio }}</li>
+          }
+        </ul>
+      </section>
+    }
+
     <section #opiniones class="opiniones-vivienda" aria-labelledby="opiniones-titulo">
+      <ng-container *ngTemplateOutlet="listaOpiniones; context: {
+        titulo: 'Reseñas de la vivienda', idTitulo: 'opiniones-titulo',
+        resenas: resenasPropiedadSeleccionada, cargando: cargandoResenasPropiedad,
+        error: errorResenasPropiedad, vacio: 'Esta vivienda aún no tiene reseñas.'
+      }"></ng-container>
+    </section>
+
+    <section class="opiniones-vivienda" aria-labelledby="opiniones-arrendador-titulo">
+      <ng-container *ngTemplateOutlet="listaOpiniones; context: {
+        titulo: 'Reseñas del arrendador', idTitulo: 'opiniones-arrendador-titulo',
+        resenas: resenasArrendadorSeleccionado, cargando: cargandoResenasArrendador,
+        error: errorResenasArrendador, vacio: 'Este arrendador aún no tiene reseñas.'
+      }"></ng-container>
+    </section>
+
+    <ng-template #listaOpiniones let-titulo="titulo" let-idTitulo="idTitulo" let-resenas="resenas"
+      let-cargando="cargando" let-error="error" let-vacio="vacio">
       <header class="opiniones-encabezado">
         <div>
-          <h2 id="opiniones-titulo">Opiniones de inquilinos</h2>
-          @if (propiedadSeleccionada.calificacion != null) {
+          <h2 [id]="idTitulo">{{ titulo }}</h2>
+          @if (resenas.length; as total) {
             <p class="opiniones-resumen">
               <span aria-hidden="true">★</span>
-              <strong>{{ propiedadSeleccionada.calificacion | number:'1.1-2' }} / 5</strong>
-              @if (propiedadSeleccionada.totalResenas; as total) {
-                <span class="opiniones-total">{{ total }} {{ total === 1 ? 'reseña' : 'reseñas' }}</span>
-              }
+              <strong>{{ promedioResenas(resenas) | number:'1.1-2' }} / 5</strong>
+              <span class="opiniones-total">{{ total }} {{ total === 1 ? 'reseña' : 'reseñas' }}</span>
             </p>
           }
         </div>
-        <button type="button" class="btn-see-all" (click)="irAComparacion.emit()">Comparar habitaciones</button>
+        @if (idTitulo === 'opiniones-titulo') {
+          <button type="button" class="btn-see-all" (click)="irAComparacion.emit()">Comparar habitaciones</button>
+        }
       </header>
 
-      @if (errorResenasPropiedad) {
-        <p class="opiniones-estado" role="status">No se pudieron cargar las reseñas de esta propiedad.</p>
-      } @else if (cargandoResenasPropiedad) {
+      @if (error) {
+        <p class="opiniones-estado" role="status">No se pudieron cargar las reseñas.</p>
+      } @else if (cargando) {
         <p class="opiniones-estado" role="status">Cargando reseñas…</p>
-      } @else if (!resenasPropiedadSeleccionada.length) {
-        <p class="opiniones-estado">Esta propiedad aún no tiene reseñas.</p>
+      } @else if (!resenas.length) {
+        <p class="opiniones-estado">{{ vacio }}</p>
       } @else {
         <div class="opiniones-lista">
-          @for (resena of resenasPropiedadSeleccionada; track resena.idResena) {
+          @for (resena of resenas; track resena.idResena) {
             <article class="opinion-vivienda">
               <header class="opinion-encabezado">
                 <div class="opinion-autor">
@@ -219,7 +250,7 @@
           }
         </div>
       }
-    </section>
+    </ng-template>
 
     @if (propiedadesRecomendadas.length) {
     <section class="detail-recommendations-section">
@@ -239,7 +270,6 @@
               </span>
             </div>
 
-            @if (rec.reservada) { <span class="vivienda-reservada">Reservada</span> }
             <p class="rec-location-text">{{ rec.direccion }}, {{ rec.distrito }}</p>
 
             <div class="rec-footer-row">

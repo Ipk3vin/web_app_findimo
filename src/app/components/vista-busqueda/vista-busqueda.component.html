@@ -70,10 +70,12 @@
               <circle cx="12" cy="10" r="3"/>
             </svg>
             <select [ngModel]="filtroUniversidad" (ngModelChange)="filtroUniversidadChange.emit($event)" class="filter-select">
-              <option value="UPC Chorrillos">UPC Chorrillos</option>
-              <option value="Universidad de Piura">Universidad de Piura</option>
-              <option value="UCSUR">UCSUR</option>
               <option value="todas">Todas las universidades</option>
+              @for (universidad of universidades; track universidad.valor) {
+                <option [value]="universidad.valor">
+                  {{ universidad.nombre }}{{ universidad.sigla ? ' (' + universidad.sigla + ')' : '' }}
+                </option>
+              }
             </select>
           </div>
         </div>
@@ -106,6 +108,9 @@
   </section>
 
   <section id="propiedades" class="search-results-section" aria-labelledby="cuartos-titulo">
+    @if (filtroDistrito !== 'todos') {
+      <p>Distrito: {{ filtroDistrito }}</p>
+    }
     <div class="main-content-container">
       <div class="cuartos-header">
         <h1 id="cuartos-titulo" class="search-section-title">Cuartos</h1>

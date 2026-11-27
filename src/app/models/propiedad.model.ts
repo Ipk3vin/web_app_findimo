@@ -14,13 +14,15 @@ export const TIPOS_ENTORNO = {
   BODEGA: { etiqueta: 'Bodega', color: 'amber' },
   PARQUE: { etiqueta: 'Parque', color: 'emerald' },
   SEGURIDAD: { etiqueta: 'Caseta de seguridad', color: 'purple' },
-  TRANSPORTE: { etiqueta: 'Transporte público', color: 'sky' }
+  TRANSPORTE: { etiqueta: 'Transporte público', color: 'sky' },
+  PERSONALIZADO: { etiqueta: 'Lugar cercano', color: 'teal' }
 } as const;
 
 export type TipoEntorno = keyof typeof TIPOS_ENTORNO;
 
 export interface LugarCercano {
   tipo: TipoEntorno;
+  categoria?: string | null;
   nombre?: string | null;
   minutos: number;
 }
@@ -44,6 +46,7 @@ export interface Propiedad {
   fotosGuardadas?: { ruta: string; url: string }[];
   idTipoPropiedad?: number | null;
   idsServicios?: number[];
+  serviciosPersonalizados?: string[];
   calificacion?: number;
   totalResenas?: number;
   esFavorito?: boolean;
@@ -51,12 +54,12 @@ export interface Propiedad {
   arrendadorAntiguedad?: string;
   arrendadorInicial?: string;
   subtituloDetalle?: string;
-  universidad?: string;
 }
 
 export interface PropiedadRequest {
   idTipoPropiedad?: number | null;
   idsServicios?: number[];
+  serviciosPersonalizados?: string[];
   idPerfilArrendador: number;
   titulo: string;
   descripcion: string;

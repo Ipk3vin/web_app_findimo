@@ -143,11 +143,6 @@
   cursor: pointer;
 }
 
-.chat-solicitud {
-  padding: 0.9rem 1rem;
-  border-block-start: 1px solid #dce4ee;
-}
-
 .chat-decisiones {
   display: flex;
   gap: 0.55rem;

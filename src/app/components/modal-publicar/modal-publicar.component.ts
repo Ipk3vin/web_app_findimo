@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { GRUPOS_DISTRITOS_LIMA_CALLAO } from '../../models/distritos.model';
 import { CatalogosPropiedad, LugarCercano, Propiedad, TIPOS_ENTORNO, TipoEntorno } from '../../models/propiedad.model';
 
 @Component({
@@ -15,7 +16,8 @@ export class ModalPublicarComponent implements OnChanges {
   @Input() modalPublicarAbierto: boolean = false;
   @Input() publicando = false;
   @Input() vivienda: Propiedad | null = null;
-  readonly distritos = ['Chorrillos', 'Surco', 'La Molina', 'Miraflores', 'San Isidro'];
+  readonly gruposDistritos = GRUPOS_DISTRITOS_LIMA_CALLAO;
+  readonly distritos = this.gruposDistritos.flatMap(grupo => grupo.distritos);
 
   @Input() pubTitulo: string = '';
   @Output() pubTituloChange = new EventEmitter<string>();
@@ -54,12 +56,13 @@ export class ModalPublicarComponent implements OnChanges {
   }
 
   @Output() cerrarModalPublicar = new EventEmitter<void>();
-  @Output() guardarPropiedad = new EventEmitter<{ entorno: LugarCercano[]; fotos: File[]; fotosRetiradas: string[] }>();
+  @Output() guardarPropiedad = new EventEmitter<{ entorno: LugarCercano[]; serviciosPersonalizados: string[]; fotos: File[]; fotosRetiradas: string[] }>();
 
-  readonly tiposEntorno = TIPOS_ENTORNO;
-  entorno = (Object.keys(TIPOS_ENTORNO) as TipoEntorno[]).map(tipo => ({
-    tipo, nombre: '', minutos: null as number | null
-  }));
+  readonly categoriasEntorno = (Object.keys(TIPOS_ENTORNO) as TipoEntorno[])
+    .filter(tipo => tipo !== 'PERSONALIZADO')
+    .map(tipo => ({ tipo, etiqueta: TIPOS_ENTORNO[tipo].etiqueta }));
+  entorno: { categoria: string; nombre: string; minutos: number | null }[] = [];
+  serviciosPersonalizados: { nombre: string }[] = [];
   errorEntorno = '';
   errorFotos = '';
   fotos: File[] = [];
@@ -72,11 +75,12 @@ export class ModalPublicarComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['modalPublicarAbierto'] || changes['vivienda']) {
-      for (const lugar of this.entorno) {
-        const original = this.vivienda?.entorno?.find(item => item.tipo === lugar.tipo);
-        lugar.nombre = original?.nombre ?? '';
-        lugar.minutos = original?.minutos ?? null;
-      }
+      this.entorno = (this.vivienda?.entorno ?? []).map(lugar => ({
+        categoria: lugar.categoria ?? TIPOS_ENTORNO[lugar.tipo].etiqueta,
+        nombre: lugar.nombre ?? '',
+        minutos: lugar.minutos
+      }));
+      this.serviciosPersonalizados = (this.vivienda?.serviciosPersonalizados ?? []).map(nombre => ({ nombre }));
       this.errorEntorno = '';
       this.errorFotos = '';
       this.fotos = [];
@@ -110,6 +114,22 @@ export class ModalPublicarComponent implements OnChanges {
     this.errorFotos = '';
   }
 
+  agregarLugar(): void {
+    this.entorno.push({ categoria: '', nombre: '', minutos: null });
+  }
+
+  quitarLugar(indice: number): void {
+    this.entorno.splice(indice, 1);
+  }
+
+  agregarServicioPersonalizado(): void {
+    this.serviciosPersonalizados.push({ nombre: '' });
+  }
+
+  quitarServicioPersonalizado(indice: number): void {
+    this.serviciosPersonalizados.splice(indice, 1);
+  }
+
   publicar(): void {
     this.errorFotos = '';
     if (!this.primeraFotoGuardada && !this.fotos.length) {
@@ -118,16 +138,20 @@ export class ModalPublicarComponent implements OnChanges {
     }
     this.errorEntorno = '';
     const lugares: LugarCercano[] = [];
-    for (const { tipo, nombre, minutos } of this.entorno) {
+    for (const { categoria, nombre, minutos } of this.entorno) {
+      const etiqueta = categoria.trim();
       const nombreLimpio = nombre.trim();
-      if (!nombreLimpio && minutos === null) continue;
+      if (!etiqueta && !nombreLimpio && minutos === null) continue;
 
-      if (minutos === null || !Number.isInteger(minutos) || minutos < 1 || minutos > 1440) {
-        this.errorEntorno = `Indica entre 1 y 1440 minutos para «${this.tiposEntorno[tipo].etiqueta}».`;
+      if (!etiqueta || minutos === null || !Number.isInteger(minutos) || minutos < 1 || minutos > 1440) {
+        this.errorEntorno = 'Indica el tipo de lugar y entre 1 y 1440 minutos a pie en cada fila.';
         return;
       }
-      lugares.push({ tipo, nombre: nombreLimpio || null, minutos });
+      const tipo = this.categoriasEntorno.find(opcion => opcion.etiqueta.toLowerCase() === etiqueta.toLowerCase()
+        || opcion.tipo.toLowerCase() === etiqueta.toLowerCase())?.tipo ?? 'PERSONALIZADO';
+      lugares.push({ tipo, categoria: tipo === 'PERSONALIZADO' ? etiqueta : null, nombre: nombreLimpio || null, minutos });
     }
-    this.guardarPropiedad.emit({ entorno: lugares, fotos: this.fotos, fotosRetiradas: [...this.fotosRetiradas] });
+    const serviciosPersonalizados = [...new Set(this.serviciosPersonalizados.map(servicio => servicio.nombre.trim()).filter(Boolean))];
+    this.guardarPropiedad.emit({ entorno: lugares, serviciosPersonalizados, fotos: this.fotos, fotosRetiradas: [...this.fotosRetiradas] });
   }
 }

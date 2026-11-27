@@ -3,7 +3,7 @@ import { Component, DestroyRef, OnInit, computed, effect, inject, input, output,
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { BehaviorSubject, EMPTY, Observable, catchError, exhaustMap, switchMap, timer } from 'rxjs';
-import { Conversacion, DecisionSolicitud, EstadoReserva, Mensaje, MensajesService, PerfilEstudianteChat } from '../../services/mensajes.service';
+import { Conversacion, EstadoReserva, Mensaje, MensajesService, PerfilEstudianteChat } from '../../services/mensajes.service';
 
 @Component({
   selector: 'app-vista-mensajes',
@@ -27,7 +27,7 @@ export class VistaMensajesComponent implements OnInit {
   readonly esArrendador = input(false);
   readonly solicitudInicial = input<number | null>(null);
   readonly viviendaInicial = input<number | null>(null);
-  accionAlquiler: 'finalizar' | 'resena' | null = null;
+  accionAlquiler: 'finalizar' | 'resena' | 'resenaVivienda' | null = null;
   codigoLiberacion = '';
   calificacionResena: number | null = null;
   comentarioResena = '';
@@ -42,9 +42,7 @@ export class VistaMensajesComponent implements OnInit {
   readonly enviando = signal(false);
   readonly perfil = signal<PerfilEstudianteChat | null>(null);
   readonly cargandoPerfil = signal(false);
-  readonly procesandoDecision = signal(false);
   readonly errorSolicitud = signal('');
-  readonly etiquetas = { PENDIENTE: 'Pendiente', ACEPTADA: 'Aceptada', CANCELADA: 'Cancelada' };
   borrador = '';
 
   constructor() {
@@ -135,25 +133,6 @@ export class VistaMensajesComponent implements OnInit {
     });
   }
 
-  decidir(chat: Conversacion, situacion: DecisionSolicitud): void {
-    if (!chat.arrendador || chat.situacion !== 'PENDIENTE' || this.procesandoDecision()) return;
-    this.procesandoDecision.set(true);
-    this.errorSolicitud.set('');
-    this.api.resolver(this.cuenta(), chat.idSolicitud, situacion).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: actualizada => {
-        this.procesandoDecision.set(false);
-        this.conversaciones.update(lista => lista?.map(item =>
-          item.idSolicitud === actualizada.idSolicitud ? actualizada : item) ?? []);
-      },
-      error: error => {
-        this.procesandoDecision.set(false);
-        if (this.activa() === chat.idSolicitud) {
-          this.errorSolicitud.set(this.mensajeError(error.status, 'No se pudo actualizar la solicitud.'));
-        }
-      }
-    });
-  }
-
   gestionarReserva(chat: Conversacion, estado: EstadoReserva): void {
     if (this.procesandoReserva()) return;
     this.procesandoReserva.set(true);
@@ -176,7 +155,7 @@ export class VistaMensajesComponent implements OnInit {
       });
   }
 
-  mostrarAccionAlquiler(accion: 'finalizar' | 'resena'): void {
+  mostrarAccionAlquiler(accion: 'finalizar' | 'resena' | 'resenaVivienda'): void {
     this.cerrarAccionAlquiler();
     this.accionAlquiler = accion;
   }
@@ -198,10 +177,12 @@ export class VistaMensajesComponent implements OnInit {
 
   dejarResena(chat: Conversacion): void {
     const nota = this.calificacionResena;
-    if (chat.reserva !== 'FINALIZADA' || chat.resenaRegistrada ||
+    const esVivienda = this.accionAlquiler === 'resenaVivienda';
+    const registrada = esVivienda ? chat.arrendador || chat.resenaViviendaRegistrada : chat.resenaRegistrada;
+    if (chat.reserva !== 'FINALIZADA' || registrada ||
         nota === null || !Number.isInteger(nota) || nota < 1 || nota > 5) return;
     this.procesarAccionAlquiler(chat, this.api.dejarResena(
-      this.cuenta(), chat.idSolicitud, chat.arrendador ? 'estudiante' : 'arrendador', nota, this.comentarioResena.trim()), 'No se pudo guardar la reseña.');
+      this.cuenta(), chat.idSolicitud, esVivienda ? 'vivienda' : chat.arrendador ? 'estudiante' : 'arrendador', nota, this.comentarioResena.trim()), 'No se pudo guardar la reseña.');
   }
 
   private procesarAccionAlquiler(chat: Conversacion, solicitud: Observable<Conversacion>, mensaje: string): void {

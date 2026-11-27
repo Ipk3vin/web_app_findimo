@@ -140,10 +140,24 @@
           <span class="info-label">Contraseña</span>
           <div class="info-value">••••••••••••</div>
         </div>
-        <button type="button" class="btn-row-action" (click)="cambiarContrasena()">
-          Actualizar
-        </button>
+        @if (!editandoContrasena()) {
+          <button type="button" class="btn-row-action" [disabled]="guardandoContrasena()"
+            (click)="editandoContrasena.set(true)">Actualizar</button>
+        }
       </div>
+      @if (editandoContrasena()) {
+        <form class="formulario-contrasena" (submit)="$event.preventDefault(); guardarContrasena(clave.value)">
+          <label for="nueva-contrasena-perfil">Nueva contraseña</label>
+          <input #clave id="nueva-contrasena-perfil" name="nuevaContrasena" type="password"
+            autocomplete="new-password" maxlength="72" required [disabled]="guardandoContrasena()">
+          <div>
+            <button type="submit" class="btn-row-action" [disabled]="guardandoContrasena()">Guardar contraseña</button>
+            <button type="button" class="btn-row-action" [disabled]="guardandoContrasena()"
+              (click)="cerrarContrasena()">Cancelar</button>
+          </div>
+          @if (errorContrasena()) { <p role="alert">{{ errorContrasena() }}</p> }
+        </form>
+      }
     </div>
 
       @if (seccionActiva === 'resenas' && usuarioActual) {

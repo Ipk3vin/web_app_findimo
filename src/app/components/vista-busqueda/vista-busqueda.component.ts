@@ -3,6 +3,7 @@ import { FotoViviendaComponent } from '../foto-vivienda/foto-vivienda.component'
 import { Component, ViewEncapsulation, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UNIVERSIDADES_LIMA } from '../../models/universidades.model';
 import { OpcionPropiedad, Propiedad } from '../../models/propiedad.model';
 
 @Component({
@@ -14,6 +15,7 @@ import { OpcionPropiedad, Propiedad } from '../../models/propiedad.model';
   styleUrl: './vista-busqueda.component.css'
 })
 export class VistaBusquedaComponent {
+  readonly universidades = UNIVERSIDADES_LIMA;
   @Input() tiposPropiedad: OpcionPropiedad[] = [];
   @Input() filtroTipoHabitacion: string = 'todos';
   @Output() filtroTipoHabitacionChange = new EventEmitter<string>();
@@ -21,6 +23,7 @@ export class VistaBusquedaComponent {
   @Input() filtroPrecioMensual: string = 'todos';
   @Output() filtroPrecioMensualChange = new EventEmitter<string>();
 
+  @Input() filtroDistrito = 'todos';
   @Input() filtroUniversidad: string = 'todas';
   @Output() filtroUniversidadChange = new EventEmitter<string>();
 

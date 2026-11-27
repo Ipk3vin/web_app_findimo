@@ -1,0 +1,147 @@
+<div class="admin">
+  <header class="admin-barra">
+    <strong>FINDIMO</strong>
+    <span>{{ nombre() }} · {{ esSupremo() ? 'Administrador supremo' : 'Administrador secundario' }}</span>
+  </header>
+
+  <div class="admin-contenido">
+    <nav aria-label="Menú de administración">
+      @for (item of secciones(); track item.id) {
+        <button type="button" [attr.aria-current]="seccion().id === item.id ? 'page' : null"
+          [disabled]="cargando() || cambiandoEstado() || accesoDenegado()" (click)="cargar(item)">{{ item.titulo }}</button>
+      }
+      <button type="button" class="salir" (click)="salir.emit()">Cerrar sesión</button>
+    </nav>
+
+    <main [attr.aria-busy]="cargando()">
+      <h1>{{ seccion().id === 'resumen' ? 'Panel administrativo' : seccion().titulo }}</h1>
+      @if (seccion().id === 'administradores') {
+        <form #nuevaCuenta class="nueva-cuenta"
+          (submit)="$event.preventDefault(); crearAdministrador(nuevaCuenta, correo.value, clave.value, confirmacion.value)">
+          <h2>Crear administrador secundario</h2>
+          <label>Correo <input #correo type="email" name="correo" maxlength="255" autocomplete="off" required></label>
+          <label>Contraseña <input #clave type="password" name="clave" maxlength="72" autocomplete="new-password" required></label>
+          <label>Confirmar contraseña <input #confirmacion type="password" name="confirmacion" maxlength="72" autocomplete="new-password" required></label>
+          <button type="submit" [disabled]="cargando() || cambiandoEstado() || accesoDenegado()">Crear cuenta</button>
+          @if (errorNuevaCuenta()) { <p role="alert">{{ errorNuevaCuenta() }}</p> }
+        </form>
+      }
+      @if (seccion().id === 'usuarios') {
+        <form class="buscador" (submit)="$event.preventDefault(); cargar(seccion(), 0, termino.value)">
+          <label for="buscar-usuario">Buscar por nombre, correo o ID</label>
+          <div>
+            <input #termino id="buscar-usuario" type="search" [value]="busqueda()">
+            <button type="submit" [disabled]="cargando() || cambiandoEstado() || accesoDenegado()">Buscar</button>
+            @if (busqueda()) {
+              <button type="button" [disabled]="cargando() || cambiandoEstado() || accesoDenegado()"
+                (click)="termino.value = ''; cargar(seccion())">Limpiar</button>
+            }
+          </div>
+        </form>
+      }
+      @if (seccion().id === 'reportes') {
+        <section class="reporte" aria-label="Tipo de reporte">
+          <div>
+            <label for="tipo-reporte">Consultar</label>
+            <select #tipo id="tipo-reporte" [value]="reporte().id" [disabled]="cargando() || accesoDenegado()"
+              (change)="cargar(seccion(), 0, tipo.value)">
+              @for (opcion of reportes; track opcion.id) {
+                <option [value]="opcion.id">{{ opcion.titulo }}</option>
+              }
+            </select>
+          </div>
+          <p>{{ reporte().descripcion }}</p>
+          <button type="button" [disabled]="cargando() || accesoDenegado()"
+            (click)="cargar(reporte().destino)">Abrir {{ reporte().destino.titulo }}</button>
+        </section>
+      }
+      @if (seccion().id === 'auditoria') {
+        <p>Historial de cambios. La cuenta asociada identifica al administrador en los cambios del panel.</p>
+      }
+      @if (mensajeEstado()) { <p role="status">{{ mensajeEstado() }}</p> }
+      @if (cargando()) {
+        <p role="status">Cargando…</p>
+      } @else if (error()) {
+        <p role="alert">{{ error() }}</p>
+        @if (!accesoDenegado()) {
+          <button type="button" (click)="cargar(seccion(), pagina(), busqueda())">Reintentar</button>
+        }
+      } @else if (datos(); as resultado) {
+        @if (!resultado.filas.length) {
+          <p>{{ seccion().id === 'usuarios' && busqueda() ? 'No se encontraron usuarios.' : 'No hay registros para mostrar.' }}</p>
+        } @else if (seccion().id === 'resumen') {
+          <dl class="indicadores">
+            @for (fila of resultado.filas; track fila['indicador']) {
+              <div><dt>{{ fila['indicador'] }}</dt><dd>{{ fila['total'] }}</dd></div>
+            }
+          </dl>
+        } @else {
+          <div class="tabla">
+            <table [attr.aria-label]="seccion().titulo">
+              <thead>
+                <tr>
+                  @for (columna of columnas(); track columna[0]) {
+                    <th scope="col">{{ columna[1] }}</th>
+                  }
+                  @if (accionEstado()) { <th scope="col">Acción</th> }
+                </tr>
+              </thead>
+              <tbody>
+                @for (fila of resultado.filas; track $index) {
+                  <tr>
+                    @for (columna of columnas(); track columna[0]) {
+                      <td>{{ mostrarCelda(fila, columna[0]) }}</td>
+                    }
+                    @if (accionEstado(); as accion) {
+                      <td>
+                        @if ((seccion().id !== 'usuarios' && seccion().id !== 'administradores') || puedeCambiarCuenta(fila)) {
+                          <button type="button" [disabled]="cambiandoEstado() || accesoDenegado()"
+                            (click)="cambiarEstado(fila)">
+                            {{ fila['estado'] === accion.estadoInactivo ? accion.restaurar : accion.retirar }}
+                          </button>
+                        } @else if (esCuentaSuprema(fila)) {
+                          Cuenta protegida
+                        } @else if (fila['id'] === idCuenta()) {
+                          Tu cuenta
+                        } @else {
+                          —
+                        }
+                        @if ((seccion().id === 'usuarios' || seccion().id === 'administradores') && puedeCambiarContrasena(fila)) {
+                          <button type="button" [disabled]="cambiandoEstado() || accesoDenegado()"
+                            [attr.aria-expanded]="cuentaContrasena() === fila['id']"
+                            (click)="abrirCambioContrasena(fila)">Cambiar contraseña</button>
+                        }
+                      </td>
+                    }
+                  </tr>
+                  @if (cuentaContrasena() !== null && cuentaContrasena() === fila['id']) {
+                    <tr>
+                      <td [attr.colspan]="columnas().length + 1">
+                        <form class="nueva-cuenta"
+                          (submit)="$event.preventDefault(); guardarContrasena(fila, nuevaClave.value, repetirClave.value)">
+                          <h2>Cambiar contraseña de {{ fila['correo'] }}</h2>
+                          <label>Nueva contraseña <input #nuevaClave type="password" maxlength="72" autocomplete="new-password" required></label>
+                          <label>Confirmar contraseña <input #repetirClave type="password" maxlength="72" autocomplete="new-password" required></label>
+                          <button type="submit" [disabled]="cambiandoEstado()">Guardar contraseña</button>
+                          <button type="button" [disabled]="cambiandoEstado()" (click)="cerrarCambioContrasena()">Cancelar</button>
+                          @if (errorContrasena()) { <p role="alert">{{ errorContrasena() }}</p> }
+                        </form>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        @if (pagina() > 0 || resultado.haySiguiente) {
+          <div class="paginacion">
+            <button type="button" [disabled]="pagina() === 0 || cambiandoEstado() || accesoDenegado()" (click)="cargar(seccion(), pagina() - 1, busqueda())">Anterior</button>
+            <span>Página {{ pagina() + 1 }}</span>
+            <button type="button" [disabled]="!resultado.haySiguiente || cambiandoEstado() || accesoDenegado()" (click)="cargar(seccion(), pagina() + 1, busqueda())">Siguiente</button>
+          </div>
+        }
+      }
+    </main>
+  </div>
+</div>

@@ -1,58 +1,68 @@
 <!-- Modal: Publicar Habitación (Conectado a POST /api/propiedades) -->
 <div class="modal-backdrop-overlay" *ngIf="modalPublicarAbierto" (click)="!publicando && cerrarModalPublicar.emit()">
-  <div class="modal-dialog-box publicar-dialog" (click)="$event.stopPropagation()">
+  <div class="modal-dialog-box publicar-dialog" role="dialog" aria-modal="true" aria-labelledby="publicar-titulo" (click)="$event.stopPropagation()">
     <div class="modal-header-row">
-      <h3 class="modal-heading">{{ vivienda ? 'Editar vivienda' : 'Publicar Habitación en Findimo' }}</h3>
-      <button type="button" class="btn-close-x" (click)="!publicando && cerrarModalPublicar.emit()">✕</button>
+      <h2 id="publicar-titulo" class="modal-heading">{{ vivienda ? 'Editar vivienda' : 'Publicar vivienda' }}</h2>
+      <button type="button" class="btn-close-x" aria-label="Cerrar" (click)="!publicando && cerrarModalPublicar.emit()">✕</button>
     </div>
 
     <div class="modal-body-area">
-      <div class="form-field-group">
-        <label class="form-label">Título de la Habitación *</label>
-        <input type="text" [ngModel]="pubTitulo" (ngModelChange)="pubTituloChange.emit($event)" placeholder="Ej. Habitación Amoblada frente a UPC" class="styled-input" />
-      </div>
-
-      <div class="form-field-group">
-        <label class="form-label" for="pub-descripcion">Descripción *</label>
-        <textarea id="pub-descripcion" required [ngModel]="pubDescripcion" (ngModelChange)="pubDescripcionChange.emit($event)" rows="3" placeholder="Detalles de la habitación, servicios incluidos (luz, agua, internet, etc.)" class="styled-input"></textarea>
-      </div>
-
-      <div class="form-two-cols">
+      <section class="publicar-seccion">
+        <h3>Datos de la vivienda</h3>
         <div class="form-field-group">
-          <label class="form-label">Precio Mensual (S/) *</label>
-          <input type="number" [ngModel]="pubPrecio" (ngModelChange)="pubPrecioChange.emit($event)" placeholder="850" class="styled-input" />
+          <label class="form-label">Título de la Habitación *</label>
+          <input type="text" [ngModel]="pubTitulo" (ngModelChange)="pubTituloChange.emit($event)" placeholder="Ej. Habitación Amoblada frente a UPC" class="styled-input" />
         </div>
-        <div class="form-field-group">
-          <label class="form-label">Habitaciones *</label>
-          <input type="number" [ngModel]="pubHabitaciones" (ngModelChange)="pubHabitacionesChange.emit($event)" placeholder="1" min="1" max="5" class="styled-input" />
-        </div>
-      </div>
 
-      <div class="form-field-group">
-        <label class="form-label" for="pub-area">Área de la vivienda (m²) *</label>
-        <input id="pub-area" type="number" required class="styled-input" min="0.01" max="999999.99" step="0.01"
-          [ngModel]="pubArea" (ngModelChange)="pubAreaChange.emit($event)" />
-      </div>
-
-      <div class="form-two-cols">
         <div class="form-field-group">
-          <label class="form-label">Dirección *</label>
-          <input type="text" [ngModel]="pubDireccion" (ngModelChange)="pubDireccionChange.emit($event)" placeholder="Av. Alameda Sur 234" class="styled-input" />
+          <label class="form-label" for="pub-descripcion">Descripción *</label>
+          <textarea id="pub-descripcion" required [ngModel]="pubDescripcion" (ngModelChange)="pubDescripcionChange.emit($event)" rows="3" placeholder="Detalles de la habitación, servicios incluidos (luz, agua, internet, etc.)" class="styled-input"></textarea>
         </div>
-        <div class="form-field-group">
-          <label class="form-label">Distrito *</label>
-          <select [ngModel]="pubDistrito" (ngModelChange)="pubDistritoChange.emit($event)" class="styled-input">
-            @if (pubDistrito && !distritos.includes(pubDistrito)) {
-              <option [value]="pubDistrito">{{ pubDistrito }}</option>
-            }
-            @for (distrito of distritos; track distrito) {
-              <option [value]="distrito">{{ distrito }}</option>
-            }
-          </select>
-        </div>
-      </div>
 
-      <div class="form-field-group publicar-fotos">
+        <div class="form-two-cols">
+          <div class="form-field-group">
+            <label class="form-label">Precio Mensual (S/) *</label>
+            <input type="number" [ngModel]="pubPrecio" (ngModelChange)="pubPrecioChange.emit($event)" placeholder="850" class="styled-input" />
+          </div>
+          <div class="form-field-group">
+            <label class="form-label">Habitaciones *</label>
+            <input type="number" [ngModel]="pubHabitaciones" (ngModelChange)="pubHabitacionesChange.emit($event)" placeholder="1" min="1" max="5" class="styled-input" />
+          </div>
+        </div>
+
+        <div class="form-field-group">
+          <label class="form-label" for="pub-area">Área de la vivienda (m²) *</label>
+          <input id="pub-area" type="number" required class="styled-input" min="0.01" max="999999.99" step="0.01"
+            [ngModel]="pubArea" (ngModelChange)="pubAreaChange.emit($event)" />
+        </div>
+
+      </section>
+      <section class="publicar-seccion">
+        <h3>Ubicación</h3>
+        <div class="form-two-cols">
+          <div class="form-field-group">
+            <label class="form-label">Dirección *</label>
+            <input type="text" [ngModel]="pubDireccion" (ngModelChange)="pubDireccionChange.emit($event)" placeholder="Av. Alameda Sur 234" class="styled-input" />
+          </div>
+          <div class="form-field-group">
+            <label class="form-label" for="publicar-distrito">Distrito *</label>
+            <select id="publicar-distrito" [ngModel]="pubDistrito" (ngModelChange)="pubDistritoChange.emit($event)" class="styled-input">
+              @if (pubDistrito && !distritos.includes(pubDistrito)) {
+                <option [value]="pubDistrito">{{ pubDistrito }}</option>
+              }
+              @for (grupo of gruposDistritos; track grupo.provincia) {
+                <optgroup [label]="grupo.provincia">
+                  @for (distrito of grupo.distritos; track distrito) {
+                    <option [value]="distrito">{{ distrito }}</option>
+                  }
+                </optgroup>
+              }
+            </select>
+          </div>
+        </div>
+
+      </section>
+      <section class="publicar-seccion publicar-fotos">
         <label class="form-label" for="publicar-fotos">Fotos de la vivienda *</label>
         @if (vivienda?.fotosGuardadas?.length) {
           <ul class="publicar-fotos-lista fotos-guardadas">
@@ -97,59 +107,77 @@
             }
           </ul>
         }
-      </div>
+      </section>
 
-      @if (cargandoCatalogos) {
-        <p role="status">Cargando tipos y servicios…</p>
-      } @else if (errorCatalogos) {
-        <p role="status">No se pudieron cargar los tipos y servicios.</p>
-        <button type="button" class="btn-link-details" (click)="reintentarCatalogos.emit()">Reintentar</button>
-      } @else {
-        <div class="form-field-group">
-          <label class="form-label" for="publicar-tipo">Tipo de propiedad (opcional)</label>
-          <select id="publicar-tipo" [ngModel]="pubIdTipoPropiedad" (ngModelChange)="pubIdTipoPropiedadChange.emit($event)" class="styled-input">
-            <option [ngValue]="null">Sin especificar</option>
-            @for (tipo of catalogos.tipos; track tipo.id) {
-              <option [ngValue]="tipo.id">{{ tipo.nombre }}</option>
-            }
-          </select>
-        </div>
-        <details class="publicar-entorno">
-          <summary>Servicios (opcional)</summary>
-          <div class="publicar-servicios">
-            @for (servicio of catalogos.servicios; track servicio.id) {
-              <label>
-                <input type="checkbox" [checked]="pubIdsServicios.includes(servicio.id)"
-                  (change)="alternarServicio(servicio.id)" />
-                {{ servicio.nombre }}
-              </label>
-            }
+      <section class="publicar-seccion">
+        <h3>Tipo y servicios</h3>
+        @if (cargandoCatalogos) {
+          <p role="status">Cargando tipos y servicios…</p>
+        } @else if (errorCatalogos) {
+          <p role="status">No se pudieron cargar los tipos y servicios.</p>
+          <button type="button" class="btn-link-details" (click)="reintentarCatalogos.emit()">Reintentar</button>
+        } @else {
+          <div class="form-field-group">
+            <label class="form-label" for="publicar-tipo">Tipo de propiedad (opcional)</label>
+            <select id="publicar-tipo" [ngModel]="pubIdTipoPropiedad" (ngModelChange)="pubIdTipoPropiedadChange.emit($event)" class="styled-input">
+              <option [ngValue]="null">Sin especificar</option>
+              @for (tipo of catalogos.tipos; track tipo.id) {
+                <option [ngValue]="tipo.id">{{ tipo.nombre }}</option>
+              }
+            </select>
           </div>
-        </details>
-      }
-
-      <details class="publicar-entorno">
-        <summary>Conoce el entorno (opcional)</summary>
-        <p>Agrega los lugares cercanos que quieras mostrar. Indica el tiempo a pie y, si lo conoces, el nombre del lugar.</p>
-        @for (lugar of entorno; track lugar.tipo) {
-          <fieldset class="publicar-lugar">
-            <legend>{{ tiposEntorno[lugar.tipo].etiqueta }}</legend>
-            <div class="form-two-cols">
-              <label class="form-label">
-                Nombre (opcional)
-                <input type="text" class="styled-input" maxlength="120" [(ngModel)]="lugar.nombre" />
-              </label>
-              <label class="form-label">
-                Minutos a pie
-                <input type="number" class="styled-input" min="1" max="1440" step="1" [(ngModel)]="lugar.minutos" />
-              </label>
-            </div>
-          </fieldset>
+          <div class="publicar-servicios" aria-label="Servicios del catálogo">
+              @for (servicio of catalogos.servicios; track servicio.id) {
+                <label>
+                  <input type="checkbox" [checked]="pubIdsServicios.includes(servicio.id)"
+                    (change)="alternarServicio(servicio.id)" />
+                  {{ servicio.nombre }}
+                </label>
+              }
+          </div>
         }
-      </details>
-      @if (errorEntorno) {
-        <p role="alert" class="publicar-entorno-error">{{ errorEntorno }}</p>
-      }
+        @for (servicio of serviciosPersonalizados; track servicio; let i = $index) {
+          <div class="publicar-servicio-personalizado">
+            <label class="form-label">Servicio personalizado
+              <input type="text" class="styled-input" maxlength="80" placeholder="Ej. Bicicletero" [(ngModel)]="servicio.nombre" />
+            </label>
+            <button type="button" class="btn-cancel" [disabled]="publicando"
+              [attr.aria-label]="'Quitar servicio personalizado ' + (i + 1)" (click)="quitarServicioPersonalizado(i)">Quitar</button>
+          </div>
+        }
+        <button type="button" class="btn-cancel publicar-agregar" [disabled]="publicando || serviciosPersonalizados.length >= 30"
+          (click)="agregarServicioPersonalizado()"><span aria-hidden="true">+</span> Agregar servicio</button>
+      </section>
+
+      <section class="publicar-seccion">
+        <h3>Entorno de la vivienda</h3>
+        <datalist id="publicar-categorias-entorno">
+          @for (categoria of categoriasEntorno; track categoria.tipo) {
+            <option [value]="categoria.etiqueta"></option>
+          }
+        </datalist>
+        @for (lugar of entorno; track lugar; let i = $index) {
+          <div class="publicar-lugar">
+            <label class="form-label">Tipo de lugar
+              <input type="text" class="styled-input" list="publicar-categorias-entorno" maxlength="60"
+                placeholder="Ej. Gimnasio o cine" [(ngModel)]="lugar.categoria" />
+            </label>
+            <label class="form-label">Nombre (opcional)
+              <input type="text" class="styled-input" maxlength="120" placeholder="Ej. Smart Fit" [(ngModel)]="lugar.nombre" />
+            </label>
+            <label class="form-label">Minutos a pie
+              <input type="number" class="styled-input" min="1" max="1440" step="1" [(ngModel)]="lugar.minutos" />
+            </label>
+            <button type="button" class="btn-cancel" [disabled]="publicando"
+              [attr.aria-label]="'Quitar lugar ' + (i + 1)" (click)="quitarLugar(i)">Quitar</button>
+          </div>
+        }
+        @if (errorEntorno) {
+          <p role="alert" class="publicar-entorno-error">{{ errorEntorno }}</p>
+        }
+        <button type="button" class="btn-cancel publicar-agregar" [disabled]="publicando || entorno.length >= 30"
+          (click)="agregarLugar()"><span aria-hidden="true">+</span> Agregar lugar</button>
+      </section>
     </div>
 
     <div class="modal-footer-row">

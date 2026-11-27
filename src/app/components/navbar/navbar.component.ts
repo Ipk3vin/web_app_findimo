@@ -22,6 +22,7 @@ export class NavbarComponent {
   @Output() irAInicio = new EventEmitter<void>();
   @Output() irABusqueda = new EventEmitter<void>();
   @Output() irAPerfil = new EventEmitter<void>();
+  @Output() irAResenas = new EventEmitter<void>();
   @Output() irAMensajes = new EventEmitter<void>();
   @Output() irAMisViviendas = new EventEmitter<void>();
   @Output() toggleMenuUsuario = new EventEmitter<void>();
