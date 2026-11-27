@@ -1,3 +1,4 @@
+import { ORIGEN_API } from './origen-api';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -6,7 +7,7 @@ import { Resena, ResenasPerfil } from '../models/resena.model';
 @Injectable({ providedIn: 'root' })
 export class ResenaService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/resenas';
+  private readonly apiUrl = `${ORIGEN_API}/api/resenas`;
 
   obtenerResenasDePerfil(idUsuario: number): Observable<ResenasPerfil> {
     return this.http.get<ResenasPerfil>(`${this.apiUrl}/perfil`, { withCredentials: true, params: { cuenta: idUsuario } });

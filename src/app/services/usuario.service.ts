@@ -1,3 +1,4 @@
+import { ORIGEN_API } from './origen-api';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -9,7 +10,7 @@ import { ActivarPerfilRequest, UsuarioRegistroRequest, UsuarioRegistroResponse }
 })
 export class UsuarioService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/usuarios';
+  private apiUrl = `${ORIGEN_API}/api/usuarios`;
 
   private currentUser: UsuarioRegistroResponse | null = null;
 

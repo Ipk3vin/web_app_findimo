@@ -1,3 +1,4 @@
+import { ORIGEN_API } from './origen-api';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -9,7 +10,7 @@ import { CatalogosPropiedad, Propiedad, PropiedadRequest } from '../models/propi
 })
 export class PropiedadService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/propiedades';
+  private readonly apiUrl = `${ORIGEN_API}/api/propiedades`;
 
   obtenerCatalogos(): Observable<CatalogosPropiedad> {
     return this.http.get<CatalogosPropiedad>(`${this.apiUrl}/catalogos`);
@@ -31,7 +32,7 @@ export class PropiedadService {
           const habitaciones = item.habitaciones || 1;
           const fotosGuardadas = [...new Set((item.imagenes as string[] | undefined)?.filter(Boolean))].map(ruta => ({
             ruta,
-            url: ruta.startsWith('/imagenes/') ? new URL(ruta, this.apiUrl).href : ruta
+            url: ruta.startsWith('/imagenes/') ? `${ORIGEN_API}${ruta}` : ruta
           }));
 
           return {

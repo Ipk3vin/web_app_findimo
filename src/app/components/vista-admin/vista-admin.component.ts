@@ -1,3 +1,4 @@
+import { ORIGEN_API } from '../../services/origen-api';
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, DestroyRef, OnInit, inject, input, output, signal } from '@angular/core';
 import { Observable, retry, throwError, timer } from 'rxjs';
@@ -113,7 +114,7 @@ export class VistaAdminComponent implements OnInit {
     this.datos.set(null);
     this.error.set('');
     this.cargando.set(true);
-    this.http.get<PaginaAdmin>(`http://localhost:8080/api/admin/${seccion.id}`, {
+    this.http.get<PaginaAdmin>(`${ORIGEN_API}/api/admin/${seccion.id}`, {
       withCredentials: true, params: { pagina, buscar: this.busqueda() }
     }).pipe(
       retry({
@@ -166,7 +167,7 @@ export class VistaAdminComponent implements OnInit {
       return;
     }
 
-    this.procesarCambio(this.http.post<void>('http://localhost:8080/api/admin/administradores',
+    this.procesarCambio(this.http.post<void>(`${ORIGEN_API}/api/admin/administradores`,
       { correo: correo.trim(), contrasena, confirmacion }, { withCredentials: true }), () => formulario.reset());
   }
 
@@ -200,7 +201,7 @@ export class VistaAdminComponent implements OnInit {
 
     this.errorContrasena.set('');
     this.cambiandoEstado.set(true);
-    this.http.patch<void>(`http://localhost:8080/api/admin/usuarios/${id}/contrasena`,
+    this.http.patch<void>(`${ORIGEN_API}/api/admin/usuarios/${id}/contrasena`,
       { contrasena, confirmacion }, { withCredentials: true })
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
@@ -228,7 +229,7 @@ export class VistaAdminComponent implements OnInit {
     const activo = fila['estado'] === accion.estadoInactivo;
     if (!activo && fila['rol'] === 'ADMINISTRADOR' && !window.confirm('¿Dar de baja a este administrador secundario?')) return;
     const recurso = seccion.id === 'administradores' ? 'usuarios' : seccion.id;
-    this.procesarCambio(this.http.patch<void>(`http://localhost:8080/api/admin/${recurso}/${id}/estado`,
+    this.procesarCambio(this.http.patch<void>(`${ORIGEN_API}/api/admin/${recurso}/${id}/estado`,
       { activo }, { withCredentials: true }));
   }
 
