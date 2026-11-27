@@ -1,6 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { UsuarioService } from '../../services/usuario.service';
 import { UsuarioRegistroResponse } from '../../models/usuario.model';
 
 import { VistaResenasComponent } from '../vista-resenas/vista-resenas.component';
@@ -35,6 +37,12 @@ export class VistaPerfilComponent implements OnChanges {
     return this.secciones.find(seccion => seccion.id === this.seccionActiva)?.titulo ?? 'Perfil';
   }
 
+  private readonly usuarioService = inject(UsuarioService);
+  private readonly destroyRef = inject(DestroyRef);
+  readonly editandoContrasena = signal(false);
+  readonly guardandoContrasena = signal(false);
+  readonly errorContrasena = signal('');
+
   campoEditando: 'nombre' | 'correo' | 'telefono' | null = null;
 
   editNombre: string = '';
@@ -45,6 +53,7 @@ export class VistaPerfilComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['seccionActiva']) {
       this.campoEditando = null;
+      this.cerrarContrasena();
     }
     if (changes['usuarioActual'] || changes['seccionActiva']) {
       this.sincronizarCampos();
@@ -125,10 +134,28 @@ export class VistaPerfilComponent implements OnChanges {
     });
   }
 
-  cambiarContrasena(): void {
-    this.mostrarToast.emit({
-      mensaje: 'Se ha enviado un código para restablecer contraseña a tu celular.',
-      tipo: 'info'
+  cerrarContrasena(): void {
+    this.editandoContrasena.set(false);
+    this.errorContrasena.set('');
+  }
+
+  guardarContrasena(contrasena: string): void {
+    if (this.guardandoContrasena()) return;
+    this.errorContrasena.set('');
+    this.guardandoContrasena.set(true);
+    this.usuarioService.actualizarContrasena(contrasena).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.guardandoContrasena.set(false);
+        this.cerrarContrasena();
+        this.mostrarToast.emit({ mensaje: 'Contraseña actualizada.', tipo: 'success' });
+      },
+      error: error => {
+        this.guardandoContrasena.set(false);
+        this.errorContrasena.set(error.status === 401 || error.status === 403
+          ? 'Vuelve a iniciar sesión para actualizar la contraseña.'
+          : error.status === 400 ? 'Ingresa una contraseña de hasta 72 bytes.'
+            : 'No se pudo actualizar la contraseña.');
+      }
     });
   }
 }

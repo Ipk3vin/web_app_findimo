@@ -434,6 +434,7 @@
 .bg-emerald-tint { background: #f0fdf4; }
 .bg-purple-tint { background: #faf5ff; }
 .bg-sky-tint { background: #f0f9ff; }
+.bg-teal-tint { background: #effafa; }
 
 .surround-icon-circle {
   flex-shrink: 0;
@@ -1139,6 +1140,22 @@
 .opiniones-total {
   margin-inline-start: 0.35rem;
   color: #52647b;
+}
+
+.detail-servicios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+.detail-servicios li {
+  padding: .45rem .75rem;
+  background: #f2f6fa;
+  border: 1px solid #dbe4ee;
+  border-radius: 999px;
+  overflow-wrap: anywhere;
 }
 
 .opiniones-lista {

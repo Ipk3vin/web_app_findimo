@@ -1,7 +1,7 @@
 import { FotoViviendaComponent } from '../foto-vivienda/foto-vivienda.component';
 import { Component, ViewEncapsulation, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Propiedad, TIPOS_ENTORNO } from '../../models/propiedad.model';
+import { OpcionPropiedad, Propiedad, TIPOS_ENTORNO } from '../../models/propiedad.model';
 import { Resena } from '../../models/resena.model';
 
 @Component({
@@ -17,9 +17,13 @@ export class VistaDetalleComponent implements OnChanges {
 
   @Input() propiedadSeleccionada: Propiedad | null = null;
   @Input() resenasPropiedadSeleccionada: Resena[] = [];
+  @Input() resenasArrendadorSeleccionado: Resena[] = [];
+  @Input() cargandoResenasArrendador = true;
+  @Input() errorResenasArrendador = false;
   @Input() cargandoResenasPropiedad = true;
   @Input() errorResenasPropiedad = false;
   @Input() propiedadesRecomendadas: Propiedad[] = [];
+  @Input() catalogoServicios: OpcionPropiedad[] = [];
 
   @Output() toggleFavorito = new EventEmitter<Propiedad>();
   @Input() puedeSolicitarAlquiler = true;
@@ -31,6 +35,34 @@ export class VistaDetalleComponent implements OnChanges {
 
   fotoActiva?: string;
   private fotosOcultas = new Set<string>();
+
+  get serviciosVivienda(): string[] {
+    const propiedad = this.propiedadSeleccionada;
+    const servicios = this.catalogoServicios
+      .filter(servicio => propiedad?.idsServicios?.includes(servicio.id))
+      .map(servicio => servicio.nombre);
+    return [...new Set([...servicios, ...(propiedad?.serviciosPersonalizados ?? [])])];
+  }
+
+  get calificacionVivienda(): number | null {
+    if (this.cargandoResenasPropiedad || this.errorResenasPropiedad) {
+      return this.propiedadSeleccionada?.calificacion ?? null;
+    }
+    return this.promedioResenas(this.resenasPropiedadSeleccionada);
+  }
+
+  get totalResenasVivienda(): number {
+    if (this.cargandoResenasPropiedad || this.errorResenasPropiedad) {
+      return this.propiedadSeleccionada?.totalResenas ?? 0;
+    }
+    return this.resenasPropiedadSeleccionada.length;
+  }
+
+  promedioResenas(resenas: Resena[]): number | null {
+    return resenas.length
+      ? resenas.reduce((suma, resena) => suma + resena.calificacion, 0) / resenas.length
+      : null;
+  }
 
   get fotos(): string[] {
     return [...new Set(this.propiedadSeleccionada?.imagenesGaleria ?? [])].filter(foto => !this.fotosOcultas.has(foto));

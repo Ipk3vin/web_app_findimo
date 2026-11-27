@@ -4,6 +4,9 @@
 <!-- ========================================================================== -->
 
 <!-- 1. BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR) -->
+@if (usuarioActual?.nombreRol === 'ADMINISTRADOR') {
+  <app-vista-admin [nombre]="usuarioActual?.nombre ?? ''" [idCuenta]="usuarioActual?.idUsuario ?? 0" [correoCuenta]="usuarioActual?.correoElectronico ?? ''" (salir)="cerrarSesion()" />
+} @else {
 <app-navbar
   [vistaActual]="vistaActual"
   [usuarioActual]="usuarioActual"
@@ -15,6 +18,7 @@
   (irAInicio)="irAInicio()"
   (irABusqueda)="irABusqueda()"
   (irAPerfil)="irAPerfil()"
+  (irAResenas)="irAPerfil('resenas')"
   (irAMensajes)="irAMensajes()"
   (irAMisViviendas)="irAMisViviendas()"
   (toggleMenuUsuario)="toggleMenuUsuario()"
@@ -54,6 +58,7 @@
     [(filtroTipoHabitacion)]="filtroTipoHabitacion"
     [(filtroPrecioMensual)]="filtroPrecioMensual"
     [(filtroUniversidad)]="filtroUniversidad"
+    [filtroDistrito]="filtroDistrito"
     [propiedadesFiltradas]="propiedadesFiltradas"
     [idsComparacion]="idsComparacion"
     (alternarComparacion)="alternarComparacion($event)"
@@ -75,9 +80,13 @@
     *ngIf="vistaActual === 'detalle'"
     [propiedadSeleccionada]="propiedadSeleccionada"
     [resenasPropiedadSeleccionada]="resenasPropiedadSeleccionada"
+    [resenasArrendadorSeleccionado]="resenasArrendadorSeleccionado"
+    [cargandoResenasArrendador]="cargandoResenasArrendador"
+    [errorResenasArrendador]="errorResenasArrendador"
     [cargandoResenasPropiedad]="cargandoResenasPropiedad"
     [errorResenasPropiedad]="errorResenasPropiedad"
     [propiedadesRecomendadas]="propiedadesRecomendadas"
+    [catalogoServicios]="catalogos.servicios"
     (toggleFavorito)="toggleFavorito($event)"
     [puedeSolicitarAlquiler]="puedeSolicitarAlquiler"
     (reservaInmediata)="reservaInmediata()"
@@ -91,7 +100,8 @@
   <app-vista-perfil
     *ngIf="vistaActual === 'perfil' && usuarioActual"
     [usuarioActual]="usuarioActual"
-    [(seccionActiva)]="seccionPerfil"
+    [seccionActiva]="seccionPerfil"
+    (seccionActivaChange)="irAPerfil($event)"
     [(pestanaResenas)]="pestanaResenas"
     (perfilActualizado)="onPerfilActualizado($event)"
     (mostrarToast)="mostrarToast($event.mensaje, $event.tipo)">
@@ -331,4 +341,5 @@
       </form>
     </section>
   </div>
+}
 }

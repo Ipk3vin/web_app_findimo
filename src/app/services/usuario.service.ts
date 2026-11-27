@@ -45,6 +45,10 @@ export class UsuarioService {
     );
   }
 
+  actualizarContrasena(contrasena: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/contrasena`, { contrasena }, { withCredentials: true });
+  }
+
   activarPerfil(dto: ActivarPerfilRequest): Observable<UsuarioRegistroResponse> {
     return this.http.post<UsuarioRegistroResponse>(`${this.apiUrl}/perfiles`, dto, { withCredentials: true }).pipe(
       tap(respuesta => this.guardarCuenta(respuesta))

@@ -10,6 +10,7 @@ import { SolicitudService } from './services/solicitud.service';
 import { ResenaService } from './services/resena.service';
 import { CatalogosPropiedad, Propiedad, PropiedadRequest, LugarCercano, TIPOS_ENTORNO } from './models/propiedad.model';
 import { ActivarPerfilRequest, ModoCuenta, UsuarioRegistroRequest, UsuarioRegistroResponse } from './models/usuario.model';
+import { coincideUniversidad } from './models/universidades.model';
 import { Resena } from './models/resena.model';
 
 // Componentes modulares
@@ -22,6 +23,7 @@ import { ModalFiltrosComponent } from './components/modal-filtros/modal-filtros.
 import { ModalAuthComponent } from './components/modal-auth/modal-auth.component';
 import { ModalPublicarComponent } from './components/modal-publicar/modal-publicar.component';
 import { ToastComponent } from './components/toast/toast.component';
+import { VistaAdminComponent } from './components/vista-admin/vista-admin.component';
 import { VistaMensajesComponent } from './components/vista-mensajes/vista-mensajes.component';
 import { SeccionPerfil, VistaPerfilComponent } from './components/vista-perfil/vista-perfil.component';
 
@@ -39,6 +41,7 @@ import { SeccionPerfil, VistaPerfilComponent } from './components/vista-perfil/v
     VistaDetalleComponent,
     VistaPerfilComponent,
     VistaMensajesComponent,
+    VistaAdminComponent,
     ModalFiltrosComponent,
     ModalAuthComponent,
     ModalPublicarComponent,
@@ -65,6 +68,9 @@ export class App implements OnInit {
 
   // Sub-vista de detalle: reseñas de la propiedad seleccionada cargadas desde backend
   resenasPropiedadSeleccionada: Resena[] = [];
+  resenasArrendadorSeleccionado: Resena[] = [];
+  cargandoResenasArrendador = true;
+  errorResenasArrendador = false;
 
   cargandoResenasPropiedad = true;
   errorResenasPropiedad = false;
@@ -100,6 +106,7 @@ export class App implements OnInit {
   filtroTipoHabitacion: string = 'todos';
   filtroPrecioMensual: string = 'todos';
   filtroUniversidad: string = 'todas';
+  filtroDistrito = 'todos';
 
   // Patrón MVP (Model-View-Presenter):
   // El componente actúa como Presenter, manteniendo las propiedades de la vista
@@ -111,7 +118,7 @@ export class App implements OnInit {
   get propiedadesRecomendadas(): Propiedad[] {
     const actual = this.propiedadSeleccionada;
     return this.propiedades
-      .filter(propiedad => propiedad.estado && propiedad.idPropiedad !== actual?.idPropiedad)
+      .filter(propiedad => propiedad.estado && !propiedad.reservada && propiedad.idPropiedad !== actual?.idPropiedad)
       .sort((a, b) => Number(b.distrito === actual?.distrito) - Number(a.distrito === actual?.distrito)
         || b.idPropiedad - a.idPropiedad)
       .slice(0, 4);
@@ -184,6 +191,7 @@ export class App implements OnInit {
   ngOnInit(): void {
     this.usuarioActual = this.usuarioService.getCurrentUser();
     this.restaurarModoCuenta();
+    if (this.usuarioActual?.nombreRol === 'ADMINISTRADOR') return;
     if (typeof sessionStorage !== 'undefined') {
       const guardadas = sessionStorage.getItem('findimo_comparacion') ?? '';
       this.idsComparacion = [...new Set(guardadas.split(',').map(Number))]
@@ -237,12 +245,13 @@ export class App implements OnInit {
         this.seccionPerfil = 'resenas';
       } else if (vista === 'inicio' || vista === 'busqueda' || vista === 'detalle' || vista === 'perfil' || vista === 'favoritos' || vista === 'mensajes' || vista === 'mis-viviendas' || vista === 'comparacion') {
         this.vistaActual = vista;
+        if (vista === 'perfil' && this.seccionPerfil === 'resenas') this.seccionPerfil = 'sobreMi';
       }
     }
   }
 
-  cambiarVista(nuevaVista: 'inicio' | 'busqueda' | 'detalle' | 'perfil' | 'favoritos' | 'mensajes' | 'mis-viviendas' | 'comparacion'): void {
-    this.vistaActual = nuevaVista;
+  cambiarVista(nuevaVista: 'inicio' | 'busqueda' | 'detalle' | 'perfil' | 'resenas' | 'favoritos' | 'mensajes' | 'mis-viviendas' | 'comparacion'): void {
+    this.vistaActual = nuevaVista === 'resenas' ? 'perfil' : nuevaVista;
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('findimo_vista_actual', nuevaVista);
     }
@@ -279,14 +288,14 @@ export class App implements OnInit {
     }
   }
 
-  irAPerfil(): void {
+  irAPerfil(seccion: SeccionPerfil = 'sobreMi'): void {
     if (!this.usuarioActual) {
       this.abrirModalLogin();
       return;
     }
 
-    this.seccionPerfil = 'sobreMi';
-    this.cambiarVista('perfil');
+    this.seccionPerfil = seccion;
+    this.cambiarVista(seccion === 'resenas' ? 'resenas' : 'perfil');
     this.menuUsuarioAbierto = false;
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -343,16 +352,8 @@ export class App implements OnInit {
       this.filtroPrecioMensual = 'todos';
     }
 
-    if (this.heroUbicacion && this.heroUbicacion !== 'todos') {
-      const u = this.heroUbicacion.toLowerCase();
-      if (u.includes('chorrillos') || u.includes('surco')) {
-        this.filtroUniversidad = 'UPC Chorrillos';
-      } else if (u.includes('molina') || u.includes('miraflores')) {
-        this.filtroUniversidad = 'Universidad de Piura';
-      }
-    } else {
-      this.filtroUniversidad = 'todas';
-    }
+    this.filtroDistrito = this.heroUbicacion;
+    this.filtroUniversidad = 'todas';
 
     // Navegar a la pantalla de resultados
     this.cambiarVista('busqueda');
@@ -414,6 +415,10 @@ export class App implements OnInit {
   // Aplica los filtros principales y los combina con los filtros adicionales (AND)
   aplicarFiltros(): void {
     let lista = this.propiedades.filter(propiedad => !propiedad.reservada);
+    if (this.filtroDistrito !== 'todos') {
+      const distrito = this.filtroDistrito.toLowerCase();
+      lista = lista.filter(propiedad => propiedad.distrito.toLowerCase().includes(distrito));
+    }
 
     if (this.filtroTipoHabitacion !== 'todos') {
       const tipo = Number(this.filtroTipoHabitacion);
@@ -435,24 +440,11 @@ export class App implements OnInit {
 
     // 3. Filtro principal por universidad
     if (this.filtroUniversidad && this.filtroUniversidad !== 'todas') {
-      const u = this.filtroUniversidad.toLowerCase();
-      lista = lista.filter(p => {
-        const uniProp = (p.universidad || '').toLowerCase();
-        const dist = (p.distrito || '').toLowerCase();
-        const tit = p.titulo.toLowerCase();
-        const dir = (p.direccion || '').toLowerCase();
-
-        if (u.includes('upc') || u.includes('chorrillos')) {
-          return uniProp.includes('upc') || dist.includes('chorrillos') || tit.includes('upc') || dir.includes('chorrillos');
-        }
-        if (u.includes('piura')) {
-          return uniProp.includes('piura') || dist.includes('miraflores') || dist.includes('san isidro') || tit.includes('piura');
-        }
-        if (u.includes('ucsur')) {
-          return uniProp.includes('ucsur') || dist.includes('sur') || tit.includes('ucsur');
-        }
-        return uniProp.includes(u);
-      });
+      lista = lista.filter(vivienda => coincideUniversidad(
+        this.filtroUniversidad,
+        [vivienda.titulo, vivienda.descripcion, vivienda.direccion],
+        (vivienda.entorno ?? []).filter(lugar => lugar.tipo === 'UNIVERSIDAD').map(lugar => lugar.nombre ?? '')
+      ));
     }
 
     if (this.serviciosSeleccionados.length) {
@@ -478,6 +470,7 @@ export class App implements OnInit {
     this.filtroTipoHabitacion = 'todos';
     this.filtroPrecioMensual = 'todos';
     this.filtroUniversidad = 'todas';
+    this.filtroDistrito = 'todos';
     this.serviciosSeleccionados = [];
   }
 
@@ -613,9 +606,13 @@ export class App implements OnInit {
     // Cargar reseñas reales de la propiedad desde el backend Spring Boot (GET /api/resenas/propiedad/{idPropiedad})
     this.solicitudResenasPropiedad?.unsubscribe();
     this.resenasPropiedadSeleccionada = [];
+    this.resenasArrendadorSeleccionado = [];
+    this.cargandoResenasArrendador = true;
+    this.errorResenasArrendador = false;
     this.cargandoResenasPropiedad = true;
     this.errorResenasPropiedad = false;
-    this.solicitudResenasPropiedad = this.resenaService.obtenerResenasPorPropiedad(prop.idPropiedad).subscribe({
+    this.solicitudResenasPropiedad = new Subscription();
+    this.solicitudResenasPropiedad.add(this.resenaService.obtenerResenasPorPropiedad(prop.idPropiedad).subscribe({
       next: (resenas: Resena[]) => {
         this.resenasPropiedadSeleccionada = resenas;
         this.cargandoResenasPropiedad = false;
@@ -626,7 +623,20 @@ export class App implements OnInit {
         this.errorResenasPropiedad = true;
         this.changeDetector.markForCheck();
       }
-    });
+    }));
+
+    this.solicitudResenasPropiedad.add(this.resenaService.obtenerResenasDelArrendador(prop.idPropiedad).subscribe({
+      next: resenas => {
+        this.resenasArrendadorSeleccionado = resenas;
+        this.cargandoResenasArrendador = false;
+        this.changeDetector.markForCheck();
+      },
+      error: () => {
+        this.cargandoResenasArrendador = false;
+        this.errorResenasArrendador = true;
+        this.changeDetector.markForCheck();
+      }
+    }));
 
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -670,7 +680,6 @@ export class App implements OnInit {
     const vivienda = this.propiedades.find(prop => prop.idPropiedad === idPropiedad);
     if (vivienda) {
       vivienda.reservada = reservada;
-      if (!reservada) vivienda.estado = true;
     }
     if (this.propiedadSeleccionada?.idPropiedad === idPropiedad) this.propiedadSeleccionada.reservada = reservada;
     this.aplicarFiltros();
@@ -697,7 +706,7 @@ export class App implements OnInit {
         next: solicitud => {
           this.solicitandoAlquiler = false;
           this.irAMensajes(solicitud.idSolicitudAlquiler);
-          this.mostrarToast(`Solicitud de alquiler enviada para «${prop.titulo}».`);
+          this.mostrarToast('Puedes solicitar el alquiler desde la conversación.', 'info');
         },
         error: error => {
           this.solicitandoAlquiler = false;
@@ -760,7 +769,9 @@ export class App implements OnInit {
     this.pubDistrito = 'Chorrillos';
   }
 
-  guardarPropiedad({ entorno, fotos, fotosRetiradas }: { entorno: LugarCercano[]; fotos: File[]; fotosRetiradas: string[] }): void {
+  guardarPropiedad({ entorno, serviciosPersonalizados, fotos, fotosRetiradas }: {
+    entorno: LugarCercano[]; serviciosPersonalizados: string[]; fotos: File[]; fotosRetiradas: string[];
+  }): void {
     if (this.publicandoPropiedad) return;
 
     if (!this.pubTitulo.trim() || !this.pubDescripcion.trim() || !(this.pubPrecio > 0) || !Number.isInteger(this.pubHabitaciones) ||
@@ -790,6 +801,7 @@ export class App implements OnInit {
       distrito: this.pubDistrito,
       estado: true,
       entorno,
+      serviciosPersonalizados,
       fotosRetiradas
     };
 
@@ -868,7 +880,7 @@ export class App implements OnInit {
   private restaurarModoCuenta(): void {
     const cuenta = this.usuarioActual;
     this.modoCuenta = null;
-    if (!cuenta) return;
+    if (!cuenta || cuenta.nombreRol === 'ADMINISTRADOR') return;
 
     const guardado = typeof localStorage === 'undefined' ? null : localStorage.getItem(`findimo_modo_${cuenta.idUsuario}`);
     const inicial = cuenta.nombreRol === 'ARRENDADOR' ? 'ARRENDADOR' : 'ESTUDIANTE';
@@ -948,9 +960,15 @@ export class App implements OnInit {
       next: (user: UsuarioRegistroResponse) => {
         this.usuarioActual = user;
         this.restaurarModoCuenta();
-        this.cargarFavoritos();
         this.modalLoginAbierto = false;
         this.menuUsuarioAbierto = false;
+        this.loginContrasena = '';
+        if (user.nombreRol === 'ADMINISTRADOR') {
+          this.changeDetector.markForCheck();
+          if (typeof window !== 'undefined') window.scrollTo(0, 0);
+          return;
+        }
+        this.cargarFavoritos();
         const tipoRol = this.modoCuenta === 'ARRENDADOR' ? 'Anfitrión (Arrendador)' : 'Estudiante';
         this.mostrarToast(`¡Bienvenido de nuevo, ${user.nombre}! Has ingresado como ${tipoRol}.`, 'success');
       },
@@ -962,6 +980,7 @@ export class App implements OnInit {
   }
 
   cerrarSesion(): void {
+    const eraAdministrador = this.usuarioActual?.nombreRol === 'ADMINISTRADOR';
     this.sesionCerrada.next();
     this.usuarioService.cerrarSesion();
     this.usuarioActual = null;
@@ -1008,6 +1027,9 @@ export class App implements OnInit {
 
     this.propiedadSeleccionada = null;
     this.resenasPropiedadSeleccionada = [];
+    this.resenasArrendadorSeleccionado = [];
+    this.cargandoResenasArrendador = true;
+    this.errorResenasArrendador = false;
     this.idsComparacion = [];
     this.guardarComparacion();
     this.solicitudResenasPropiedad?.unsubscribe();
@@ -1017,6 +1039,10 @@ export class App implements OnInit {
     }
 
     this.irAInicio();
+    if (eraAdministrador) {
+      this.cargarPropiedades();
+      this.cargarCatalogos();
+    }
     this.mostrarToast('Has cerrado sesión correctamente.', 'info');
   }
 

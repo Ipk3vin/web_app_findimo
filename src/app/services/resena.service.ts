@@ -12,6 +12,10 @@ export class ResenaService {
     return this.http.get<ResenasPerfil>(`${this.apiUrl}/perfil`, { withCredentials: true, params: { cuenta: idUsuario } });
   }
 
+  obtenerResenasDelArrendador(idPropiedad: number): Observable<Resena[]> {
+    return this.http.get<Resena[]>(`${this.apiUrl}/propiedad/${idPropiedad}/arrendador`);
+  }
+
   obtenerResenasPorPropiedad(idPropiedad: number): Observable<Resena[]> {
     return this.http.get<Resena[]>(`${this.apiUrl}/propiedad/${idPropiedad}`);
   }

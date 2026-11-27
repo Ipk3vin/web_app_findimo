@@ -12,7 +12,7 @@
               (click)="abrir(item.idSolicitud)">
               <strong>{{ item.contacto || 'Participante' }}</strong>
               <span>{{ item.vivienda }} · {{ item.distrito }}</span>
-              <small>{{ item.reserva ? etiquetasReserva[item.reserva] : etiquetas[item.situacion] }}</small>
+              <small>{{ item.reserva ? etiquetasReserva[item.reserva] : (item.situacion === 'CANCELADA' ? 'Cancelada' : 'Conversación') }}</small>
             </button>
           }
         </nav>
@@ -27,18 +27,9 @@
                 </button>
               }
             </header>
-            <section class="chat-solicitud" aria-label="Solicitud de alquiler">
-              <p><strong>Solicitud #{{ chat.idSolicitud }}</strong> · {{ etiquetas[chat.situacion] }}</p>
-              @if (chat.arrendador && chat.situacion === 'PENDIENTE') {
-                <div class="chat-decisiones">
-                  <button type="button" class="chat-aceptar" [disabled]="procesandoDecision()" (click)="decidir(chat, 'ACEPTADA')">Aceptar solicitud</button>
-                  <button type="button" class="chat-cancelar" [disabled]="procesandoDecision()" (click)="decidir(chat, 'CANCELADA')">Cancelar solicitud</button>
-                </div>
-              }
-              @if (errorSolicitud()) {
-                <p class="chat-error" role="alert">{{ errorSolicitud() }}</p>
-              }
-            </section>
+            @if (errorSolicitud()) {
+              <p class="chat-error" role="alert">{{ errorSolicitud() }}</p>
+            }
             <div #historial class="chat-history" aria-label="Historial de mensajes" role="log">
               @if (mensajes(); as mensajesChat) {
                 @for (mensaje of mensajesChat; track mensaje.idMensaje) {
@@ -56,11 +47,8 @@
                 <article class="chat-reserva" aria-label="Reserva de vivienda">
                   <strong>{{ etiquetasReserva[reserva] }}</strong>
                   <p>{{ chat.vivienda }}</p>
-                  @if (esArrendador() && chat.arrendador && reserva === 'PENDIENTE') {
-                    <div class="chat-decisiones">
-                      <button type="button" class="chat-aceptar" [disabled]="procesandoReserva()" (click)="gestionarReserva(chat, 'CONFIRMADA')">Confirmar reserva</button>
-                      <button type="button" class="chat-cancelar" [disabled]="procesandoReserva()" (click)="gestionarReserva(chat, 'RECHAZADA')">Rechazar reserva</button>
-                    </div>
+                  @if (reserva === 'PENDIENTE') {
+                    <p>{{ chat.reservaSolicitadaPorMi ? 'Esperando confirmación de la otra persona.' : 'La otra persona solicitó el alquiler.' }}</p>
                   }
                   @if (chat.reservaFinalizadaEn) {
                     <p>{{ chat.reservaFinalizadaEn | date:'dd/MM/yyyy' }}</p>
@@ -70,11 +58,20 @@
                   }
                   @if (reserva === 'FINALIZADA') {
                     @if (chat.resenaRegistrada) {
-                      <p>Tu reseña fue publicada.</p>
+                      <p>Tu reseña al {{ chat.arrendador ? 'estudiante' : 'arrendador' }} fue publicada.</p>
                     } @else if (!accionAlquiler) {
                       <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('resena')">
                         Dejar reseña al {{ chat.arrendador ? 'estudiante' : 'arrendador' }}
                       </button>
+                    }
+                    @if (!chat.arrendador) {
+                      @if (chat.resenaViviendaRegistrada) {
+                        <p>Tu reseña de la vivienda fue publicada.</p>
+                      } @else {
+                        <button type="button" class="chat-enlace" (click)="mostrarAccionAlquiler('resenaVivienda')">
+                          Dejar reseña de la vivienda
+                        </button>
+                      }
                     }
                   }
                 </article>
@@ -95,9 +92,17 @@
                   <button type="submit" class="chat-aceptar" [disabled]="procesandoReserva() || codigoLiberacion.trim() !== ('LIBERAR-' + chat.idSolicitud)">Finalizar y liberar vivienda</button>
                 </div>
               </form>
-            } @else if (accionAlquiler === 'resena' && chat.reserva === 'FINALIZADA' && !chat.resenaRegistrada) {
+            } @else if (chat.reserva === 'FINALIZADA' &&
+                ((accionAlquiler === 'resena' && !chat.resenaRegistrada) ||
+                (accionAlquiler === 'resenaVivienda' && !chat.arrendador && !chat.resenaViviendaRegistrada))) {
               <form class="chat-accion-alquiler" (ngSubmit)="dejarResena(chat)">
-                <strong>Dejar reseña al {{ chat.arrendador ? 'estudiante' : 'arrendador' }}</strong>
+                <strong>
+                  @if (accionAlquiler === 'resenaVivienda') {
+                    Dejar reseña de la vivienda
+                  } @else {
+                    Dejar reseña al {{ chat.arrendador ? 'estudiante' : 'arrendador' }}
+                  }
+                </strong>
                 <label for="nota-resena">Calificación</label>
                 <select id="nota-resena" name="notaResena" [(ngModel)]="calificacionResena" required>
                   <option [ngValue]="null">Elige una calificación</option>
@@ -120,9 +125,16 @@
             <form class="chat-form" (ngSubmit)="enviar()">
               <input type="text" name="borrador" [(ngModel)]="borrador" aria-label="Mensaje"
                 placeholder="Escribe un mensaje" maxlength="1000" [disabled]="enviando() || mensajes() === null" />
-              @if (!esArrendador() && !chat.arrendador && chat.situacion === 'ACEPTADA' && !chat.reserva) {
-                <button type="button" class="chat-reservar" [disabled]="procesandoReserva()"
-                  (click)="gestionarReserva(chat, 'PENDIENTE')">Solicitar reserva</button>
+              @if (chat.situacion !== 'CANCELADA' && esArrendador() === chat.arrendador) {
+                @if (!chat.reserva || chat.reserva === 'RECHAZADA') {
+                  <button type="button" class="chat-reservar" [disabled]="procesandoReserva()"
+                    (click)="gestionarReserva(chat, 'PENDIENTE')">{{ chat.arrendador ? 'Brindar alquiler' : 'Solicitar alquiler' }}</button>
+                } @else if (chat.reserva === 'PENDIENTE' && !chat.reservaSolicitadaPorMi) {
+                  <button type="button" class="chat-reservar" [disabled]="procesandoReserva()"
+                    (click)="gestionarReserva(chat, 'CONFIRMADA')">Confirmar alquiler</button>
+                  <button type="button" class="chat-reservar" [disabled]="procesandoReserva()"
+                    (click)="gestionarReserva(chat, 'RECHAZADA')">Rechazar</button>
+                }
               }
               <button type="submit" [disabled]="!borrador.trim() || enviando() || mensajes() === null">Enviar</button>
             </form>

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 
 export type EstadoReserva = 'PENDIENTE' | 'CONFIRMADA' | 'RECHAZADA' | 'FINALIZADA';
 export type SituacionSolicitud = 'PENDIENTE' | 'ACEPTADA' | 'CANCELADA';
-export type DecisionSolicitud = Exclude<SituacionSolicitud, 'PENDIENTE'>;
 
 export interface PerfilEstudianteChat {
   nombre: string;
@@ -20,8 +19,10 @@ export interface Conversacion {
   situacion: SituacionSolicitud;
   arrendador: boolean;
   reserva?: EstadoReserva | null;
+  reservaSolicitadaPorMi?: boolean;
   reservaFinalizadaEn?: string | null;
   resenaRegistrada?: boolean;
+  resenaViviendaRegistrada?: boolean;
 }
 
 export interface Mensaje {
@@ -45,11 +46,6 @@ export class MensajesService {
       { withCredentials: true, params: { cuenta } });
   }
 
-  resolver(cuenta: number, solicitud: number, situacion: DecisionSolicitud) {
-    return this.http.put<Conversacion>(`${this.url}/${solicitud}/situacion`, { situacion },
-      { withCredentials: true, params: { cuenta } });
-  }
-
   gestionarReserva(cuenta: number, solicitud: number, estado: EstadoReserva) {
     return this.http.put<Conversacion>(`${this.url}/${solicitud}/reserva`, { estado },
       { withCredentials: true, params: { cuenta } });
@@ -60,7 +56,7 @@ export class MensajesService {
       { withCredentials: true, params: { cuenta } });
   }
 
-  dejarResena(cuenta: number, solicitud: number, destino: 'estudiante' | 'arrendador', calificacion: number, comentario: string) {
+  dejarResena(cuenta: number, solicitud: number, destino: 'estudiante' | 'arrendador' | 'vivienda', calificacion: number, comentario: string) {
     return this.http.post<Conversacion>(`${this.url}/${solicitud}/resena-${destino}`, { calificacion, comentario },
       { withCredentials: true, params: { cuenta } });
   }

@@ -50,7 +50,7 @@ export class PropiedadService {
             estado: item.estado !== undefined ? item.estado : true,
             idTipoPropiedad: item.idTipoPropiedad ?? null,
             idsServicios: item.idsServicios ?? [],
-            universidad: this.determinarUniversidad(titulo, descripcion, direccion, distrito),
+            serviciosPersonalizados: item.serviciosPersonalizados ?? [],
             calificacion: item.calificacion ?? undefined,
             totalResenas: item.totalResenas ?? 0,
             subtituloDetalle: `${habitaciones} Hab · Baño en el alojamiento`,
@@ -74,26 +74,5 @@ export class PropiedadService {
       ? this.http.post(this.apiUrl, datos, { withCredentials: true })
       : this.http.put(`${this.apiUrl}/${id}`, datos, { withCredentials: true });
   }
-
-  determinarUniversidad(titulo: string, descripcion: string, direccion: string, distrito: string): string {
-    const texto = `${titulo} ${descripcion} ${direccion} ${distrito}`.toLowerCase();
-    if (texto.includes('piura') || texto.includes('udep')) {
-      return 'Universidad de Piura';
-    }
-    if (texto.includes('ucsur') || texto.includes('cientifica') || texto.includes('científica')) {
-      return 'UCSUR';
-    }
-    if (texto.includes('upc') || texto.includes('chorrillos')) {
-      return 'UPC Chorrillos';
-    }
-    if (texto.includes('san isidro') || texto.includes('miraflores')) {
-      return 'Universidad de Piura';
-    }
-    if (texto.includes('sur') || texto.includes('villa')) {
-      return 'UCSUR';
-    }
-    return 'UPC Chorrillos';
-  }
-
 
 }
